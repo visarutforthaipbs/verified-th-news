@@ -1,15 +1,54 @@
 from __future__ import annotations
 
+import os
+import time
+from collections import defaultdict, deque
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException, Query
-from fastapi.responses import FileResponse
+from fastapi import FastAPI, HTTPException, Query, Request
+from fastapi.responses import FileResponse, JSONResponse
 from pydantic import BaseModel, Field
 
 from .config import Settings
 from .db import Repository
 
-app = FastAPI(title="TH Verify Database", version="0.1.0")
+# TH_VERIFY_READONLY=1 runs a public-safe instance: labeling/review endpoints
+# are disabled and /check is rate-limited. The private full instance runs
+# without the flag on the LAN.
+READONLY = os.getenv("TH_VERIFY_READONLY") == "1"
+
+app = FastAPI(title="TH Verify Database", version="0.1.0",
+              docs_url=None if READONLY else "/docs",
+              redoc_url=None if READONLY else "/redoc",
+              openapi_url=None if READONLY else "/openapi.json")
+
+_RATE = 20          # /check requests per window per client
+_WINDOW = 60.0      # seconds
+_hits: dict[str, deque] = defaultdict(deque)
+
+
+@app.middleware("http")
+async def public_guard(request: Request, call_next):
+    if READONLY:
+        if request.url.path.startswith("/review"):
+            return JSONResponse({"detail": "not available"}, status_code=404)
+        if request.url.path == "/check":
+            ip = (request.headers.get("cf-connecting-ip")
+                  or (request.client.host if request.client else "?"))
+            now = time.monotonic()
+            q = _hits[ip]
+            while q and now - q[0] > _WINDOW:
+                q.popleft()
+            if len(q) >= _RATE:
+                return JSONResponse(
+                    {"detail": "ค้นหาถี่เกินไป โปรดรอสักครู่"}, status_code=429)
+            q.append(now)
+    return await call_next(request)
+
+
+def _require_private() -> None:
+    if READONLY:
+        raise HTTPException(status_code=404, detail="not available")
 
 _STATIC_DIR = Path(__file__).parent / "static"
 
@@ -63,6 +102,7 @@ def review_queue(limit: int = Query(25, ge=1, le=100)) -> dict:
 
 @app.post("/review/label")
 def review_label(req: LabelRequest) -> dict:
+    _require_private()  # belt-and-braces on top of the middleware
     from .models import utc_now
 
     repo = Repository(Settings.from_env().database_path)
