@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ห้องตรวจ — ติดป้ายผลตรวจสอบ</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏷️</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chonburi&family=Sarabun:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f6f1e5; --paper-2:#efe7d4; --ink:#221d16; --ink-soft:#5c5344;
+  --rule:#c9bda3; --red:#b3372b; --green:#2c6e49; --amber:#a86f1f;
+  --blue:#2b5d8a; --brown:#8a4b2b; --gray:#6f6a5e;
+}
+*{box-sizing:border-box;margin:0}
+body{
+  font-family:"Sarabun",sans-serif;color:var(--ink);
+  background:repeating-linear-gradient(0deg,transparent 0 2px,rgba(34,29,22,.012) 2px 4px),var(--paper);
+  min-height:100vh;padding:1.2rem 1.25rem 3rem;
+}
+.wrap{max-width:62rem;margin:0 auto}
+header{display:flex;align-items:baseline;gap:1rem;flex-wrap:wrap;border-bottom:3px double var(--ink);padding-bottom:.7rem}
+h1{font-family:"Chonburi",serif;font-weight:400;font-size:1.7rem}
+h1 a{color:inherit;text-decoration:none}
+.progress{margin-left:auto;font-size:.85rem;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+.progress b{color:var(--ink)}
+.bar{height:5px;background:var(--paper-2);border:1px solid var(--rule);margin-top:.8rem}
+.bar i{display:block;height:100%;background:var(--green);transition:width .3s}
+main{display:grid;grid-template-columns:1.25fr 1fr;gap:1.6rem;margin-top:1.5rem}
+@media(max-width:820px){main{grid-template-columns:1fr}}
+.video{aspect-ratio:16/9;border:1.5px solid var(--ink);background:#000;box-shadow:5px 5px 0 var(--paper-2),5px 5px 0 1.5px var(--rule)}
+.video iframe{width:100%;height:100%;border:0;display:block}
+.claim-kicker{font-size:.72rem;letter-spacing:.28em;color:var(--ink-soft);text-transform:uppercase;margin-bottom:.5rem}
+.claim{font-size:1.25rem;font-weight:700;line-height:1.55}
+.meta{margin-top:.5rem;font-size:.82rem;color:var(--ink-soft)}
+.meta a{color:var(--blue)}
+.tip{margin-top:.9rem;font-size:.82rem;color:var(--ink-soft);border-left:3px solid var(--rule);padding-left:.7rem;line-height:1.7}
+.keys{margin-top:1.3rem;display:grid;gap:.5rem}
+.key-btn{
+  display:flex;align-items:center;gap:.8rem;width:100%;text-align:left;
+  font-family:"Sarabun",sans-serif;font-size:1.02rem;font-weight:700;
+  background:#fffdf6;border:1.5px solid var(--ink);padding:.6rem .8rem;cursor:pointer;
+  transition:transform .07s ease, box-shadow .07s ease;
+}
+.key-btn:hover{box-shadow:3px 3px 0 var(--paper-2),3px 3px 0 1.5px var(--rule)}
+.key-btn:active{transform:translate(2px,2px)}
+kbd{
+  font-family:inherit;font-size:.85rem;min-width:1.7rem;text-align:center;
+  border:1.5px solid currentColor;border-radius:3px;padding:.06rem .3rem;
+}
+.k-false{color:var(--red)} .k-true{color:var(--green)} .k-misleading{color:var(--amber)}
+.k-altered{color:var(--blue)} .k-scam{color:var(--brown)}
+.k-aux{color:var(--gray);font-weight:500}
+.flash{
+  position:fixed;inset:0;display:grid;place-items:center;pointer-events:none;opacity:0;
+}
+.flash span{
+  font-family:"Chonburi",serif;font-size:3rem;padding:.6rem 1.4rem .4rem;
+  border:4px solid currentColor;border-radius:.4rem;transform:rotate(-5deg);background:var(--paper);
+}
+.flash.go{animation:pop .45s ease}
+@keyframes pop{0%{opacity:0}15%{opacity:1}80%{opacity:1}100%{opacity:0}}
+.done{
+  display:none;text-align:center;padding:4rem 1rem;font-size:1.1rem;color:var(--ink-soft)
+}
+.done .stamp-big{font-family:"Chonburi",serif;font-size:2.4rem;color:var(--green)}
+footer{margin-top:2.2rem;font-size:.75rem;color:var(--ink-soft);border-top:1px solid var(--rule);padding-top:.6rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <h1><a href="/">เช็กก่อนเชื่อ</a> · ห้องตรวจ</h1>
+  <div class="progress">ติดป้ายแล้ว <b id="done-n">–</b> / <span id="total-n">–</span> ตอน</div>
+</header>
+<div class="bar"><i id="bar" style="width:0%"></i></div>
+
+<main id="main">
+  <div>
+    <div class="video"><iframe id="player" src="about:blank" allow="autoplay; encrypted-media" allowfullscreen></iframe></div>
+    <p class="tip">💡 คำตอบมักอยู่ <b>ช่วงท้ายคลิป</b> (“บทสรุป : …”) — ลากไปท้าย ๆ ได้เลย ·
+    ป้ายที่ติดจะบันทึกเป็น <b>human</b> ทันที กด <kbd>U</kbd> ถ้าติดผิด</p>
+  </div>
+  <div>
+    <div class="claim-kicker">คำกล่าวอ้างที่ตรวจสอบ</div>
+    <div class="claim" id="claim">กำลังโหลด…</div>
+    <div class="meta" id="meta"></div>
+    <div class="keys">
+      <button class="key-btn k-false" data-v="false"><kbd>1</kbd> ไม่จริง / ข่าวปลอม</button>
+      <button class="key-btn k-true" data-v="true"><kbd>2</kbd> จริง / แชร์ได้</button>
+      <button class="key-btn k-misleading" data-v="misleading"><kbd>3</kbd> จริงบางส่วน / บิดเบือน / อย่าเพิ่งแชร์</button>
+      <button class="key-btn k-altered" data-v="altered_media"><kbd>4</kbd> ภาพ/คลิปดัดแปลง · AI</button>
+      <button class="key-btn k-scam" data-v="scam_alert"><kbd>5</kbd> เตือนภัยมิจฉาชีพ</button>
+      <button class="key-btn k-aux" data-v="skip"><kbd>S</kbd> ข้าม (ตัดสินไม่ได้จากคลิป)</button>
+      <button class="key-btn k-aux" data-v="undo"><kbd>U</kbd> ย้อนกลับรายการก่อนหน้า</button>
+    </div>
+  </div>
+</main>
+
+<div class="done" id="done-view">
+  <div class="stamp-big">ครบแล้ว !</div>
+  <p>ไม่มีตอนค้างตรวจในคิว — รัน <code>scripts/build_dataset.py</code> แล้วตามด้วย <code>th-verify index</code> เพื่ออัปเดตชุดข้อมูล</p>
+</div>
+
+<div class="flash" id="flash"><span id="flash-text"></span></div>
+<footer>ป้าย: 1 ปลอม · 2 จริง · 3 บิดเบือน · 4 สื่อดัดแปลง · 5 เตือนภัย · S ข้าม · U ย้อนกลับ — บันทึกอัตโนมัติทุกครั้งที่กด</footer>
+</div>
+
+<script>
+const FLASH = {
+  false:["ไม่จริง","var(--red)"], true:["จริง","var(--green)"],
+  misleading:["บิดเบือน","var(--amber)"], altered_media:["ดัดแปลง","var(--blue)"],
+  scam_alert:["เตือนภัย","var(--brown)"], skip:["ข้าม","var(--gray)"], undo:["ย้อนกลับ","var(--gray)"],
+};
+let queue = [], history = [], total = 0, labeled = 0, current = null, fetching = false;
+
+const $ = id => document.getElementById(id);
+
+async function refill(){
+  if(fetching) return; fetching = true;
+  try{
+    const res = await fetch("/review/queue?limit=50");
+    const data = await res.json();
+    total = data.total; labeled = data.labeled;
+    const have = new Set(queue.map(x=>x.id));
+    if(current) have.add(current.id);
+    for(const it of data.items) if(!have.has(it.id)) queue.push(it);
+    updateProgress();
+  } finally { fetching = false; }
+}
+function updateProgress(){
+  $("done-n").textContent = labeled; $("total-n").textContent = total;
+  $("bar").style.width = total ? (100*labeled/total).toFixed(1)+"%" : "0%";
+}
+function show(item){
+  current = item;
+  if(!item){
+    $("main").style.display = "none"; $("done-view").style.display = "block";
+    $("player").src = "about:blank";
+    return;
+  }
+  $("main").style.display = ""; $("done-view").style.display = "none";
+  $("claim").textContent = item.title;
+  const d = item.published_at ? new Date(item.published_at).toLocaleDateString("th-TH",{year:"numeric",month:"short",day:"numeric"}) : "";
+  $("meta").innerHTML = `${d} · <a href="${item.source_url}" target="_blank" rel="noopener">เปิดใน YouTube ↗</a>`;
+  $("player").src = item.video_id
+    ? `https://www.youtube-nocookie.com/embed/${item.video_id}?autoplay=1&rel=0`
+    : "about:blank";
+}
+function next(){
+  show(queue.shift() ?? null);
+  if(queue.length < 15) refill();
+}
+function flash(v){
+  const [txt, color] = FLASH[v];
+  const f = $("flash"); $("flash-text").textContent = txt;
+  $("flash-text").style.color = color;
+  f.classList.remove("go"); void f.offsetWidth; f.classList.add("go");
+}
+async function label(v){
+  if(v === "undo"){
+    const prev = history.pop();
+    if(!prev) return;
+    flash("undo");
+    await fetch("/review/label",{method:"POST",headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({id:prev.item.id, verdict:"undo"})});
+    if(prev.v !== "skip") labeled = Math.max(0, labeled-1);
+    if(current) queue.unshift(current);
+    updateProgress(); show(prev.item);
+    return;
+  }
+  if(!current) return;
+  const item = current;
+  flash(v);
+  history.push({item, v});
+  if(v !== "skip"){ labeled++; updateProgress(); }
+  next();  // advance immediately; save in the background
+  fetch("/review/label",{method:"POST",headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({id:item.id, verdict:v})})
+    .catch(()=>{ alert("บันทึกไม่สำเร็จ — รายการ: " + item.title); });
+}
+document.querySelectorAll(".key-btn").forEach(b=>b.addEventListener("click",()=>label(b.dataset.v)));
+document.addEventListener("keydown",e=>{
+  if(e.target.tagName === "TEXTAREA" || e.target.tagName === "INPUT") return;
+  const map = {"1":"false","2":"true","3":"misleading","4":"altered_media","5":"scam_alert",
+               "s":"skip","S":"skip","u":"undo","U":"undo"};
+  if(map[e.key]){ e.preventDefault(); label(map[e.key]); }
+});
+(async ()=>{ await refill(); next(); })();
+</script>
+</body>
+</html>
