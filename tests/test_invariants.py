@@ -204,6 +204,66 @@ def test_private_instance_keeps_labeling_surface(monkeypatch, tmp_path):
         assert client.get("/review/queue").status_code == 200
 
 
+def test_multi_source_review_queue(monkeypatch, tmp_path):
+    db_path = tmp_path / "queue_test.db"
+    monkeypatch.delenv("TH_VERIFY_READONLY", raising=False)
+    monkeypatch.setenv("TH_VERIFY_DATABASE_PATH", str(db_path))
+    import th_verify.api as api
+    importlib.reload(api)
+    r = Repository(db_path)
+    r.initialize()
+    r.upsert_many([
+        make_record(source="cofact", source_id="c1", title="ข่าว Cofact", verdict="unknown"),
+        make_record(source="sure_share", source_id="s1", title="ข่าว SureShare", verdict="unknown"),
+    ])
+    from fastapi.testclient import TestClient
+    with TestClient(api.app) as client:
+        res_all = client.get("/review/queue?source=all")
+        assert res_all.status_code == 200
+        data_all = res_all.json()
+        assert data_all["total"] == 2
+
+        res_cofact = client.get("/review/queue?source=cofact")
+        assert res_cofact.status_code == 200
+        data_cofact = res_cofact.json()
+        assert data_cofact["total"] == 1
+        assert data_cofact["items"][0]["source"] == "cofact"
+
+
+def test_review_queue_sorting(monkeypatch, tmp_path):
+    db_path = tmp_path / "sort_test.db"
+    monkeypatch.delenv("TH_VERIFY_READONLY", raising=False)
+    monkeypatch.setenv("TH_VERIFY_DATABASE_PATH", str(db_path))
+    import th_verify.api as api
+    importlib.reload(api)
+    r = Repository(db_path)
+    r.initialize()
+    r.upsert_many([
+        make_record(source="cofact", source_id="c1", title="ข่าวเก่า", published_at="2020-01-01T00:00:00Z"),
+        make_record(source="cofact", source_id="c2", title="ข่าวใหม่", published_at="2026-07-01T00:00:00Z"),
+    ])
+    from fastapi.testclient import TestClient
+    with TestClient(api.app) as client:
+        res_asc = client.get("/review/queue?order=asc")
+        items_asc = res_asc.json()["items"]
+        assert items_asc[0]["title"] == "ข่าวเก่า"
+
+        res_desc = client.get("/review/queue?order=desc")
+        items_desc = res_desc.json()["items"]
+        assert items_desc[0]["title"] == "ข่าวใหม่"
+
+
+def test_fts5_search_indexing(repo):
+    repo.upsert_many([
+        make_record(source="afnc", source_id="f1", title="ข่าวลือวัคซีนโควิด", explanation="อย่าเชื่อการแอบอ้าง"),
+    ])
+    results = repo.search_fts("วัคซีนโควิด")
+    assert len(results) >= 1
+    assert "วัคซีน" in results[0]["title"]
+
+
+
+
 # ── 6. briefs never present heuristic verdicts ─────────────────────────────
 
 def test_brief_fetch_demotes_heuristic_labels(repo):
@@ -224,3 +284,96 @@ def test_brief_fetch_demotes_heuristic_labels(repo):
     by_id = {r["source"]: r["label"] for r in rows}
     assert by_id["cofact"] == "unknown", "heuristic verdict leaked into brief"
     assert by_id["afnc"] == "false"
+
+
+# ── 7. thaipbs verdicts come from the article, never a neighbouring card ───
+
+THAIPBS_LISTING = """
+<html><body><div class="wrapper">
+  <div class="card">
+    <a href="/verify/content/111">ข่าวจริง เรื่องหนึ่งที่เป็นความจริง</a>
+    <span>21 พ.ค. 69 | สังคม</span>
+  </div>
+  <div class="card">
+    <a href="/verify/content/222">คลิปอ้างเหตุการณ์หนึ่ง แท้จริงเป็นคลิปเก่า</a>
+    <span>20 พ.ค. 69 | รอบโลก</span>
+  </div>
+</div></body></html>
+"""
+
+CLAIM_REVIEW_PAGE = """
+<html><head>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[{"@type":"ClaimReview",
+ "datePublished":"2026-05-20",
+ "reviewRating":{"@type":"Rating","ratingValue":"5","bestRating":5,
+                 "alternateName":"%s"}}]}
+</script></head>
+<body><article class="single-content"><p>เนื้อหาการตรวจสอบ</p></article></body></html>
+"""
+
+
+def test_claim_review_prefers_alternate_name_over_rating_value():
+    """ratingValue does not track the label - Thai PBS ships ratingValue 5
+    alongside 'ภาพปลอม'. Only alternateName may be trusted."""
+    from selectolax.parser import HTMLParser
+    from th_verify.collectors.thaipbs import parse_claim_review
+
+    verdict, published = parse_claim_review(HTMLParser(CLAIM_REVIEW_PAGE % "ภาพปลอม"))
+    assert verdict == "ภาพปลอม"
+    assert published == "2026-05-20"
+
+
+def test_listing_container_never_spans_two_articles():
+    """The container walk must stop at the card boundary.
+
+    The original walk only checked a 140-character floor and overshot into the
+    multi-card wrapper, so every record cut from it inherited the first card's
+    verdict and date. That corrupted gold-tier labels in the training exports.
+    """
+    from selectolax.parser import HTMLParser
+    from th_verify.collectors.thaipbs import _spans_multiple_articles
+
+    tree = HTMLParser(THAIPBS_LISTING)
+    wrapper = tree.css_first("div.wrapper")
+    assert _spans_multiple_articles(wrapper), "wrapper holds two cards and must be rejected"
+    for card in tree.css("div.card"):
+        assert not _spans_multiple_articles(card), "a single card must be accepted"
+
+
+def test_thaipbs_collect_does_not_borrow_neighbour_verdict():
+    """End-to-end: the second card must not inherit the first card's verdict."""
+    import httpx
+    from th_verify.collectors.thaipbs import ThaiPbsCollector
+
+    pages = {
+        "https://www.thaipbs.or.th/verify/category/all": THAIPBS_LISTING,
+        "https://www.thaipbs.or.th/verify/content/111": CLAIM_REVIEW_PAGE % "ข่าวจริง",
+        "https://www.thaipbs.or.th/verify/content/222": CLAIM_REVIEW_PAGE % "ข่าวปลอม",
+    }
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(200, text=pages[str(request.url).split("?")[0]])
+
+    async def run():
+        transport = httpx.MockTransport(handler)
+        async with httpx.AsyncClient(transport=transport) as client:
+            return [r async for r in ThaiPbsCollector(client).collect(mode="delta")]
+
+    records = {r.source_id: r for r in asyncio.run(run())}
+    assert records["111"].verdict == "ข่าวจริง"
+    assert records["222"].verdict == "ข่าวปลอม", "second card inherited the first card's verdict"
+    assert records["222"].published_at == "2026-05-20"
+
+
+def test_thaipbs_published_date_is_never_in_the_future():
+    """A date scraped out of claim text ('เริ่ม 1 มิ.ย. - 30 ก.ย. 69') is not a
+    publication date. ClaimReview datePublished must win."""
+    from selectolax.parser import HTMLParser
+    from th_verify.collectors.thaipbs import parse_claim_review, parse_thai_date
+
+    # The old fallback would happily read a future date out of claim prose.
+    assert parse_thai_date("เริ่ม 1 มิ.ย. – 30 ก.ย. 69") == "2026-09-30"
+    # ClaimReview supplies the real one, so the fallback is never reached.
+    verdict, published = parse_claim_review(HTMLParser(CLAIM_REVIEW_PAGE % "ข่าวจริง"))
+    assert published == "2026-05-20"

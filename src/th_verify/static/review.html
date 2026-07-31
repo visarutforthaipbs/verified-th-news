@@ -67,20 +67,119 @@ kbd{
 }
 .done .stamp-big{font-family:"Chonburi",serif;font-size:2.4rem;color:var(--green)}
 footer{margin-top:2.2rem;font-size:.75rem;color:var(--ink-soft);border-top:1px solid var(--rule);padding-top:.6rem}
+<style>
+:root{
+  --paper:#f6f1e5; --paper-2:#efe7d4; --ink:#221d16; --ink-soft:#5c5344;
+  --rule:#c9bda3; --red:#b3372b; --green:#2c6e49; --amber:#a86f1f;
+  --blue:#2b5d8a; --brown:#8a4b2b; --gray:#6f6a5e;
+}
+*{box-sizing:border-box;margin:0}
+body{
+  font-family:"Sarabun",sans-serif;color:var(--ink);
+  background:repeating-linear-gradient(0deg,transparent 0 2px,rgba(34,29,22,.012) 2px 4px),var(--paper);
+  min-height:100vh;padding:1.2rem 1.25rem 3rem;
+}
+.wrap{max-width:62rem;margin:0 auto}
+header{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;border-bottom:3px double var(--ink);padding-bottom:.7rem}
+h1{font-family:"Chonburi",serif;font-weight:400;font-size:1.7rem}
+h1 a{color:inherit;text-decoration:none}
+.source-select{
+  font-family:"Sarabun",sans-serif;font-size:.9rem;font-weight:600;
+  padding:.3rem .6rem;background:var(--paper-2);border:1.5px solid var(--ink);
+  border-radius:4px;color:var(--ink);cursor:pointer;
+}
+.progress{margin-left:auto;font-size:.85rem;color:var(--ink-soft);font-variant-numeric:tabular-nums}
+.progress b{color:var(--ink)}
+.bar{height:5px;background:var(--paper-2);border:1px solid var(--rule);margin-top:.8rem}
+.bar i{display:block;height:100%;background:var(--green);transition:width .3s}
+main{display:grid;grid-template-columns:1.25fr 1fr;gap:1.6rem;margin-top:1.5rem}
+@media(max-width:820px){main{grid-template-columns:1fr}}
+.video{aspect-ratio:16/9;border:1.5px solid var(--ink);background:#000;box-shadow:5px 5px 0 var(--paper-2),5px 5px 0 1.5px var(--rule)}
+.video iframe{width:100%;height:100%;border:0;display:block}
+.article-card{
+  border:1.5px solid var(--ink);background:#fffdf6;padding:1.2rem;
+  box-shadow:5px 5px 0 var(--paper-2),5px 5px 0 1.5px var(--rule);
+  min-height:200px;display:flex;flex-direction:column;gap:.8rem;
+}
+.article-card .badge{
+  display:inline-block;font-size:.75rem;font-weight:700;padding:.15rem .5rem;
+  border-radius:3px;background:var(--paper-2);border:1px solid var(--rule);
+  color:var(--ink-soft);width:fit-content;text-transform:uppercase;
+}
+.article-card .art-title{font-size:1.1rem;font-weight:700;line-height:1.4}
+.article-card .art-body{font-size:.9rem;color:var(--ink-soft);line-height:1.6;max-height:220px;overflow-y:auto}
+.article-card .art-link{margin-top:auto;font-size:.85rem;font-weight:700;color:var(--blue);text-decoration:none}
+.article-card .art-link:hover{text-decoration:underline}
+.claim-kicker{font-size:.72rem;letter-spacing:.28em;color:var(--ink-soft);text-transform:uppercase;margin-bottom:.5rem}
+.claim{font-size:1.25rem;font-weight:700;line-height:1.55}
+.meta{margin-top:.5rem;font-size:.82rem;color:var(--ink-soft)}
+.meta a{color:var(--blue)}
+.tip{margin-top:.9rem;font-size:.82rem;color:var(--ink-soft);border-left:3px solid var(--rule);padding-left:.7rem;line-height:1.7}
+.keys{margin-top:1.3rem;display:grid;gap:.5rem}
+.key-btn{
+  display:flex;align-items:center;gap:.8rem;width:100%;text-align:left;
+  font-family:"Sarabun",sans-serif;font-size:1.02rem;font-weight:700;
+  background:#fffdf6;border:1.5px solid var(--ink);padding:.6rem .8rem;cursor:pointer;
+  transition:transform .07s ease, box-shadow .07s ease;
+}
+.key-btn:hover{box-shadow:3px 3px 0 var(--paper-2),3px 3px 0 1.5px var(--rule)}
+.key-btn:active{transform:translate(2px,2px)}
+kbd{
+  font-family:inherit;font-size:.85rem;min-width:1.7rem;text-align:center;
+  border:1.5px solid currentColor;border-radius:3px;padding:.06rem .3rem;
+}
+.k-false{color:var(--red)} .k-true{color:var(--green)} .k-misleading{color:var(--amber)}
+.k-altered{color:var(--blue)} .k-scam{color:var(--brown)}
+.k-aux{color:var(--gray);font-weight:500}
+.flash{
+  position:fixed;inset:0;display:grid;place-items:center;pointer-events:none;opacity:0;
+}
+.flash span{
+  font-family:"Chonburi",serif;font-size:3rem;padding:.6rem 1.4rem .4rem;
+  border:4px solid currentColor;border-radius:.4rem;transform:rotate(-5deg);background:var(--paper);
+}
+.flash.go{animation:pop .45s ease}
+@keyframes pop{0%{opacity:0}15%{opacity:1}80%{opacity:1}100%{opacity:0}}
+.done{
+  display:none;text-align:center;padding:4rem 1rem;font-size:1.1rem;color:var(--ink-soft)
+}
+.done .stamp-big{font-family:"Chonburi",serif;font-size:2.4rem;color:var(--green)}
+footer{margin-top:2.2rem;font-size:.75rem;color:var(--ink-soft);border-top:1px solid var(--rule);padding-top:.6rem}
 </style>
 </head>
 <body>
 <div class="wrap">
 <header>
   <h1><a href="/">เช็กก่อนเชื่อ</a> · ห้องตรวจ</h1>
-  <div class="progress">ติดป้ายแล้ว <b id="done-n">–</b> / <span id="total-n">–</span> ตอน</div>
+  <select id="source-select" class="source-select">
+    <option value="all">ทุกแหล่งข่าว (All Sources)</option>
+    <option value="sure_share">ชัวร์ก่อนแชร์ (Sure & Share)</option>
+    <option value="cofact">Cofact</option>
+    <option value="thaipbs">Thai PBS Verify</option>
+    <option value="afp">AFP Fact Check</option>
+    <option value="afnc">ศูนย์ต่อต้านข่าวปลอม (AFNC)</option>
+  </select>
+  <select id="order-select" class="source-select">
+    <option value="asc">เก่าสุดก่อน (Oldest First)</option>
+    <option value="desc">ใหม่สุดก่อน (Newest First)</option>
+  </select>
+  <div class="progress">ติดป้ายแล้ว <b id="done-n">–</b> / <span id="total-n">–</span> รายการ</div>
 </header>
+
 <div class="bar"><i id="bar" style="width:0%"></i></div>
 
 <main id="main">
   <div>
-    <div class="video"><iframe id="player" src="about:blank" allow="autoplay; encrypted-media" allowfullscreen></iframe></div>
-    <p class="tip">💡 คำตอบมักอยู่ <b>ช่วงท้ายคลิป</b> (“บทสรุป : …”) — ลากไปท้าย ๆ ได้เลย ·
+    <div id="video-container" class="video">
+      <iframe id="player" src="about:blank" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    </div>
+    <div id="article-container" class="article-card" style="display:none;">
+      <span class="badge" id="art-badge">SOURCE</span>
+      <div class="art-title" id="art-title"></div>
+      <div class="art-body" id="art-body"></div>
+      <a id="art-link" class="art-link" href="#" target="_blank" rel="noopener">เปิดดูบทความต้นฉบับ ↗</a>
+    </div>
+    <p class="tip" id="tip-text">💡 คำตอบมักอยู่ <b>ช่วงท้ายคลิป</b> หรือใน <b>บทสรุปเนื้อหา</b> ·
     ป้ายที่ติดจะบันทึกเป็น <b>human</b> ทันที กด <kbd>U</kbd> ถ้าติดผิด</p>
   </div>
   <div>
@@ -93,7 +192,7 @@ footer{margin-top:2.2rem;font-size:.75rem;color:var(--ink-soft);border-top:1px s
       <button class="key-btn k-misleading" data-v="misleading"><kbd>3</kbd> จริงบางส่วน / บิดเบือน / อย่าเพิ่งแชร์</button>
       <button class="key-btn k-altered" data-v="altered_media"><kbd>4</kbd> ภาพ/คลิปดัดแปลง · AI</button>
       <button class="key-btn k-scam" data-v="scam_alert"><kbd>5</kbd> เตือนภัยมิจฉาชีพ</button>
-      <button class="key-btn k-aux" data-v="skip"><kbd>S</kbd> ข้าม (ตัดสินไม่ได้จากคลิป)</button>
+      <button class="key-btn k-aux" data-v="skip"><kbd>S</kbd> ข้าม (ตัดสินไม่ได้จากเนื้อหา)</button>
       <button class="key-btn k-aux" data-v="undo"><kbd>U</kbd> ย้อนกลับรายการก่อนหน้า</button>
     </div>
   </div>
@@ -101,7 +200,7 @@ footer{margin-top:2.2rem;font-size:.75rem;color:var(--ink-soft);border-top:1px s
 
 <div class="done" id="done-view">
   <div class="stamp-big">ครบแล้ว !</div>
-  <p>ไม่มีตอนค้างตรวจในคิว — รัน <code>scripts/build_dataset.py</code> แล้วตามด้วย <code>th-verify index</code> เพื่ออัปเดตชุดข้อมูล</p>
+  <p>ไม่มีรายการค้างตรวจในคิว — รัน <code>scripts/build_dataset.py</code> แล้วตามด้วย <code>th-verify index</code> เพื่ออัปเดตชุดข้อมูล</p>
 </div>
 
 <div class="flash" id="flash"><span id="flash-text"></span></div>
@@ -120,8 +219,10 @@ const $ = id => document.getElementById(id);
 
 async function refill(){
   if(fetching) return; fetching = true;
+  const src = $("source-select").value;
+  const ord = $("order-select").value;
   try{
-    const res = await fetch("/review/queue?limit=50");
+    const res = await fetch(`/review/queue?limit=50&source=${encodeURIComponent(src)}&order=${encodeURIComponent(ord)}`);
     const data = await res.json();
     total = data.total; labeled = data.labeled;
     const have = new Set(queue.map(x=>x.id));
@@ -144,10 +245,24 @@ function show(item){
   $("main").style.display = ""; $("done-view").style.display = "none";
   $("claim").textContent = item.title;
   const d = item.published_at ? new Date(item.published_at).toLocaleDateString("th-TH",{year:"numeric",month:"short",day:"numeric"}) : "";
-  $("meta").innerHTML = `${d} · <a href="${item.source_url}" target="_blank" rel="noopener">เปิดใน YouTube ↗</a>`;
-  $("player").src = item.video_id
-    ? `https://www.youtube-nocookie.com/embed/${item.video_id}?autoplay=1&rel=0`
-    : "about:blank";
+  const srcName = item.source || "web";
+  const originTag = item.verdict_origin ? ` [${item.verdict_origin}]` : "";
+  
+  if(item.video_id){
+    $("video-container").style.display = "block";
+    $("article-container").style.display = "none";
+    $("player").src = `https://www.youtube-nocookie.com/embed/${item.video_id}?autoplay=1&rel=0`;
+    $("meta").innerHTML = `${d} · <span style="font-weight:600">${srcName}</span>${originTag} · <a href="${item.source_url}" target="_blank" rel="noopener">เปิดใน YouTube ↗</a>`;
+  } else {
+    $("video-container").style.display = "none";
+    $("player").src = "about:blank";
+    $("article-container").style.display = "flex";
+    $("art-badge").textContent = `${srcName}${originTag}`;
+    $("art-title").textContent = item.title;
+    $("art-body").textContent = item.explanation || item.claim || "(ไม่มีคำอธิบายเพิ่มเติม)";
+    $("art-link").href = item.source_url || "#";
+    $("meta").innerHTML = `${d} · <span style="font-weight:600">${srcName}</span>${originTag} · <a href="${item.source_url}" target="_blank" rel="noopener">เปิดดูต้นฉบับ ↗</a>`;
+  }
 }
 function next(){
   show(queue.shift() ?? null);
@@ -183,12 +298,22 @@ async function label(v){
 }
 document.querySelectorAll(".key-btn").forEach(b=>b.addEventListener("click",()=>label(b.dataset.v)));
 document.addEventListener("keydown",e=>{
-  if(e.target.tagName === "TEXTAREA" || e.target.tagName === "INPUT") return;
+  if(e.target.tagName === "TEXTAREA" || e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
   const map = {"1":"false","2":"true","3":"misleading","4":"altered_media","5":"scam_alert",
                "s":"skip","S":"skip","u":"undo","U":"undo"};
   if(map[e.key]){ e.preventDefault(); label(map[e.key]); }
 });
+$("source-select").addEventListener("change", async ()=>{
+  queue = []; current = null; history = [];
+  await refill(); next();
+});
+$("order-select").addEventListener("change", async ()=>{
+  queue = []; current = null; history = [];
+  await refill(); next();
+});
 (async ()=>{ await refill(); next(); })();
+
 </script>
 </body>
 </html>
+

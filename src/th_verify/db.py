@@ -71,6 +71,15 @@ CREATE INDEX IF NOT EXISTS idx_claim_cluster_members_fact_check ON claim_cluster
 
 
 
+FTS_SCHEMA = """
+CREATE VIRTUAL TABLE IF NOT EXISTS fact_checks_fts USING fts5(
+    title,
+    claim,
+    explanation
+);
+"""
+
+
 class Repository:
     def __init__(self, path: Path | str):
         self.path = Path(path)
@@ -85,6 +94,61 @@ class Repository:
         with self.connect() as conn:
             conn.executescript(SCHEMA)
             self._migrate(conn)
+            self._setup_fts(conn)
+
+    @staticmethod
+    def _setup_fts(conn: sqlite3.Connection) -> None:
+        try:
+            conn.execute("DROP TRIGGER IF EXISTS fact_checks_ai;")
+            conn.execute("DROP TRIGGER IF EXISTS fact_checks_ad;")
+            conn.execute("DROP TRIGGER IF EXISTS fact_checks_au;")
+            conn.executescript(FTS_SCHEMA)
+            fc_count = conn.execute("SELECT COUNT(*) FROM fact_checks").fetchone()[0]
+            fts_count = conn.execute("SELECT COUNT(*) FROM fact_checks_fts").fetchone()[0]
+            if fc_count > 0 and fts_count == 0:
+                conn.execute(
+                    "INSERT INTO fact_checks_fts(rowid, title, claim, explanation) "
+                    "SELECT id, title, claim, explanation FROM fact_checks"
+                )
+        except sqlite3.OperationalError:
+            pass
+
+
+    def search_fts(self, text: str, limit: int = 30) -> list[dict]:
+        terms = [t for t in text.replace('"', ' ').replace("'", ' ').replace(':', ' ').split() if len(t) > 1]
+        if not terms:
+            return []
+        fts_query = " OR ".join(f'"{t}"*' for t in terms[:10])
+        with self.connect() as conn:
+            try:
+                rows = conn.execute(
+                    "SELECT f.id, f.source, f.source_url AS url, f.title, f.claim AS claim_text, "
+                    "       f.verdict AS label, f.published_at, f.explanation AS explanation_snippet, "
+                    "       fts.rank "
+                    "FROM fact_checks_fts fts "
+                    "JOIN fact_checks f ON fts.rowid = f.id "
+                    "WHERE fact_checks_fts MATCH ? "
+                    "ORDER BY fts.rank ASC LIMIT ?",
+                    (fts_query, limit),
+                ).fetchall()
+                if rows:
+                    return [dict(r) for r in rows]
+            except sqlite3.OperationalError:
+                pass
+
+            where_like = " OR ".join(["title LIKE ? OR claim LIKE ? OR explanation LIKE ?"] * len(terms[:5]))
+            params_like = []
+            for t in terms[:5]:
+                params_like.extend([f"%{t}%"] * 3)
+            rows = conn.execute(
+                f"SELECT id, source, source_url AS url, title, claim AS claim_text, "
+                f"       verdict AS label, published_at, explanation AS explanation_snippet, 0.0 AS rank "
+                f"FROM fact_checks WHERE {where_like} LIMIT ?",
+                [*params_like, limit],
+            ).fetchall()
+            return [dict(r) for r in rows]
+
+
 
     @staticmethod
     def _migrate(conn: sqlite3.Connection) -> None:

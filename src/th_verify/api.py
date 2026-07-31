@@ -17,10 +17,18 @@ from .db import Repository
 # without the flag on the LAN.
 READONLY = os.getenv("TH_VERIFY_READONLY") == "1"
 
+from contextlib import asynccontextmanager
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    Repository(Settings.from_env().database_path).initialize()
+    yield
+
 app = FastAPI(title="TH Verify Database", version="0.1.0",
               docs_url=None if READONLY else "/docs",
               redoc_url=None if READONLY else "/redoc",
-              openapi_url=None if READONLY else "/openapi.json")
+              openapi_url=None if READONLY else "/openapi.json",
+              lifespan=lifespan)
 
 _RATE = 20          # /check requests per window per client
 _WINDOW = 60.0      # seconds
@@ -74,28 +82,45 @@ def review_page() -> FileResponse:
 
 
 @app.get("/review/queue")
-def review_queue(limit: int = Query(25, ge=1, le=100)) -> dict:
-    """Unlabeled sure_share claim-check episodes, oldest first."""
+def review_queue(
+    source: str | None = Query(None, description="Source filter (e.g. sure_share, cofact, thaipbs, afnc, afp, all)"),
+    order: str = Query("asc", description="Sort order: 'asc' (oldest first) or 'desc' (newest first)"),
+    limit: int = Query(25, ge=1, le=100)
+) -> dict:
+    """Unlabeled/heuristic claim-check records awaiting human review."""
     repo = Repository(Settings.from_env().database_path)
+    sort_dir = "DESC" if order.lower() == "desc" else "ASC"
     with repo.connect() as conn:
+        where_clause = ""
+        params_count: list[str] = []
+        params_rows: list[str | int] = []
+
+        if source and source != "all":
+            where_clause = " WHERE source = ?"
+            params_count.append(source)
+            params_rows.append(source)
+
         total, done = conn.execute(
             "SELECT "
-            " SUM(title LIKE '%จริงหรือ%'),"
-            " SUM(title LIKE '%จริงหรือ%' AND verdict_origin LIKE 'human%') "
-            "FROM fact_checks WHERE source='sure_share'"
+            " COUNT(*),"
+            f" SUM(CASE WHEN verdict_origin LIKE 'human%' THEN 1 ELSE 0 END) "
+            f"FROM fact_checks{where_clause}",
+            params_count,
         ).fetchone()
-        # unlabeled episodes plus heuristic-labeled ones awaiting human
-        # verification; anything touched by a human stays out
-        rows = conn.execute(
-            "SELECT id, title, published_at, source_url,"
-            "       json_extract(raw_json, '$.contentDetails.videoId') AS video_id "
+
+        where_rows = (where_clause + " AND " if where_clause else " WHERE ")
+        sql_rows = (
+            "SELECT id, source, source_id, source_url, title, claim, explanation, verdict, verdict_origin, published_at,"
+            " json_extract(raw_json, '$.contentDetails.videoId') AS video_id "
             "FROM fact_checks "
-            "WHERE source='sure_share' AND title LIKE '%จริงหรือ%' "
-            "  AND verdict_origin NOT LIKE 'human%' "
-            "  AND (verdict='unknown' OR verdict_origin='heuristic') "
-            "ORDER BY published_at ASC LIMIT ?",
-            (limit,),
-        ).fetchall()
+            f"{where_rows} verdict_origin NOT LIKE 'human%' "
+            " AND (verdict='unknown' OR verdict_origin='heuristic') "
+            f"ORDER BY COALESCE(published_at, collected_at) {sort_dir} LIMIT ?"
+        )
+        params_rows.append(limit)
+        rows = conn.execute(sql_rows, params_rows).fetchall()
+
+
     return {"total": total or 0, "labeled": done or 0,
             "items": [dict(r) for r in rows]}
 
@@ -149,7 +174,12 @@ def check(req: CheckRequest) -> dict:
     if not (DEFAULT_INDEX_DIR / "config.json").exists():
         raise HTTPException(status_code=503,
                             detail="Search index not built - run: th-verify index")
-    matches = get_searcher().search(req.text, top_k=req.top_k)
+    try:
+        searcher = get_searcher()
+    except (ModuleNotFoundError, ImportError) as exc:
+        raise HTTPException(status_code=503,
+                            detail=f"Search service dependency missing: {exc}") from exc
+    matches = searcher.search(req.text, top_k=req.top_k)
     best = matches[0]["score"] if matches else 0.0
     if best >= STRONG_MATCH:
         level = "strong"
@@ -164,10 +194,6 @@ def check(req: CheckRequest) -> dict:
         "matches": matches,
     }
 
-
-@app.on_event("startup")
-def startup() -> None:
-    Repository(Settings.from_env().database_path).initialize()
 
 
 @app.get("/health")

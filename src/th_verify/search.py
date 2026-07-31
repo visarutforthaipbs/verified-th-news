@@ -97,15 +97,67 @@ class ClaimSearcher:
         self.model = SentenceTransformer(config["model"])
         self._np = np
 
-    def search(self, text: str, top_k: int = 5) -> list[dict]:
+    def search(self, text: str, top_k: int = 5, hybrid: bool = True, db_path: Path | str | None = None) -> list[dict]:
         np = self._np
         q = self.model.encode([_QUERY_PREFIX + text.strip()],
                               normalize_embeddings=True).astype(np.float32)[0]
         scores = self.vectors @ q
-        k = min(top_k, len(scores))
-        top = np.argpartition(scores, -k)[-k:]
-        top = top[np.argsort(scores[top])[::-1]]
-        return [{**self.meta[i], "score": round(float(scores[i]), 4)} for i in top]
+        k_dense = min(30, len(scores))
+        top_dense_idx = np.argpartition(scores, -k_dense)[-k_dense:]
+        top_dense_idx = top_dense_idx[np.argsort(scores[top_dense_idx])[::-1]]
+
+        dense_results = [{**self.meta[i], "score": float(scores[i])} for i in top_dense_idx]
+
+        if not hybrid:
+            return [{**d, "score": round(d["score"], 4)} for d in dense_results[:top_k]]
+
+        # FTS BM25 Keyword Search
+        from .config import Settings
+        from .db import Repository
+        target_db = Path(db_path) if db_path else Settings.from_env().database_path
+        repo = Repository(target_db)
+        fts_results = repo.search_fts(text, limit=30)
+
+        # Reciprocal Rank Fusion (RRF)
+        rrf_scores: dict[int, float] = {}
+        item_map: dict[int, dict] = {}
+        match_types: dict[int, str] = {}
+
+        for rank, d in enumerate(dense_results, start=1):
+            doc_id = d["id"]
+            rrf_scores[doc_id] = rrf_scores.get(doc_id, 0.0) + (1.0 / (60.0 + rank))
+            item_map[doc_id] = d
+            match_types[doc_id] = "dense"
+
+        for rank, fts_item in enumerate(fts_results, start=1):
+            doc_id = fts_item["id"]
+            if doc_id in match_types:
+                match_types[doc_id] = "hybrid"
+            else:
+                match_types[doc_id] = "keyword"
+                item_map[doc_id] = {
+                    "id": fts_item["id"],
+                    "source": fts_item["source"],
+                    "url": fts_item["url"],
+                    "claim_text": fts_item["claim_text"] or fts_item["title"],
+                    "label": fts_item["label"],
+                    "published_at": fts_item["published_at"],
+                    "explanation_snippet": (fts_item["explanation_snippet"] or "")[:600],
+                    "score": 0.85,
+                }
+            rrf_scores[doc_id] = rrf_scores.get(doc_id, 0.0) + (1.0 / (60.0 + rank))
+
+        sorted_ids = sorted(rrf_scores.keys(), key=lambda x: rrf_scores[x], reverse=True)[:top_k]
+
+        final_results = []
+        for doc_id in sorted_ids:
+            item = dict(item_map[doc_id])
+            item["score"] = round(item.get("score", 0.85), 4)
+            item["match_type"] = match_types[doc_id]
+            final_results.append(item)
+
+        return final_results
+
 
 
 _searcher: ClaimSearcher | None = None

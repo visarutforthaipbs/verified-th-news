@@ -89,6 +89,14 @@ VERDICT_MAP: dict[tuple[str, str], str] = {
     ("thaipbs", "ข่าวบิดเบือน"): "misleading",
     ("thaipbs", "ภาพปลอม"): "altered_media",
     ("thaipbs", "unknown"): "unknown",
+    # Thai PBS also ships these two in ClaimReview.reviewRating.alternateName.
+    # Neither is a verdict on the claim: "ไม่สแตมป์ข่าว" is an explicit refusal to
+    # stamp one, and "ตรวจสอบแล้ว" only asserts that a check happened. They are
+    # mapped to unknown deliberately rather than left to fall through, so that a
+    # future reader can see the choice was made rather than missed. Do not guess a
+    # polarity for them -- that would put invented labels in the gold tier.
+    ("thaipbs", "ไม่สแตมป์ข่าว"): "unknown",
+    ("thaipbs", "ตรวจสอบแล้ว"): "unknown",
     # --- sure_share: YouTube metadata, no verdicts ---
     ("sure_share", "unknown"): "unknown",
 }

@@ -1,7 +1,8 @@
 # secrets — never commit
 .env
 
-# data lives on popmacmini, not in git (DB is 250MB+, exports 100MB+)
+# data lives on lighthouse-core (formerly popmacmini), not in git
+# (DB is 250MB+, exports 100MB+); also covers data/repair/ audit reports
 data/
 
 # python
@@ -13,3 +14,18 @@ __pycache__/
 
 # os
 .DS_Store
+
+# Strategy documents. This repository is public; the Cofact pitch pack is
+# business material and is deliberately kept out of it (the canonical copy
+# lives in data/pitch/, which is already ignored above).
+pitch/
+
+# Stray duplicates of scripts/build_dataset.py and scripts/llm_assist.py left
+# at the repository root. The copies under scripts/ are the ones the handoff
+# documents and the ones actually imported; these two should be deleted once
+# it is confirmed nothing references them.
+/build_dataset.py
+/llm_assist.py
+
+# Agent run log
+agy.log

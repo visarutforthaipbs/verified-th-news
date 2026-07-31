@@ -1,4 +1,4 @@
-"""Local-LLM helpers running on the aipower box (RTX 3090, Ollama).
+"""Local-LLM helpers backed by Ollama on lighthouse-gpu01 (RTX 3090).
 
 Two subcommands:
 
@@ -18,8 +18,28 @@ Usage:
   python scripts/llm_assist.py summarize "ข้อความที่ต้องตรวจสอบ"
 
 Env:
-  OLLAMA_URL   default http://192.168.31.19:11434  (aipower)
+  OLLAMA_URL   default http://127.0.0.1:11434
   OLLAMA_MODEL default qwen2.5:14b
+
+Reaching Ollama
+---------------
+lighthouse-gpu01 (the RTX 3090 box, formerly "aipower") binds Ollama to
+127.0.0.1 only -- Project Lighthouse closed its LAN exposure as risk R-05, so
+the old http://192.168.31.19:11434 default could not work even if the address
+were right (the node is .17, not .19). Tunnel to it instead:
+
+    ssh -N -L 11435:127.0.0.1:11434 gpu &
+    export OLLAMA_URL=http://127.0.0.1:11435
+
+Use port 11435, not 11434. This MacBook runs its own Ollama on 11434 with no
+models installed. Tunnelling 11434 -> 11434 does not fail loudly: ssh cannot
+bind the IPv4 address, quietly settles for IPv6 [::1], and every request then
+resolves to the local empty Ollama, which answers "model not found" for a model
+that is in fact sitting on the GPU node. Preflight() below turns that into one
+clear error instead of a 404 per record.
+
+The node is also powered off by default to save electricity; bring it up with
+Project Lighthouse's scripts/wake-gpu.sh before running either subcommand.
 """
 
 from __future__ import annotations
@@ -35,7 +55,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
 
-OLLAMA_URL = os.getenv("OLLAMA_URL", "http://192.168.31.19:11434")
+OLLAMA_URL = os.getenv("OLLAMA_URL", "http://127.0.0.1:11434")
 MODEL = os.getenv("OLLAMA_MODEL", "qwen2.5:14b")
 DB = "data/th_verify.db"
 
@@ -68,6 +88,31 @@ SUMMARY_PROMPT = """คุณเป็นผู้ช่วยนักตรว
 
 ผลตรวจสอบเดิมที่เกี่ยวข้อง:
 {evidence}"""
+
+
+def preflight() -> None:
+    """Fail fast, and loudly, when OLLAMA_URL is not the host we think it is.
+
+    Pointing at the wrong Ollama is the easy mistake here (see "Reaching Ollama"
+    above), and its symptom -- a 404 per record -- reads like a broken endpoint
+    rather than a misrouted tunnel. Checking the model list once up front turns
+    that into a single actionable message.
+    """
+    try:
+        with urllib.request.urlopen(f"{OLLAMA_URL}/api/tags", timeout=10) as r:
+            models = [m["name"] for m in json.loads(r.read()).get("models", [])]
+    except Exception as exc:
+        sys.exit(f"cannot reach Ollama at {OLLAMA_URL}: {exc}\n"
+                 f"  Is the GPU node awake and the tunnel open?\n"
+                 f"    ssh -N -L 11435:127.0.0.1:11434 gpu &\n"
+                 f"    export OLLAMA_URL=http://127.0.0.1:11435")
+    if MODEL not in models:
+        sys.exit(f"Ollama at {OLLAMA_URL} does not have {MODEL!r}.\n"
+                 f"  It reports: {models or '(no models at all)'}\n"
+                 f"  An empty list usually means you reached this Mac's own Ollama on\n"
+                 f"  port 11434 rather than the GPU node. Tunnel to 11435 instead:\n"
+                 f"    ssh -N -L 11435:127.0.0.1:11434 gpu &\n"
+                 f"    export OLLAMA_URL=http://127.0.0.1:11435")
 
 
 def ollama(prompt: str, json_mode: bool = False, num_predict: int = 600) -> str:
@@ -164,6 +209,7 @@ def main() -> None:
     p2 = sub.add_parser("summarize")
     p2.add_argument("claim")
     args = ap.parse_args()
+    preflight()
     if args.cmd == "extract-verdicts":
         extract_verdicts(args.limit, args.dry_run)
     else:

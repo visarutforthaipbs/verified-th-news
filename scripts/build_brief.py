@@ -33,6 +33,11 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 from build_dataset import clean_claim, dedup_key, normalize_verdict  # noqa: E402
 
+import sys
+from pathlib import Path as _P
+sys.path.insert(0, str(_P(__file__).resolve().parent))
+from _freshness import assert_fresh  # noqa: E402
+
 SOURCE_NAMES = {
     "afnc": "ศูนย์ต่อต้านข่าวปลอม", "sure_share": "ชัวร์ก่อนแชร์",
     "cofact": "Cofact", "afp": "AFP Fact Check", "thaipbs": "Thai PBS Verify",
@@ -208,6 +213,7 @@ def main() -> None:
     pstart, pend = month_bounds(pm)
 
     con = sqlite3.connect(args.db)
+    assert_fresh(con)
     con.row_factory = sqlite3.Row
     cur = fetch(con, start, end)
     prev = fetch(con, pstart, pend)
