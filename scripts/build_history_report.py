@@ -14,6 +14,7 @@ import sys
 from pathlib import Path as _P
 sys.path.insert(0, str(_P(__file__).resolve().parent))
 from _freshness import assert_fresh  # noqa: E402
+import _brand  # noqa: E402
 
 DB_PATH = Path('data/th_verify.db')
 OUTPUT_DIR = Path('data/reports')
@@ -253,134 +254,36 @@ def generate_markdown(data):
     return md
 
 def generate_html(data, md_content):
-    html = f"""<!DOCTYPE html>
-<html lang="th">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>10+ Years of Thai People and Fake News (2015–2026)</title>
-    <style>
-        :root {{
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --accent-blue: #38bdf8;
-            --accent-red: #f43f5e;
-            --accent-amber: #f59e0b;
-            --border-color: #334155;
-        }}
-        body {{
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            line-height: 1.6;
-            margin: 0;
-            padding: 2rem;
-        }}
-        .container {{
-            max-width: 1000px;
-            margin: 0 auto;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 2.5rem;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-        }}
-        h1 {{
-            color: var(--accent-blue);
-            font-size: 2.2rem;
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 0.8rem;
-            margin-top: 0;
-        }}
-        h2 {{
-            color: var(--accent-amber);
-            font-size: 1.5rem;
-            margin-top: 2rem;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 0.4rem;
-        }}
-        h3 {{
-            color: var(--accent-blue);
-            font-size: 1.2rem;
-        }}
-        .metrics-grid {{
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin: 1.5rem 0;
-        }}
-        .metric-card {{
-            background: #0f172a;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 1.2rem;
-            text-align: center;
-        }}
-        .metric-val {{
-            font-size: 2rem;
-            font-weight: bold;
-            color: var(--accent-blue);
-        }}
-        .metric-label {{
-            font-size: 0.9rem;
-            color: var(--text-muted);
-        }}
-        table {{
-            width: 100%;
-            border-collapse: collapse;
-            margin: 1.5rem 0;
-        }}
-        th, td {{
-            padding: 0.75rem 1rem;
-            border: 1px solid var(--border-color);
-            text-align: left;
-        }}
-        th {{
-            background-color: #0f172a;
-            color: var(--accent-blue);
-        }}
-        tr:nth-child(even) {{
-            background-color: rgba(255,255,255,0.02);
-        }}
-        .btn-print {{
-            background: var(--accent-blue);
-            color: #0f172a;
-            font-weight: bold;
-            border: none;
-            padding: 0.6rem 1.2rem;
-            border-radius: 6px;
-            cursor: pointer;
-            float: right;
-        }}
-        .btn-print:hover {{
-            background: #7dd3fc;
-        }}
-        pre {{
-            background: #0f172a;
-            padding: 1rem;
-            border-radius: 6px;
-            overflow-x: auto;
-            color: #38bdf8;
-        }}
-        @media print {{
-            body {{ background: white; color: black; }}
-            .container {{ border: none; box-shadow: none; padding: 0; background: white; }}
-            .btn-print {{ display: none; }}
-            th {{ background: #eee; color: black; }}
-            th, td {{ border: 1px solid #ccc; }}
-            pre {{ background: #f5f5f5; color: black; }}
-            .metric-card {{ background: #f8f8f8; border: 1px solid #ddd; }}
-            .metric-val {{ color: #0284c7; }}
-        }}
-    </style>
-</head>
-<body>
-    <div class="container">
-        <button class="btn-print" onclick="window.print()">🖨️ Print / Save PDF</button>
-        <h1>🇹🇭 10+ Years of Thai People and Fake News (2015–2026)</h1>
-        <p style="color: var(--text-muted);">รายงานประวัติศาสตร์ 10+ ปี ข่าวลวงในประเทศไทย ผ่านฐานข้อมูล 28,000+ เรื่อง</p>
+    """Render the history report in the Fake News Lab system.
+
+    The stylesheet is assets/brand/fnl-design-system.css; only the metric-tile
+    grid used on this page is added on top.
+    """
+    extra_css = """
+    .metrics-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+      gap:var(--fnl-space-3); margin:var(--fnl-space-5) 0; }
+    .metric-card { border:var(--fnl-rule) solid var(--fnl-line);
+      border-top:var(--fnl-rule-heavy) solid var(--fnl-red);
+      background:var(--fnl-surface-1); padding:var(--fnl-space-4); text-align:center; }
+    .metric-val { font-family:var(--fnl-font-mono); font-size:1.8rem; font-weight:700;
+      color:var(--fnl-white); font-variant-numeric:tabular-nums; }
+    .metric-label { font-family:var(--fnl-font-mono); font-size:var(--fnl-fs-micro);
+      letter-spacing:0.06em; text-transform:uppercase; color:var(--fnl-gray); }
+    """
+    body = f"""
+        <button class="dl-btn" onclick="window.print()">พิมพ์ / บันทึก PDF</button>
+        {_brand.cover(
+            "รายงานประวัติศาสตร์ · HISTORY REPORT",
+            "๑๐ ปี คนไทยกับ<em>ข่าวลวง</em>",
+            subtitle="10+ Years of Thai People and Fake News (2015–2026)",
+            chips=[_brand.chip(f"{data['total_records']:,} เรื่อง"),
+                   _brand.chip(f"{data['total_clusters']:,} คลัสเตอร์", "arrow"),
+                   _brand.chip("5 สำนักตรวจสอบ", "mute")],
+            meta=[("ฐานข้อมูล", "TH Verify Archive"),
+                  ("ช่วงข้อมูล", "2015 – 2026"),
+                  ("จัดทำเมื่อ", datetime.now().strftime("%Y-%m-%d"))])}
+
+        <p class="fnl-muted">รายงานประวัติศาสตร์ 10+ ปี ข่าวลวงในประเทศไทย ผ่านฐานข้อมูล 28,000+ เรื่อง</p>
 
         <div class="metrics-grid">
             <div class="metric-card">
@@ -423,14 +326,14 @@ def generate_html(data, md_content):
         name = source_names.get(s['source'], s['source'])
         oldest = str(s['oldest'])[:10] if s['oldest'] else '-'
         newest = str(s['newest'])[:10] if s['newest'] else '-'
-        html += f"""
+        body += f"""
                 <tr>
                     <td><strong>{name}</strong></td>
                     <td>{s['cnt']:,}</td>
                     <td>{oldest} ถึง {newest}</td>
                 </tr>"""
 
-    html += """
+    body += """
             </tbody>
         </table>
 
@@ -440,9 +343,9 @@ def generate_html(data, md_content):
     for y in data['yearly']:
         bar_len = int((y['cnt'] / max_cnt) * 30)
         bar = "█" * bar_len
-        html += f"\n{y['year']}  {y['cnt']:>6,}  {bar}"
+        body += f"\n{y['year']}  {y['cnt']:>6,}  {bar}"
         
-    html += """</pre>
+    body += """</pre>
 
         <h2>เจาะลึก 4 ยุคประวัติศาสตร์ข่าวลวงในไทย</h2>
         
@@ -469,14 +372,14 @@ def generate_html(data, md_content):
             </thead>
             <tbody>
 """
-    html += f"""
+    body += f"""
                 <tr><td>ธนาคารออมสิน</td><td>{data['scam_counts']['ออมสิน']:,}</td><td>เพจสินเชื่อเงินกู้ดอกเบี้ยต่ำ / อนุมัติไวผ่านไลน์</td></tr>
                 <tr><td>ตลาดหลักทรัพย์แห่งประเทศไทย (SET)</td><td>{data['scam_counts']['ตลาดหลักทรัพย์']:,}</td><td>ชวนลงทุนหุ้นเริ่มต้น 1,000 บาท ปันผลรายวัน</td></tr>
                 <tr><td>ธนาคารกรุงไทย</td><td>{data['scam_counts']['กรุงไทย']:,}</td><td>แอบอ้างแอป Krungthai NEXT และโครงการรัฐบาล</td></tr>
                 <tr><td>สปสช.</td><td>{data['scam_counts']['สปสช']:,}</td><td>ล่อลวงเงินเยียวยาสิทธิรักษาพยาบาล</td></tr>
                 <tr><td>กรมสรรพากร</td><td>{data['scam_counts']['สรรพากร']:,}</td><td>แอปปลอมคืนเงินภาษี / หลอกโหลดไฟล์ APK</td></tr>
 """
-    html += """
+    body += """
             </tbody>
         </table>
 
@@ -486,15 +389,16 @@ def generate_html(data, md_content):
     for r in data['recirculated']:
         min_d = str(r['min_date'])[:10]
         max_d = str(r['max_date'])[:10]
-        html += f"            <li><strong>{r['title']}</strong> — ตรวจสอบซ้ำ {r['cnt']} ครั้ง ({min_d} ถึง {max_d})</li>\n"
+        body += f"            <li><strong>{r['title']}</strong> — ตรวจสอบซ้ำ {r['cnt']} ครั้ง ({min_d} ถึง {max_d})</li>\n"
 
-    html += """
+    body += """
         </ul>
-    </div>
-</body>
-</html>
 """
-    return html
+    body += _brand.footer(f"{_brand.ORG_TH} · {_brand.ORG_EN}",
+                          "TH VERIFY ARCHIVE · 2015–2026")
+    return _brand.document(
+        "10+ Years of Thai People and Fake News (2015–2026)",
+        f'<div class="fnl-doc">{body}</div>', extra_css=extra_css)
 
 def main():
     print("Extracting data from database...")

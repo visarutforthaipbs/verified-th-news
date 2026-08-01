@@ -1,9 +1,16 @@
 # -*- coding: utf-8 -*-
+# NOTE: superseded by scripts/build_issue_report.py, which does the same job
+# from a topic config instead of hardcoded keywords. Kept for reference only;
+# the DB and output paths below are still the original author's absolute paths.
 import json
 import sqlite3
+import sys
 from pathlib import Path
 from datetime import datetime
 from collections import Counter
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import _brand  # noqa: E402
 
 db_path = "/Users/visarutsankham/th-verify/data/th_verify.db"
 
@@ -180,303 +187,9 @@ def timeline_bars_html():
 
 now_thai = datetime.now().strftime("%d/%m/") + str(datetime.now().year + 543)
 
-html = f"""<!DOCTYPE html>
-<html lang="th">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>รายงานสถานการณ์ข่าวลวง — แรงงานและคนต่างด้าวในประเทศไทย</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>
-    @page {{
-      size: A4;
-      margin: 18mm 20mm 16mm 20mm;
-    }}
-
-    * {{ box-sizing: border-box; margin: 0; padding: 0; }}
-
-    body {{
-      font-family: 'Sarabun', sans-serif;
-      font-size: 9.5pt;
-      color: #1a1a1a;
-      line-height: 1.55;
-      background: #f0efed;
-      -webkit-print-color-adjust: exact;
-      print-color-adjust: exact;
-    }}
-
-    /* ── A4 Page Container ── */
-    .page {{
-      width: 210mm;
-      min-height: 297mm;
-      background: #fff;
-      margin: 12px auto;
-      padding: 20mm 22mm 16mm 22mm;
-      box-shadow: 0 2px 20px rgba(0,0,0,.08);
-      position: relative;
-    }}
-
-    .page + .page {{ page-break-before: always; }}
-
-    /* ── Download Button ── */
-    .dl-btn {{
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      z-index: 999;
-      background: #2b1f1d;
-      color: #fff;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 8px;
-      font-family: 'Sarabun', sans-serif;
-      font-size: 11pt;
-      font-weight: 600;
-      cursor: pointer;
-      box-shadow: 0 4px 16px rgba(0,0,0,.2);
-      transition: background .15s, transform .15s;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }}
-    .dl-btn:hover {{ background: #8f3429; transform: translateY(-1px); }}
-
-    @media print {{
-      body {{ background: #fff; }}
-      .page {{ box-shadow: none; margin: 0; padding: 0; width: auto; min-height: auto; }}
-      .dl-btn {{ display: none !important; }}
-    }}
-
-    /* ── Header ── */
-    .rpt-header {{
-      border-bottom: 3px solid #2b1f1d;
-      padding-bottom: 10px;
-      margin-bottom: 14px;
-    }}
-    .rpt-kicker {{
-      font-family: 'Outfit', sans-serif;
-      font-size: 7pt;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: #8f3429;
-      font-weight: 600;
-      margin-bottom: 2px;
-    }}
-    .rpt-title {{
-      font-size: 18pt;
-      font-weight: 700;
-      line-height: 1.25;
-      color: #1a1a1a;
-    }}
-    .rpt-title em {{ font-style: normal; color: #8f3429; }}
-    .rpt-subtitle {{
-      font-size: 9pt;
-      color: #666;
-      margin-top: 4px;
-    }}
-    .rpt-date {{
-      font-family: 'Outfit', sans-serif;
-      font-size: 7.5pt;
-      color: #999;
-      margin-top: 4px;
-    }}
-
-    /* ── Stat Pills ── */
-    .stats-row {{
-      display: flex;
-      gap: 8px;
-      margin-bottom: 14px;
-    }}
-    .pill {{
-      flex: 1;
-      border: 1px solid #e5e2dc;
-      border-radius: 6px;
-      padding: 8px 10px;
-      text-align: center;
-    }}
-    .pill-num {{
-      font-family: 'Outfit', sans-serif;
-      font-size: 16pt;
-      font-weight: 700;
-      line-height: 1.1;
-    }}
-    .pill-label {{
-      font-size: 7pt;
-      color: #888;
-      text-transform: uppercase;
-      letter-spacing: .04em;
-      margin-top: 2px;
-    }}
-    .pill-pct {{
-      font-size: 7pt;
-      color: #aaa;
-    }}
-    .pill.c-total {{ border-top: 3px solid #2b1f1d; }}
-    .pill.c-total .pill-num {{ color: #2b1f1d; }}
-    .pill.c-false {{ border-top: 3px solid #c93b2b; }}
-    .pill.c-false .pill-num {{ color: #c93b2b; }}
-    .pill.c-mis {{ border-top: 3px solid #a86b1c; }}
-    .pill.c-mis .pill-num {{ color: #a86b1c; }}
-    .pill.c-true {{ border-top: 3px solid #21693e; }}
-    .pill.c-true .pill-num {{ color: #21693e; }}
-    .pill.c-other {{ border-top: 3px solid #2c5980; }}
-    .pill.c-other .pill-num {{ color: #2c5980; }}
-
-    /* ── Two-Col Layout ── */
-    .two-col {{
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-bottom: 14px;
-    }}
-
-    .sec-title {{
-      font-size: 9pt;
-      font-weight: 700;
-      color: #2b1f1d;
-      margin-bottom: 8px;
-      padding-bottom: 3px;
-      border-bottom: 1.5px solid #e5e2dc;
-    }}
-
-    /* ── Timeline Bars ── */
-    .timeline {{
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      height: 125px;
-      border-bottom: 1.5px solid #e5e2dc;
-      padding-top: 16px;
-    }}
-    .tb-col {{
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      flex: 1;
-      margin: 0 2px;
-    }}
-    .tb-val {{
-      font-family: 'Outfit', sans-serif;
-      font-size: 7pt;
-      font-weight: 700;
-      color: #444;
-      margin-bottom: 2px;
-    }}
-    .tb-bar {{
-      width: 100%;
-      max-width: 32px;
-      background: #c4a68a;
-      border-radius: 2px 2px 0 0;
-    }}
-    .tb-bar.sp {{ background: #8f3429; }}
-    .tb-yr {{
-      font-family: 'Outfit', sans-serif;
-      font-size: 7pt;
-      color: #888;
-      margin-top: 3px;
-    }}
-    .tl-note {{
-      font-size: 7pt;
-      color: #aaa;
-      margin-top: 3px;
-    }}
-
-    /* ── Category Bars ── */
-    .cb-row {{
-      display: flex;
-      align-items: center;
-      margin-bottom: 5px;
-      font-size: 8.5pt;
-    }}
-    .cb-label {{ width: 115px; color: #555; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }}
-    .cb-track {{ flex: 1; height: 10px; background: #f0ede6; border-radius: 5px; overflow: hidden; margin: 0 6px; }}
-    .cb-fill {{ display: block; height: 100%; background: #8f3429; border-radius: 5px; }}
-    .cb-val {{ font-family: 'Outfit', sans-serif; font-weight: 700; width: 28px; text-align: right; font-size: 8pt; }}
-
-    /* ── Trend Table ── */
-    .trend-tbl {{
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 7.5pt;
-      margin-top: 6px;
-    }}
-    .trend-tbl th, .trend-tbl td {{
-      padding: 4px 6px;
-      border: 1px solid #e5e2dc;
-      text-align: center;
-    }}
-    .trend-tbl th {{
-      background: #f7f4ee;
-      font-weight: 600;
-      font-size: 7pt;
-      color: #444;
-    }}
-    .trend-tbl td.yr {{
-      text-align: left;
-      font-weight: 600;
-      background: #faf9f7;
-    }}
-    .trend-tbl td.hl {{
-      background: #fcecea;
-      color: #8f3429;
-      font-weight: 700;
-    }}
-    .trend-tbl td.tot {{
-      background: #f7f4ee;
-      font-weight: 600;
-    }}
-
-    /* ── Insight Box ── */
-    .insight {{
-      background: #faf8f3;
-      border-left: 3px solid #8f3429;
-      padding: 10px 12px;
-      margin-top: 14px;
-      border-radius: 0 4px 4px 0;
-      font-size: 8.5pt;
-      line-height: 1.6;
-      color: #444;
-    }}
-    .insight strong {{ color: #2b1f1d; }}
-
-    /* ── Source Bars ── */
-    .src-row {{
-      display: flex;
-      align-items: center;
-      margin-bottom: 4px;
-      font-size: 8pt;
-    }}
-    .src-name {{ width: 120px; color: #555; }}
-    .src-bar {{ flex: 1; height: 8px; background: #f0ede6; border-radius: 4px; overflow: hidden; margin: 0 6px; }}
-    .src-fill {{ display: block; height: 100%; background: #2c5980; border-radius: 4px; }}
-    .src-val {{ font-family: 'Outfit', sans-serif; font-weight: 700; width: 28px; text-align: right; font-size: 7.5pt; }}
-
-    /* ── Methodology ── */
-    .method {{
-      margin-top: 14px;
-      padding-top: 10px;
-      border-top: 1.5px solid #e5e2dc;
-      font-size: 7.5pt;
-      color: #999;
-      line-height: 1.55;
-    }}
-    .method strong {{ color: #666; }}
-
-    /* ── Footer ── */
-    .rpt-footer {{
-      margin-top: 12px;
-      padding-top: 8px;
-      border-top: 2px solid #2b1f1d;
-      display: flex;
-      justify-content: space-between;
-      font-size: 7pt;
-      color: #aaa;
-    }}
-  </style>
-</head>
-<body>
+html = _brand.document(
+    "รายงานสถานการณ์ข่าวลวง — แรงงานและคนต่างด้าวในประเทศไทย",
+    f"""
 
   <button class="dl-btn" onclick="window.print()">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -487,6 +200,7 @@ html = f"""<!DOCTYPE html>
   <div class="page">
 
     <div class="rpt-header">
+      <div class="rpt-brand">{_brand.mark(30)}<span>{_brand.ORG_TH} · {_brand.ORG_EN}</span></div>
       <div class="rpt-kicker">TH Verify — Issue Focus Report</div>
       <h1 class="rpt-title">สถานการณ์ข่าวปลอมเรื่อง<em>แรงงานและคนต่างด้าว</em>ในประเทศไทย</h1>
       <p class="rpt-subtitle">วิเคราะห์จากฐานข้อมูลการตรวจสอบข้อเท็จจริง {total} คดี ระหว่างปี พ.ศ. 2563 – 2569</p>
@@ -585,7 +299,7 @@ html = f"""<!DOCTYPE html>
         <div style="margin-top:6px;">
           {source_list_html()}
         </div>
-        <p style="font-size:7pt; color:#aaa; margin-top:6px;">
+        <p style="font-size:7pt; color:var(--fnl-gray); margin-top:6px;">
           ข้อมูลจาก 5 หน่วยงานตรวจสอบข้อเท็จจริงชั้นนำ<br>
           ครอบคลุมทั้งหน่วยงานรัฐ (AFNC) และภาคประชาสังคม (Cofact, ThaiPBS, ชัวร์ก่อนแชร์, AFP)
         </p>
@@ -594,12 +308,12 @@ html = f"""<!DOCTYPE html>
       <!-- Key Findings -->
       <div>
         <div class="sec-title">ข้อค้นพบสำคัญ 5 ประการ</div>
-        <div style="font-size:8.5pt; color:#444; line-height:1.65;">
-          <p style="margin-bottom:6px;"><strong style="color:#8f3429;">①</strong> ข่าวปลอมเรื่องต่างด้าว<strong>เพิ่มขึ้น 11 เท่า</strong>ในรอบ 6 ปี (8 เรื่องในปี 2563 → 88+ เรื่องในครึ่งแรกปี 2569)</p>
-          <p style="margin-bottom:6px;"><strong style="color:#8f3429;">②</strong> เกือบครึ่ง ({fc/total*100:.0f}%) ของข่าวที่ตรวจสอบ<strong>เป็นข่าวปลอมทั้งหมด</strong> — สะท้อนว่าประเด็นนี้ถูกบิดเบือนอย่างหนัก</p>
-          <p style="margin-bottom:6px;"><strong style="color:#8f3429;">③</strong> ประเด็น "สัญชาติ/นอมินี/สิทธิเลือกตั้ง" <strong>เติบโตเร็วที่สุด</strong>ในปี 2568–2569 แซงหน้าทุกประเด็นอื่น</p>
-          <p style="margin-bottom:6px;"><strong style="color:#8f3429;">④</strong> ศูนย์ต่อต้านข่าวปลอม (AFNC) เป็นแหล่งตรวจสอบหลัก คิดเป็น {src_counts['afnc']/total*100:.0f}% ของข้อมูลทั้งหมด</p>
-          <p><strong style="color:#8f3429;">⑤</strong> ข่าวลวงมีลักษณะ<strong>เปลี่ยนตามบริบทสังคม</strong> — จากโรคระบาด → แย่งงาน → ชาตินิยม สะท้อนความวิตกกังวลของสังคมในแต่ละช่วง</p>
+        <div style="font-size:var(--fnl-fs-small); line-height:1.65;">
+          <p style="margin-bottom:6px;"><strong style="color:var(--fnl-red);">①</strong> ข่าวปลอมเรื่องต่างด้าว<strong>เพิ่มขึ้น 11 เท่า</strong>ในรอบ 6 ปี (8 เรื่องในปี 2563 → 88+ เรื่องในครึ่งแรกปี 2569)</p>
+          <p style="margin-bottom:6px;"><strong style="color:var(--fnl-red);">②</strong> เกือบครึ่ง ({fc/total*100:.0f}%) ของข่าวที่ตรวจสอบ<strong>เป็นข่าวปลอมทั้งหมด</strong> — สะท้อนว่าประเด็นนี้ถูกบิดเบือนอย่างหนัก</p>
+          <p style="margin-bottom:6px;"><strong style="color:var(--fnl-red);">③</strong> ประเด็น "สัญชาติ/นอมินี/สิทธิเลือกตั้ง" <strong>เติบโตเร็วที่สุด</strong>ในปี 2568–2569 แซงหน้าทุกประเด็นอื่น</p>
+          <p style="margin-bottom:6px;"><strong style="color:var(--fnl-red);">④</strong> ศูนย์ต่อต้านข่าวปลอม (AFNC) เป็นแหล่งตรวจสอบหลัก คิดเป็น {src_counts['afnc']/total*100:.0f}% ของข้อมูลทั้งหมด</p>
+          <p><strong style="color:var(--fnl-red);">⑤</strong> ข่าวลวงมีลักษณะ<strong>เปลี่ยนตามบริบทสังคม</strong> — จากโรคระบาด → แย่งงาน → ชาตินิยม สะท้อนความวิตกกังวลของสังคมในแต่ละช่วง</p>
         </div>
       </div>
     </div>
@@ -618,7 +332,7 @@ html = f"""<!DOCTYPE html>
       <tbody>
         {"".join(
           f'<tr><td style="text-align:left">{r["title"][:75]}{"…" if len(r["title"])>75 else ""}</td>'
-          f'<td style="color:{"#c93b2b" if get_verdict(r["verdict"])=="false" else "#a86b1c" if get_verdict(r["verdict"])=="misleading" else "#21693e"}">'
+          f'<td style="color:{"var(--fnl-red)" if get_verdict(r["verdict"])=="false" else "var(--fnl-yellow)" if get_verdict(r["verdict"])=="misleading" else "var(--fnl-white)"}">'
           f'{"ปลอม" if get_verdict(r["verdict"])=="false" else "บิดเบือน" if get_verdict(r["verdict"])=="misleading" else "จริง" if get_verdict(r["verdict"])=="true" else "อื่นๆ"}</td>'
           f'<td>{cat_short.get(r["categories"][0], r["categories"][0][:8])}</td>'
           f'<td>{src_names.get(r["source"], r["source"])}</td></tr>'
@@ -644,10 +358,7 @@ html = f"""<!DOCTYPE html>
     </div>
 
   </div>
-
-</body>
-</html>
-"""
+""")
 
 # Save output
 output_path = Path("/Users/visarutsankham/Desktop/migrant_report.html")

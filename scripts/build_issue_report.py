@@ -36,6 +36,7 @@ import sys
 from pathlib import Path as _P
 sys.path.insert(0, str(_P(__file__).resolve().parent))
 from _freshness import assert_fresh  # noqa: E402
+import _brand  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 TOPICS_DIR = Path(__file__).resolve().parent / "issue_topics"
@@ -48,7 +49,10 @@ SOURCE_NAMES = {
     "thaipbs": "Thai PBS Verify",
 }
 BUCKET_TH = {"false": "ปลอม", "misleading": "บิดเบือน", "true": "จริง", "other": "อื่นๆ"}
-BUCKET_COLOR = {"false": "#c93b2b", "misleading": "#a86b1c", "true": "#21693e", "other": "#2c5980"}
+# verdict colours are palette roles: red = alert, yellow = indicator,
+# white = plain statement, grey = residual
+BUCKET_COLOR = {"false": "var(--fnl-red)", "misleading": "var(--fnl-yellow)",
+                "true": "var(--fnl-white)", "other": "var(--fnl-gray)"}
 THAI_MONTHS_ABBR = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.",
                     "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."]
 
@@ -120,87 +124,12 @@ def fetch_records(con: sqlite3.Connection, cfg: dict) -> list[dict]:
 
 # ── HTML rendering ──────────────────────────────────────────────────────
 
-CSS = """
-    @page { size: A4; margin: 18mm 20mm 16mm 20mm; }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Sarabun', sans-serif; font-size: 9.5pt; color: #1a1a1a;
-      line-height: 1.55; background: #f0efed;
-      -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    .page { width: 210mm; min-height: 297mm; background: #fff; margin: 12px auto;
-      padding: 20mm 22mm 16mm 22mm; box-shadow: 0 2px 20px rgba(0,0,0,.08); position: relative; }
-    .page + .page { page-break-before: always; }
-    .dl-btn { position: fixed; bottom: 24px; right: 24px; z-index: 999; background: #2b1f1d;
-      color: #fff; border: none; padding: 12px 24px; border-radius: 8px;
-      font-family: 'Sarabun', sans-serif; font-size: 11pt; font-weight: 600; cursor: pointer;
-      box-shadow: 0 4px 16px rgba(0,0,0,.2); transition: background .15s, transform .15s;
-      display: flex; align-items: center; gap: 8px; }
-    .dl-btn:hover { background: #8f3429; transform: translateY(-1px); }
-    @media print {
-      body { background: #fff; }
-      .page { box-shadow: none; margin: 0; padding: 0; width: auto; min-height: auto; }
-      .dl-btn { display: none !important; } }
-    .rpt-header { border-bottom: 3px solid #2b1f1d; padding-bottom: 10px; margin-bottom: 14px; }
-    .rpt-kicker { font-family: 'Outfit', sans-serif; font-size: 7pt; letter-spacing: 0.3em;
-      text-transform: uppercase; color: #8f3429; font-weight: 600; margin-bottom: 2px; }
-    .rpt-title { font-size: 18pt; font-weight: 700; line-height: 1.25; color: #1a1a1a; }
-    .rpt-title em { font-style: normal; color: #8f3429; }
-    .rpt-subtitle { font-size: 9pt; color: #666; margin-top: 4px; }
-    .rpt-date { font-family: 'Outfit', sans-serif; font-size: 7.5pt; color: #999; margin-top: 4px; }
-    .stats-row { display: flex; gap: 8px; margin-bottom: 14px; }
-    .pill { flex: 1; border: 1px solid #e5e2dc; border-radius: 6px; padding: 8px 10px; text-align: center; }
-    .pill-num { font-family: 'Outfit', sans-serif; font-size: 16pt; font-weight: 700; line-height: 1.1; }
-    .pill-label { font-size: 7pt; color: #888; text-transform: uppercase;
-      letter-spacing: .04em; margin-top: 2px; }
-    .pill-pct { font-size: 7pt; color: #aaa; }
-    .pill.c-total { border-top: 3px solid #2b1f1d; } .pill.c-total .pill-num { color: #2b1f1d; }
-    .pill.c-false { border-top: 3px solid #c93b2b; } .pill.c-false .pill-num { color: #c93b2b; }
-    .pill.c-mis { border-top: 3px solid #a86b1c; } .pill.c-mis .pill-num { color: #a86b1c; }
-    .pill.c-true { border-top: 3px solid #21693e; } .pill.c-true .pill-num { color: #21693e; }
-    .pill.c-other { border-top: 3px solid #2c5980; } .pill.c-other .pill-num { color: #2c5980; }
-    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 14px; }
-    .sec-title { font-size: 9pt; font-weight: 700; color: #2b1f1d; margin-bottom: 8px;
-      padding-bottom: 3px; border-bottom: 1.5px solid #e5e2dc; }
-    .timeline { display: flex; align-items: flex-end; justify-content: space-between;
-      height: 125px; border-bottom: 1.5px solid #e5e2dc; padding-top: 16px; }
-    .tb-col { display: flex; flex-direction: column; align-items: center; flex: 1; margin: 0 2px; }
-    .tb-val { font-family: 'Outfit', sans-serif; font-size: 7pt; font-weight: 700;
-      color: #444; margin-bottom: 2px; }
-    .tb-bar { width: 100%; max-width: 32px; background: #c4a68a; border-radius: 2px 2px 0 0; }
-    .tb-bar.sp { background: #8f3429; }
-    .tb-yr { font-family: 'Outfit', sans-serif; font-size: 7pt; color: #888; margin-top: 3px; }
-    .tl-note { font-size: 7pt; color: #aaa; margin-top: 3px; }
-    .cb-row { display: flex; align-items: center; margin-bottom: 5px; font-size: 8.5pt; }
-    .cb-label { width: 115px; color: #555; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .cb-track { flex: 1; height: 10px; background: #f0ede6; border-radius: 5px;
-      overflow: hidden; margin: 0 6px; }
-    .cb-fill { display: block; height: 100%; background: #8f3429; border-radius: 5px; }
-    .cb-val { font-family: 'Outfit', sans-serif; font-weight: 700; width: 28px;
-      text-align: right; font-size: 8pt; }
-    .trend-tbl { width: 100%; border-collapse: collapse; font-size: 7.5pt; margin-top: 6px; }
-    .trend-tbl th, .trend-tbl td { padding: 4px 6px; border: 1px solid #e5e2dc; text-align: center; }
-    .trend-tbl th { background: #f7f4ee; font-weight: 600; font-size: 7pt; color: #444; }
-    .trend-tbl td.yr { text-align: left; font-weight: 600; background: #faf9f7; }
-    .trend-tbl td.hl { background: #fcecea; color: #8f3429; font-weight: 700; }
-    .trend-tbl td.tot { background: #f7f4ee; font-weight: 600; }
-    .insight { background: #faf8f3; border-left: 3px solid #8f3429; padding: 10px 12px;
-      margin-top: 14px; border-radius: 0 4px 4px 0; font-size: 8.5pt; line-height: 1.6; color: #444; }
-    .insight strong { color: #2b1f1d; }
-    .src-row { display: flex; align-items: center; margin-bottom: 4px; font-size: 8pt; }
-    .src-name { width: 120px; color: #555; }
-    .src-bar { flex: 1; height: 8px; background: #f0ede6; border-radius: 4px;
-      overflow: hidden; margin: 0 6px; }
-    .src-fill { display: block; height: 100%; background: #2c5980; border-radius: 4px; }
-    .src-val { font-family: 'Outfit', sans-serif; font-weight: 700; width: 28px;
-      text-align: right; font-size: 7.5pt; }
-    .method { margin-top: 14px; padding-top: 10px; border-top: 1.5px solid #e5e2dc;
-      font-size: 7.5pt; color: #999; line-height: 1.55; }
-    .method strong { color: #666; }
-    .rpt-footer { margin-top: 12px; padding-top: 8px; border-top: 2px solid #2b1f1d;
-      display: flex; justify-content: space-between; font-size: 7pt; color: #aaa; }
-"""
+# All visual styling now comes from assets/brand/fnl-design-system.css (see
+# section 06 of that file, which styles exactly the class names this template
+# emits). Nothing report-specific is left to override.
 
 
-def render(cfg: dict, records: list[dict]) -> str:
+def render(cfg: dict, records: list[dict], *, economy: bool = False) -> str:
     total = len(records)
     if total == 0:
         sys.exit("no records matched this topic's keywords — nothing to report")
@@ -278,7 +207,7 @@ def render(cfg: dict, records: list[dict]) -> str:
     ]
     markers = "①②③④⑤⑥⑦⑧⑨"
     fh = "".join(
-        f'<p style="margin-bottom:6px;"><strong style="color:#8f3429;">{markers[i]}</strong> {f}</p>'
+        f'<p style="margin-bottom:6px;"><strong style="color:var(--fnl-red);">{markers[i]}</strong> {f}</p>'
         for i, f in enumerate(findings[:9]))
 
     insight = cfg.get("insight_html") or (
@@ -302,18 +231,9 @@ def render(cfg: dict, records: list[dict]) -> str:
     def pct(n: int) -> str:
         return f"{n / total * 100:.1f}%"
 
-    return f"""<!DOCTYPE html>
-<html lang="th">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>รายงานสถานการณ์ข่าวลวง — {cfg["slug"]}</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Outfit:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>{CSS}</style>
-</head>
-<body>
+    return _brand.document(
+        f'รายงานสถานการณ์ข่าวลวง — {cfg["slug"]}',
+        f"""
 
   <button class="dl-btn" onclick="window.print()">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -322,6 +242,7 @@ def render(cfg: dict, records: list[dict]) -> str:
 
   <div class="page">
     <div class="rpt-header">
+      <div class="rpt-brand">{_brand.mark(30)}<span>{_brand.ORG_TH} · {_brand.ORG_EN}</span></div>
       <div class="rpt-kicker">{cfg["kicker"]}</div>
       <h1 class="rpt-title">{cfg["title_html"]}</h1>
       <p class="rpt-subtitle">วิเคราะห์จากฐานข้อมูลการตรวจสอบข้อเท็จจริง {total} คดี ระหว่างปี พ.ศ. {year_floor + 543} – {buddhist}</p>
@@ -375,14 +296,14 @@ def render(cfg: dict, records: list[dict]) -> str:
         <div style="margin-top:6px;">
           {"".join(sb)}
         </div>
-        <p style="font-size:7pt; color:#aaa; margin-top:6px;">
+        <p class="fnl-meta fnl-meta--tight" style="margin-top:6px;">
           ข้อมูลจาก {n_src} หน่วยงานตรวจสอบข้อเท็จจริง<br>
           ครอบคลุมทั้งหน่วยงานรัฐ (AFNC) และภาคประชาสังคม
         </p>
       </div>
       <div>
         <div class="sec-title">ข้อค้นพบสำคัญ {len(findings[:9])} ประการ</div>
-        <div style="font-size:8.5pt; color:#444; line-height:1.65;">
+        <div style="font-size:var(--fnl-fs-small); line-height:1.65;">
           {fh}
         </div>
       </div>
@@ -419,10 +340,8 @@ def render(cfg: dict, records: list[dict]) -> str:
       <span>รายงานสร้างอัตโนมัติ — ห้ามใช้อ้างอิงทางกฎหมาย</span>
     </div>
   </div>
-
-</body>
-</html>
-"""
+""",
+        economy=economy)
 
 
 def main() -> None:
@@ -432,6 +351,9 @@ def main() -> None:
     ap.add_argument("--out", help="output HTML path (default data/reports/<slug>_report.html)")
     ap.add_argument("--publish", help="also copy the finished report to this path (e.g. the web-served folder)")
     ap.add_argument("--list", action="store_true", help="list available topics")
+    ap.add_argument("--print-economy", action="store_true",
+                    help="render the opt-in light variant instead of the brand's "
+                         "black base — for desk printing only")
     args = ap.parse_args()
 
     if args.list or not args.topic:
@@ -450,7 +372,7 @@ def main() -> None:
     finally:
         con.close()
 
-    html = render(cfg, records)
+    html = render(cfg, records, economy=args.print_economy)
     out = Path(args.out) if args.out else OUT_DIR / f"{cfg['slug']}_report.html"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(html, encoding="utf-8")

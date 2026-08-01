@@ -4,176 +4,1331 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>เช็กก่อนเชื่อ — คลังตรวจสอบข่าวไทย</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔎</text></svg>">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Chonburi&family=Sarabun:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+<!--
+  Fake News Lab brand. The generated stylesheet block below is a verbatim copy
+  of assets/brand/fnl-design-system.css, inlined because this file is served
+  directly by FastAPI (FileResponse, no static mount) and must not make a single
+  network request. Do not hand-edit it: run
+
+      python scripts/_brand.py sync-static
+
+  after changing the stylesheet. Page-specific rules live in the second block.
+-->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Cg transform='rotate(-45 60 60)'%3E%3Crect x='8' y='47' width='104' height='26' fill='%23F2F2F2'/%3E%3C/g%3E%3Cg transform='rotate(45 60 60)'%3E%3Crect x='8' y='47' width='104' height='26' fill='%23F20D1B'/%3E%3C/g%3E%3C/svg%3E">
+<style data-fnl-design-system>
+/* ===== GENERATED — do not edit here. Source of truth: assets/brand/fnl-design-system.css
+   Re-inline with: python scripts/_brand.py sync-static ===== */
+/* ===========================================================================
+   FAKE NEWS LAB — ห้องปฏิบัติการข่าวปลอม
+   fnl-design-system.css — v1.0 (implements brand guide v1.0, พ.ค. 2568)
+
+   Single file, zero dependencies. No @import, no webfonts, no CDN, no network
+   requests of any kind: every page that uses this is rendered offline and by
+   headless Chrome, so anything remote would either fail or leak an IP.
+
+   Dark is the native mode. The base is Infra Black and it stays black in print
+   too (print-color-adjust: exact). A light variant exists for print economy but
+   it is opt-in only — add class="fnl-print-economy" to the html or body element. It is
+   never applied automatically; the brand is not silently inverted.
+
+   Sections
+     01  tokens
+     02  reset + base typography
+     03  layout: documents, A4 pages, bands
+     04  visual language: halftone, X bars, UI brackets, grid/scale, signals
+     05  components: cover, stats, tables, quotes, callouts, bars, chips
+     06  report component layer (classes the existing report builders emit)
+     07  print / PDF
+     08  print-economy (opt-in light)
+   =========================================================================== */
+
+/* ---------------------------------------------------------------------------
+   01  TOKENS
+   The five palette values are transcribed from the guide and are not to be
+   altered. Everything else in this block is derived from them: the surface and
+   line neutrals are steps on the black→Grid Gray ramp, nothing new is invented.
+   --------------------------------------------------------------------------- */
+:root {
+  /* palette — non-negotiable */
+  --fnl-black:  #000000;   /* Infra Black  — the base. Backgrounds are black. */
+  --fnl-red:    #F20D1B;   /* Signal Red   — urgency, alerts, emphasis, action */
+  --fnl-white:  #F2F2F2;   /* Field White  — primary text */
+  --fnl-yellow: #FFD400;   /* Alert Yellow — indicators/markers ONLY, never body text */
+  --fnl-gray:   #7A7A7A;   /* Grid Gray    — secondary text, grid lines */
+
+  /* Alert Yellow in its *ink* role (small mono labels, markers, tick numbers).
+     Split out because #FFD400 on white is unreadable: the print-economy variant
+     re-points this one token and every yellow marker follows, while yellow
+     survives untouched wherever it is a fill behind dark text. */
+  --fnl-signal-ink: var(--fnl-yellow);
+
+  /* derived neutrals */
+  --fnl-surface-1: #0A0A0A;
+  --fnl-surface-2: #131313;
+  --fnl-line:        rgba(122, 122, 122, 0.38);
+  --fnl-line-soft:   rgba(122, 122, 122, 0.20);
+  --fnl-line-strong: var(--fnl-gray);
+  --fnl-red-wash:    rgba(242, 13, 27, 0.12);
+  --fnl-yellow-wash: rgba(255, 212, 0, 0.14);
+  --fnl-white-wash:  rgba(242, 242, 242, 0.05);
+
+  /* type
+     No webfonts are permitted, so each tier is a stack of faces that are
+     realistically present on a Thai desktop or a Linux render host, ending in
+     a generic. Thai correctness comes first: Sarabun / Noto Sans Thai / IBM
+     Plex Sans Thai lead every stack, and the mono stack carries a Thai-capable
+     proportional fallback at the end so Thai inside mono metadata does not
+     render as tofu. */
+  --fnl-font-body: "Sarabun", "IBM Plex Sans Thai", "Noto Sans Thai", "Thonburi",
+                   -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --fnl-font-head: "Sarabun", "IBM Plex Sans Thai", "Noto Sans Thai", "Thonburi",
+                   -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --fnl-font-mono: ui-monospace, "SF Mono", SFMono-Regular, "IBM Plex Mono",
+                   "JetBrains Mono", Menlo, Consolas, "Sarabun", "Noto Sans Thai", monospace;
+
+  --fnl-weight-head: 800;
+  --fnl-weight-body: 400;
+  --fnl-weight-strong: 700;
+
+  /* type scale — rem based, so the print block can rescale the whole document
+     by moving the root size from px to pt */
+  --fnl-fs-display: 3.05rem;
+  --fnl-fs-h1: 2.1rem;
+  --fnl-fs-h2: 1.35rem;
+  --fnl-fs-h3: 1.08rem;
+  --fnl-fs-body: 1rem;
+  --fnl-fs-small: 0.875rem;
+  --fnl-fs-meta: 0.75rem;
+  --fnl-fs-micro: 0.66rem;
+
+  --fnl-lh-tight: 1.18;
+  --fnl-lh-head: 1.3;
+  /* Thai needs more leading than Latin: vowels stack above and tone marks above
+     those, so 1.6 is a floor for body copy, not a stylistic preference. */
+  --fnl-lh-body: 1.68;
+
+  --fnl-track-mono: 0.14em;
+  --fnl-track-head: -0.01em;
+
+  /* spacing */
+  --fnl-space-1: 0.25rem;
+  --fnl-space-2: 0.5rem;
+  --fnl-space-3: 0.75rem;
+  --fnl-space-4: 1rem;
+  --fnl-space-5: 1.5rem;
+  --fnl-space-6: 2rem;
+  --fnl-space-7: 3rem;
+  --fnl-space-8: 4rem;
+
+  /* radii — the brand is squarish: 0 is the default, 2px is the maximum */
+  --fnl-radius-0: 0;
+  --fnl-radius-1: 2px;
+
+  --fnl-rule: 1px;
+  --fnl-rule-strong: 2px;
+  --fnl-rule-heavy: 3px;
+
+  /* halftone controls */
+  --fnl-halftone-dot: 1.1px;
+  --fnl-halftone-gap: 6px;
+  --fnl-halftone-color: rgba(242, 242, 242, 0.16);
+
+  /* UI bracket controls */
+  --fnl-bracket-len: 14px;
+  --fnl-bracket-w: 2px;
+  --fnl-bracket-color: var(--fnl-yellow);
+
+  --fnl-measure: 46rem;   /* comfortable reading column */
+  --fnl-doc-max: 62rem;   /* wide document / dashboard column */
+}
+
+/* ---------------------------------------------------------------------------
+   02  RESET + BASE
+   --------------------------------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  font-size: 16px;
+  background: var(--fnl-black);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--fnl-black);
+  color: var(--fnl-white);
+  font-family: var(--fnl-font-body);
+  font-size: var(--fnl-fs-body);
+  font-weight: var(--fnl-weight-body);
+  line-height: var(--fnl-lh-body);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--fnl-font-head);
+  font-weight: var(--fnl-weight-head);
+  line-height: var(--fnl-lh-head);
+  letter-spacing: var(--fnl-track-head);
+  color: var(--fnl-white);
+  margin: 0 0 var(--fnl-space-3);
+}
+
+h1 { font-size: var(--fnl-fs-h1); line-height: var(--fnl-lh-tight); }
+
+/* Section heads carry the grid: a heavy red rule under the title is the
+   report-wide signal that a new block of evidence starts here. */
+h2 {
+  font-size: var(--fnl-fs-h2);
+  margin-top: var(--fnl-space-6);
+  padding-bottom: var(--fnl-space-2);
+  border-bottom: var(--fnl-rule-strong) solid var(--fnl-red);
+}
+
+h3 {
+  font-size: var(--fnl-fs-h3);
+  margin-top: var(--fnl-space-5);
+  color: var(--fnl-white);
+}
+
+h4 {
+  font-size: var(--fnl-fs-body);
+  margin-top: var(--fnl-space-4);
+  color: var(--fnl-gray);
+}
+
+p { margin: 0 0 var(--fnl-space-3); }
+
+/* Links stay Field White with a grey underline. Red is reserved for emphasis
+   and calls to action — a table whose every claim cell is a link would
+   otherwise turn into a wall of red and the emphasis would stop meaning
+   anything. Red arrives on hover, where it does mean something. */
+a {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid var(--fnl-line);
+}
+a:hover, a:focus-visible { color: var(--fnl-red); border-bottom-color: var(--fnl-red); }
+a:focus-visible { outline: 2px solid var(--fnl-yellow); outline-offset: 2px; }
+
+strong, b { font-weight: var(--fnl-weight-strong); color: var(--fnl-white); }
+em, i { font-style: italic; }
+small { font-size: var(--fnl-fs-small); color: var(--fnl-gray); }
+
+hr {
+  border: 0;
+  border-top: var(--fnl-rule) solid var(--fnl-line);
+  margin: var(--fnl-space-5) 0;
+}
+
+code, kbd, samp, pre {
+  font-family: var(--fnl-font-mono);
+  font-size: 0.92em;
+}
+code { color: var(--fnl-signal-ink); }
+pre {
+  background: var(--fnl-surface-1);
+  border: var(--fnl-rule) solid var(--fnl-line);
+  padding: var(--fnl-space-4);
+  overflow-x: auto;
+  color: var(--fnl-white);
+  line-height: 1.5;
+}
+
+ul, ol { margin: 0 0 var(--fnl-space-3); padding-left: 1.3em; }
+li { margin-bottom: var(--fnl-space-1); }
+ul { list-style: none; padding-left: 1.1em; }
+ul > li::before {
+  content: "→";
+  color: var(--fnl-signal-ink);
+  font-family: var(--fnl-font-mono);
+  display: inline-block;
+  width: 1.1em;
+  margin-left: -1.1em;
+}
+
+::selection { background: var(--fnl-red); color: var(--fnl-white); }
+
+/* ---------------------------------------------------------------------------
+   03  LAYOUT
+   --------------------------------------------------------------------------- */
+.fnl-doc {
+  max-width: var(--fnl-doc-max);
+  margin: 0 auto;
+  padding: var(--fnl-space-6) var(--fnl-space-5) var(--fnl-space-8);
+}
+.fnl-doc--narrow { max-width: var(--fnl-measure); }
+.fnl-doc--wide { max-width: 76rem; }
+
+/* An A4 sheet rendered on screen. In print it drops its own chrome and lets
+   @page own the geometry. */
+.fnl-page {
+  width: 210mm;
+  min-height: 297mm;
+  margin: 12px auto;
+  padding: 18mm 20mm 14mm;
+  background: var(--fnl-black);
+  border: var(--fnl-rule) solid var(--fnl-line-soft);
+  position: relative;
+}
+.fnl-page + .fnl-page { break-before: page; page-break-before: always; }
+
+.fnl-band {
+  padding: var(--fnl-space-5) 0;
+  border-top: var(--fnl-rule) solid var(--fnl-line);
+}
+
+.fnl-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--fnl-space-5); }
+.fnl-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--fnl-space-4); }
+@media (max-width: 720px) {
+  .fnl-grid-2, .fnl-grid-3 { grid-template-columns: 1fr; }
+}
+
+/* ---------------------------------------------------------------------------
+   04  VISUAL LANGUAGE
+   The five documented elements: pixel halftone, X bars, UI brackets, grid and
+   scale, yellow signals.
+   --------------------------------------------------------------------------- */
+
+/* --- 04.1  พิกเซลฮาล์ฟโทน — pixel halftone -------------------------------- */
+.fnl-halftone {
+  background-image: radial-gradient(var(--fnl-halftone-color) var(--fnl-halftone-dot), transparent 0);
+  background-size: var(--fnl-halftone-gap) var(--fnl-halftone-gap);
+  background-position: 0 0;
+}
+.fnl-halftone--dense  { --fnl-halftone-gap: 4px; --fnl-halftone-dot: 1.3px; }
+.fnl-halftone--sparse { --fnl-halftone-gap: 9px; --fnl-halftone-dot: 1px; }
+.fnl-halftone--red    { --fnl-halftone-color: rgba(242, 13, 27, 0.34); }
+.fnl-halftone--yellow { --fnl-halftone-color: rgba(255, 212, 0, 0.28); }
+/* density gradient: the texture dissolves as it travels, the way it does around
+   the mark in the guide */
+.fnl-halftone--fade {
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, rgba(0,0,0,0.25) 60%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, rgba(0,0,0,0.25) 60%, transparent 100%);
+}
+.fnl-halftone--fade-right {
+  -webkit-mask-image: linear-gradient(to right, #000 0%, rgba(0,0,0,0.2) 70%, transparent 100%);
+  mask-image: linear-gradient(to right, #000 0%, rgba(0,0,0,0.2) 70%, transparent 100%);
+}
+
+/* --- 04.2  แถบตัว X — the X mark, in pure CSS ------------------------------
+   For anything larger than an inline glyph use the SVG in assets/brand/. This
+   is the inline-text-sized version: two crossing bars, red over white. */
+.fnl-x {
+  --fnl-x-w: 9%;
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.12em;
+  flex: none;
+  background-image:
+    linear-gradient(45deg,
+      transparent calc(50% - var(--fnl-x-w)), var(--fnl-red) calc(50% - var(--fnl-x-w)),
+      var(--fnl-red) calc(50% + var(--fnl-x-w)), transparent calc(50% + var(--fnl-x-w))),
+    linear-gradient(-45deg,
+      transparent calc(50% - var(--fnl-x-w)), var(--fnl-white) calc(50% - var(--fnl-x-w)),
+      var(--fnl-white) calc(50% + var(--fnl-x-w)), transparent calc(50% + var(--fnl-x-w)));
+}
+.fnl-x--mono {
+  background-image:
+    linear-gradient(45deg,
+      transparent calc(50% - var(--fnl-x-w)), currentColor calc(50% - var(--fnl-x-w)),
+      currentColor calc(50% + var(--fnl-x-w)), transparent calc(50% + var(--fnl-x-w))),
+    linear-gradient(-45deg,
+      transparent calc(50% - var(--fnl-x-w)), currentColor calc(50% - var(--fnl-x-w)),
+      currentColor calc(50% + var(--fnl-x-w)), transparent calc(50% + var(--fnl-x-w)));
+}
+.fnl-x--lg { width: 2.2em; height: 2.2em; vertical-align: -0.55em; }
+
+/* --- 04.3  วงเล็บ UI — corner brackets -------------------------------------
+   Eight gradient arms, no extra DOM, prints cleanly. Clear space inside the
+   brackets is the padding; do not reduce it below --fnl-space-4. */
+.fnl-frame {
+  position: relative;
+  padding: var(--fnl-space-5);
+  background-image:
+    linear-gradient(var(--fnl-bracket-color), var(--fnl-bracket-color)),
+    linear-gradient(var(--fnl-bracket-color), var(--fnl-bracket-color)),
+    linear-gradient(var(--fnl-bracket-color), var(--fnl-bracket-color)),
+    linear-gradient(var(--fnl-bracket-color), var(--fnl-bracket-color)),
+    linear-gradient(var(--fnl-bracket-color), var(--fnl-bracket-color)),
+    linear-gradient(var(--fnl-bracket-color), var(--fnl-bracket-color)),
+    linear-gradient(var(--fnl-bracket-color), var(--fnl-bracket-color)),
+    linear-gradient(var(--fnl-bracket-color), var(--fnl-bracket-color));
+  background-repeat: no-repeat;
+  background-size:
+    var(--fnl-bracket-len) var(--fnl-bracket-w), var(--fnl-bracket-w) var(--fnl-bracket-len),
+    var(--fnl-bracket-len) var(--fnl-bracket-w), var(--fnl-bracket-w) var(--fnl-bracket-len),
+    var(--fnl-bracket-len) var(--fnl-bracket-w), var(--fnl-bracket-w) var(--fnl-bracket-len),
+    var(--fnl-bracket-len) var(--fnl-bracket-w), var(--fnl-bracket-w) var(--fnl-bracket-len);
+  background-position:
+    left top, left top,
+    right top, right top,
+    left bottom, left bottom,
+    right bottom, right bottom;
+}
+.fnl-frame--red   { --fnl-bracket-color: var(--fnl-red); }
+.fnl-frame--white { --fnl-bracket-color: var(--fnl-white); }
+.fnl-frame--gray  { --fnl-bracket-color: var(--fnl-gray); }
+.fnl-frame--lg    { --fnl-bracket-len: 22px; --fnl-bracket-w: 3px; padding: var(--fnl-space-6); }
+.fnl-frame--tight { padding: var(--fnl-space-4); }
+
+/* --- 04.4  กริดและสเกล — grid, rules, scales ------------------------------- */
+/* SYS // 001 — a mono system label followed by a hairline that runs to the edge */
+.fnl-sys {
+  display: flex;
+  align-items: center;
+  gap: var(--fnl-space-3);
+  font-family: var(--fnl-font-mono);
+  font-size: var(--fnl-fs-meta);
+  letter-spacing: var(--fnl-track-mono);
+  text-transform: uppercase;
+  color: var(--fnl-gray);
+  margin: var(--fnl-space-4) 0 var(--fnl-space-3);
+}
+.fnl-sys::after {
+  content: "";
+  flex: 1;
+  height: var(--fnl-rule);
+  background: var(--fnl-line);
+}
+.fnl-sys--red { color: var(--fnl-red); }
+.fnl-sys--red::after { background: var(--fnl-red); }
+.fnl-sys > .fnl-sys__id { color: var(--fnl-signal-ink); }
+
+/* mono metadata label — the workhorse for IDs, versions, timestamps, counts */
+.fnl-meta {
+  font-family: var(--fnl-font-mono);
+  font-size: var(--fnl-fs-meta);
+  letter-spacing: var(--fnl-track-mono);
+  color: var(--fnl-gray);
+  text-transform: uppercase;
+}
+.fnl-meta--tight { letter-spacing: 0.06em; text-transform: none; }
+.fnl-meta b, .fnl-meta strong { color: var(--fnl-white); font-weight: 600; }
+
+/* a definition list of metadata — label above value, mono throughout */
+.fnl-metablock {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: var(--fnl-space-4);
+  margin: var(--fnl-space-4) 0;
+  padding: var(--fnl-space-4) 0;
+  border-top: var(--fnl-rule) solid var(--fnl-line);
+  border-bottom: var(--fnl-rule) solid var(--fnl-line);
+}
+.fnl-metablock dt {
+  font-family: var(--fnl-font-mono);
+  font-size: var(--fnl-fs-micro);
+  letter-spacing: var(--fnl-track-mono);
+  text-transform: uppercase;
+  color: var(--fnl-gray);
+  margin-bottom: var(--fnl-space-1);
+}
+.fnl-metablock dd { margin: 0; font-size: var(--fnl-fs-small); color: var(--fnl-white); }
+
+/* measurement rule: 00 — 50 — 100 with tick marks */
+.fnl-scale {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  height: 14px;
+  margin: var(--fnl-space-3) 0 var(--fnl-space-5);
+  border-top: var(--fnl-rule) solid var(--fnl-line-strong);
+  font-family: var(--fnl-font-mono);
+  font-size: var(--fnl-fs-micro);
+  letter-spacing: 0.08em;
+  color: var(--fnl-gray);
+}
+.fnl-scale span { position: relative; padding-top: 8px; }
+.fnl-scale span::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0;
+  width: var(--fnl-rule);
+  height: 6px;
+  background: var(--fnl-line-strong);
+}
+.fnl-scale span:last-child::before { left: auto; right: 0; }
+
+/* tick row — pure grid texture, no labels */
+.fnl-ticks {
+  height: 10px;
+  background-image: linear-gradient(to right, var(--fnl-line-strong) var(--fnl-rule), transparent var(--fnl-rule));
+  background-size: 8px 10px;
+  background-repeat: repeat-x;
+  background-position: bottom;
+}
+
+/* --- 04.5  สัญญาณสีเหลือง — yellow signals -------------------------------- */
+/* Chips are indicators, never running text. Default is the yellow status chip;
+   red is for alerts and calls to action; gray for inert/neutral state. */
+.fnl-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  font-family: var(--fnl-font-mono);
+  font-size: var(--fnl-fs-meta);
+  letter-spacing: 0.08em;
+  line-height: 1.4;
+  padding: 0.18em 0.6em;
+  border: var(--fnl-rule) solid var(--fnl-signal-ink);
+  color: var(--fnl-signal-ink);
+  border-radius: var(--fnl-radius-0);
+  white-space: nowrap;
+}
+.fnl-chip::before { content: "+"; font-weight: 700; }
+.fnl-chip--solid { background: var(--fnl-yellow); color: var(--fnl-black); }
+.fnl-chip--alert { border-color: var(--fnl-red); color: var(--fnl-red); }
+.fnl-chip--alert::before { content: "!"; }
+.fnl-chip--alert.fnl-chip--solid { background: var(--fnl-red); color: var(--fnl-white); }
+.fnl-chip--mute { border-color: var(--fnl-gray); color: var(--fnl-gray); }
+.fnl-chip--mute::before { content: "·"; }
+.fnl-chip--arrow::before { content: "→"; }
+.fnl-chip--target::before { content: "⌖"; }
+.fnl-chip--plain::before { content: none; }
+
+/* inline yellow marker for a single word or figure inside body copy */
+.fnl-mark {
+  color: var(--fnl-signal-ink);
+  font-family: var(--fnl-font-mono);
+  font-weight: 700;
+}
+.fnl-arrow { color: var(--fnl-signal-ink); font-family: var(--fnl-font-mono); }
+
+/* caution stripes — for the edge of a warning block */
+.fnl-caution {
+  height: 6px;
+  background-image: repeating-linear-gradient(-45deg,
+    var(--fnl-yellow) 0 8px, var(--fnl-black) 8px 16px);
+}
+
+/* red emphasis */
+.fnl-emph { color: var(--fnl-red); font-weight: var(--fnl-weight-strong); }
+.fnl-emph-block {
+  border-left: var(--fnl-rule-heavy) solid var(--fnl-red);
+  background: var(--fnl-red-wash);
+  padding: var(--fnl-space-3) var(--fnl-space-4);
+  margin: var(--fnl-space-4) 0;
+}
+
+/* ---------------------------------------------------------------------------
+   05  COMPONENTS
+   --------------------------------------------------------------------------- */
+
+/* --- cover block ---------------------------------------------------------- */
+.fnl-cover {
+  position: relative;
+  padding: var(--fnl-space-7) 0 var(--fnl-space-6);
+  border-bottom: var(--fnl-rule-heavy) solid var(--fnl-red);
+  margin-bottom: var(--fnl-space-5);
+}
+.fnl-cover__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--fnl-space-3);
+  margin-bottom: var(--fnl-space-5);
+}
+.fnl-cover__brand svg { display: block; flex: none; }
+.fnl-cover__org {
+  font-family: var(--fnl-font-head);
+  font-weight: var(--fnl-weight-head);
+  font-size: var(--fnl-fs-small);
+  line-height: 1.25;
+  letter-spacing: var(--fnl-track-head);
+}
+.fnl-cover__org span {
+  display: block;
+  font-family: var(--fnl-font-mono);
+  font-weight: 400;
+  font-size: var(--fnl-fs-micro);
+  letter-spacing: var(--fnl-track-mono);
+  color: var(--fnl-gray);
+  text-transform: uppercase;
+}
+.fnl-cover__kicker {
+  font-family: var(--fnl-font-mono);
+  font-size: var(--fnl-fs-meta);
+  letter-spacing: var(--fnl-track-mono);
+  text-transform: uppercase;
+  color: var(--fnl-red);
+  margin-bottom: var(--fnl-space-2);
+}
+.fnl-cover__title {
+  font-size: var(--fnl-fs-display);
+  line-height: var(--fnl-lh-tight);
+  margin: 0 0 var(--fnl-space-2);
+}
+.fnl-cover__title em { font-style: normal; color: var(--fnl-red); }
+.fnl-cover__sub {
+  font-size: var(--fnl-fs-h3);
+  color: var(--fnl-gray);
+  font-weight: 400;
+  margin: 0 0 var(--fnl-space-4);
+}
+.fnl-cover__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--fnl-space-2);
+  margin: 0 0 var(--fnl-space-4);
+}
+.fnl-tagline {
+  font-family: var(--fnl-font-mono);
+  font-size: var(--fnl-fs-meta);
+  letter-spacing: 0.06em;
+  color: var(--fnl-gray);
+}
+.fnl-tagline b { color: var(--fnl-white); font-weight: 400; }
+
+/* section divider page */
+.fnl-divider {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 40vh;
+  border-top: var(--fnl-rule-heavy) solid var(--fnl-red);
+  border-bottom: var(--fnl-rule-heavy) solid var(--fnl-red);
+  padding: var(--fnl-space-7) 0;
+  margin: var(--fnl-space-6) 0;
+}
+.fnl-divider__no {
+  font-family: var(--fnl-font-mono);
+  font-size: var(--fnl-fs-display);
+  color: var(--fnl-signal-ink);
+  line-height: 1;
+}
+
+/* --- stat tiles ----------------------------------------------------------- */
+.fnl-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr));
+  gap: var(--fnl-space-3);
+  margin: var(--fnl-space-4) 0 var(--fnl-space-5);
+}
+.fnl-stat {
+  border: var(--fnl-rule) solid var(--fnl-line);
+  border-top: var(--fnl-rule-heavy) solid var(--fnl-gray);
+  background: var(--fnl-surface-1);
+  padding: var(--fnl-space-3) var(--fnl-space-3) var(--fnl-space-2);
+  text-align: center;
+}
+.fnl-stat__num {
+  font-family: var(--fnl-font-mono);
+  font-size: 1.7rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--fnl-white);
+  font-variant-numeric: tabular-nums;
+}
+.fnl-stat__label {
+  font-family: var(--fnl-font-mono);
+  font-size: var(--fnl-fs-micro);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fnl-gray);
+  margin-top: var(--fnl-space-1);
+}
+.fnl-stat__sub { font-size: var(--fnl-fs-micro); color: var(--fnl-gray); }
+.fnl-stat--alert { border-top-color: var(--fnl-red); }
+.fnl-stat--alert .fnl-stat__num { color: var(--fnl-red); }
+.fnl-stat--signal { border-top-color: var(--fnl-yellow); }
+.fnl-stat--signal .fnl-stat__num { color: var(--fnl-signal-ink); }
+.fnl-stat--key { border-top-color: var(--fnl-white); }
+
+/* --- tables --------------------------------------------------------------- */
+/* Charts and tables: simple, high contrast, no decoration that is not data. */
+table, .fnl-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: var(--fnl-space-3) 0 var(--fnl-space-5);
+  font-size: var(--fnl-fs-small);
+}
+thead { display: table-header-group; }
+tr { break-inside: avoid; page-break-inside: avoid; }
+th {
+  font-family: var(--fnl-font-mono);
+  font-size: var(--fnl-fs-meta);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: left;
+  color: var(--fnl-white);
+  background: var(--fnl-surface-2);
+  border-bottom: var(--fnl-rule-strong) solid var(--fnl-red);
+  padding: var(--fnl-space-2) var(--fnl-space-3);
+  vertical-align: bottom;
+}
+td {
+  border-bottom: var(--fnl-rule) solid var(--fnl-line-soft);
+  padding: var(--fnl-space-2) var(--fnl-space-3);
+  vertical-align: top;
+}
+tbody tr:nth-child(even) td { background: var(--fnl-white-wash); }
+td.fnl-num, th.fnl-num { text-align: right; font-variant-numeric: tabular-nums; font-family: var(--fnl-font-mono); }
+/* highlighted cell — a yellow indicator, which is what yellow is for */
+td.hl, td.fnl-hl { color: var(--fnl-signal-ink); font-weight: 700; background: var(--fnl-yellow-wash); }
+
+/* --- pull quote ----------------------------------------------------------- */
+blockquote, .fnl-quote {
+  margin: var(--fnl-space-5) 0;
+  padding: var(--fnl-space-4) var(--fnl-space-5);
+  border-left: var(--fnl-rule-heavy) solid var(--fnl-red);
+  background: var(--fnl-surface-1);
+  color: var(--fnl-gray);
+  font-size: var(--fnl-fs-small);
+}
+blockquote p:last-child, .fnl-quote p:last-child { margin-bottom: 0; }
+.fnl-quote--display {
+  border-left: 0;
+  background: transparent;
+  padding: var(--fnl-space-6) 0;
+  border-top: var(--fnl-rule) solid var(--fnl-line);
+  border-bottom: var(--fnl-rule) solid var(--fnl-line);
+  font-family: var(--fnl-font-head);
+  font-weight: var(--fnl-weight-head);
+  font-size: var(--fnl-fs-h2);
+  line-height: var(--fnl-lh-head);
+  color: var(--fnl-white);
+}
+.fnl-quote__cite {
+  display: block;
+  margin-top: var(--fnl-space-3);
+  font-family: var(--fnl-font-mono);
+  font-size: var(--fnl-fs-meta);
+  font-weight: 400;
+  letter-spacing: var(--fnl-track-mono);
+  text-transform: uppercase;
+  color: var(--fnl-gray);
+}
+
+/* --- callout / note ------------------------------------------------------- */
+.fnl-note {
+  border: var(--fnl-rule) solid var(--fnl-line);
+  border-left: var(--fnl-rule-heavy) solid var(--fnl-gray);
+  background: var(--fnl-surface-1);
+  padding: var(--fnl-space-3) var(--fnl-space-4);
+  margin: var(--fnl-space-4) 0;
+  font-size: var(--fnl-fs-small);
+}
+.fnl-note--signal { border-left-color: var(--fnl-yellow); }
+.fnl-note--alert { border-left-color: var(--fnl-red); }
+
+/* --- data bars ------------------------------------------------------------ */
+.fnl-bar-row {
+  display: flex;
+  align-items: center;
+  gap: var(--fnl-space-2);
+  margin-bottom: var(--fnl-space-2);
+  font-size: var(--fnl-fs-small);
+}
+.fnl-bar-row__label {
+  width: 9.5rem;
+  flex: none;
+  color: var(--fnl-gray);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.fnl-bar-row__track {
+  flex: 1;
+  height: 10px;
+  background: var(--fnl-surface-2);
+  border: var(--fnl-rule) solid var(--fnl-line-soft);
+  overflow: hidden;
+}
+.fnl-bar-row__fill { display: block; height: 100%; background: var(--fnl-red); }
+.fnl-bar-row__fill--mute { background: var(--fnl-gray); }
+.fnl-bar-row__val {
+  width: 2.6rem;
+  flex: none;
+  text-align: right;
+  font-family: var(--fnl-font-mono);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- buttons -------------------------------------------------------------- */
+.fnl-btn {
+  font-family: var(--fnl-font-mono);
+  font-size: var(--fnl-fs-meta);
+  letter-spacing: var(--fnl-track-mono);
+  text-transform: uppercase;
+  color: var(--fnl-black);
+  background: var(--fnl-red);
+  border: var(--fnl-rule-strong) solid var(--fnl-red);
+  border-radius: var(--fnl-radius-0);
+  padding: 0.55em 1.4em;
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+.fnl-btn:hover { background: var(--fnl-black); color: var(--fnl-red); }
+.fnl-btn:disabled { opacity: 0.45; cursor: wait; }
+.fnl-btn--ghost { background: transparent; color: var(--fnl-white); border-color: var(--fnl-line-strong); }
+.fnl-btn--ghost:hover { border-color: var(--fnl-yellow); color: var(--fnl-yellow); background: transparent; }
+.fnl-btn--float {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 99;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* --- form controls -------------------------------------------------------- */
+.fnl-field {
+  border: var(--fnl-rule-strong) solid var(--fnl-line-strong);
+  background: var(--fnl-surface-1);
+}
+.fnl-field:focus-within { border-color: var(--fnl-yellow); }
+.fnl-field > label {
+  display: block;
+  font-family: var(--fnl-font-mono);
+  font-size: var(--fnl-fs-meta);
+  letter-spacing: var(--fnl-track-mono);
+  text-transform: uppercase;
+  color: var(--fnl-gray);
+  padding: var(--fnl-space-3) var(--fnl-space-4) 0;
+}
+.fnl-field textarea, .fnl-field input[type="text"] {
+  display: block;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: var(--fnl-white);
+  font-family: var(--fnl-font-body);
+  font-size: var(--fnl-fs-body);
+  line-height: var(--fnl-lh-body);
+  padding: var(--fnl-space-2) var(--fnl-space-4) var(--fnl-space-4);
+  resize: vertical;
+  outline: none;
+}
+.fnl-field__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--fnl-space-3);
+  border-top: var(--fnl-rule) solid var(--fnl-line);
+  padding: var(--fnl-space-2) var(--fnl-space-3);
+}
+select.fnl-select {
+  font-family: var(--fnl-font-mono);
+  font-size: var(--fnl-fs-meta);
+  letter-spacing: 0.04em;
+  color: var(--fnl-white);
+  background: var(--fnl-surface-2);
+  border: var(--fnl-rule) solid var(--fnl-line-strong);
+  border-radius: var(--fnl-radius-0);
+  padding: 0.35em 0.6em;
+  cursor: pointer;
+}
+
+/* progress meter */
+.fnl-meter {
+  height: 6px;
+  background: var(--fnl-surface-2);
+  border: var(--fnl-rule) solid var(--fnl-line-soft);
+}
+.fnl-meter > i { display: block; height: 100%; background: var(--fnl-yellow); }
+
+/* --- footer --------------------------------------------------------------- */
+.fnl-footer {
+  margin-top: var(--fnl-space-7);
+  padding-top: var(--fnl-space-3);
+  border-top: var(--fnl-rule-strong) solid var(--fnl-red);
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--fnl-space-2);
+  font-family: var(--fnl-font-mono);
+  font-size: var(--fnl-fs-micro);
+  letter-spacing: 0.06em;
+  color: var(--fnl-gray);
+}
+
+/* --- utilities ------------------------------------------------------------ */
+.fnl-mono { font-family: var(--fnl-font-mono); }
+.fnl-muted { color: var(--fnl-gray); }
+.fnl-center { text-align: center; }
+.fnl-right { text-align: right; }
+.fnl-nowrap { white-space: nowrap; }
+.fnl-sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+.fnl-stack > * + * { margin-top: var(--fnl-space-4); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+/* ---------------------------------------------------------------------------
+   06  REPORT COMPONENT LAYER
+   The report builders already emit a stable, semantic set of class names
+   (.page, .pill, .trend-tbl, .insight …). Rather than rewrite that markup —
+   which is dense Thai-bearing f-string HTML and the riskiest thing in the repo
+   to touch — the brand is applied to those names here, composed entirely from
+   the tokens above. New markup should prefer the fnl- components.
+   --------------------------------------------------------------------------- */
+.page {
+  width: 210mm;
+  min-height: 297mm;
+  background: var(--fnl-black);
+  margin: 12px auto;
+  padding: 18mm 20mm 14mm;
+  border: var(--fnl-rule) solid var(--fnl-line-soft);
+  position: relative;
+}
+.page + .page { break-before: page; page-break-before: always; }
+
+/* the mark sits above the kicker on a report header */
+.rpt-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--fnl-space-2);
+  margin-bottom: var(--fnl-space-3);
+  font-family: var(--fnl-font-mono);
+  font-size: var(--fnl-fs-micro);
+  letter-spacing: var(--fnl-track-mono);
+  text-transform: uppercase;
+  color: var(--fnl-gray);
+}
+.rpt-brand svg { display: block; flex: none; }
+
+.rpt-header {
+  border-bottom: var(--fnl-rule-heavy) solid var(--fnl-red);
+  padding-bottom: var(--fnl-space-3);
+  margin-bottom: var(--fnl-space-4);
+}
+.rpt-kicker {
+  font-family: var(--fnl-font-mono);
+  font-size: var(--fnl-fs-micro);
+  letter-spacing: var(--fnl-track-mono);
+  text-transform: uppercase;
+  color: var(--fnl-red);
+  font-weight: 600;
+  margin-bottom: var(--fnl-space-1);
+}
+.rpt-title {
+  font-family: var(--fnl-font-head);
+  font-size: 1.75rem;
+  font-weight: var(--fnl-weight-head);
+  line-height: var(--fnl-lh-tight);
+  letter-spacing: var(--fnl-track-head);
+  color: var(--fnl-white);
+  margin: 0;
+  border: 0;
+  padding: 0;
+}
+.rpt-title em { font-style: normal; color: var(--fnl-red); }
+.rpt-subtitle { font-size: var(--fnl-fs-small); color: var(--fnl-gray); margin-top: var(--fnl-space-1); }
+.rpt-date {
+  font-family: var(--fnl-font-mono);
+  font-size: var(--fnl-fs-micro);
+  letter-spacing: 0.06em;
+  color: var(--fnl-gray);
+  margin-top: var(--fnl-space-1);
+}
+
+.stats-row { display: flex; gap: var(--fnl-space-2); margin-bottom: var(--fnl-space-4); }
+.pill {
+  flex: 1;
+  border: var(--fnl-rule) solid var(--fnl-line);
+  border-top: var(--fnl-rule-heavy) solid var(--fnl-gray);
+  background: var(--fnl-surface-1);
+  border-radius: var(--fnl-radius-0);
+  padding: var(--fnl-space-2) var(--fnl-space-3);
+  text-align: center;
+}
+.pill-num {
+  font-family: var(--fnl-font-mono);
+  font-size: 1.45rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--fnl-white);
+  font-variant-numeric: tabular-nums;
+}
+.pill-label {
+  font-family: var(--fnl-font-mono);
+  font-size: var(--fnl-fs-micro);
+  color: var(--fnl-gray);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: 2px;
+}
+.pill-pct { font-family: var(--fnl-font-mono); font-size: var(--fnl-fs-micro); color: var(--fnl-gray); }
+.pill.c-total { border-top-color: var(--fnl-white); }
+.pill.c-total .pill-num { color: var(--fnl-white); }
+.pill.c-false { border-top-color: var(--fnl-red); }
+.pill.c-false .pill-num { color: var(--fnl-red); }
+.pill.c-mis { border-top-color: var(--fnl-yellow); }
+.pill.c-mis .pill-num { color: var(--fnl-signal-ink); }
+.pill.c-true { border-top-color: var(--fnl-gray); }
+.pill.c-true .pill-num { color: var(--fnl-white); }
+.pill.c-other { border-top-color: var(--fnl-line-strong); }
+.pill.c-other .pill-num { color: var(--fnl-gray); }
+
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: var(--fnl-space-5); margin-bottom: var(--fnl-space-4); }
+
+.sec-title {
+  font-family: var(--fnl-font-mono);
+  font-size: var(--fnl-fs-meta);
+  font-weight: 600;
+  letter-spacing: var(--fnl-track-mono);
+  text-transform: uppercase;
+  color: var(--fnl-white);
+  margin-bottom: var(--fnl-space-2);
+  padding-bottom: var(--fnl-space-1);
+  border-bottom: var(--fnl-rule-strong) solid var(--fnl-red);
+}
+
+/* Bars are drawn up to 110px tall by the builders, and each column also carries
+   a value label above and a year label below. 125px left the tallest column
+   overflowing into the section title above it, so the box is 145px here. */
+.timeline {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: 145px;
+  border-bottom: var(--fnl-rule) solid var(--fnl-line-strong);
+  padding-top: 16px;
+}
+.tb-col { display: flex; flex-direction: column; align-items: center; flex: 1; margin: 0 2px; }
+.tb-val {
+  font-family: var(--fnl-font-mono);
+  font-size: var(--fnl-fs-micro);
+  font-weight: 700;
+  color: var(--fnl-gray);
+  margin-bottom: 2px;
+}
+.tb-bar { width: 100%; max-width: 32px; background: var(--fnl-gray); border-radius: 0; }
+.tb-bar.sp { background: var(--fnl-red); }
+.tb-yr { font-family: var(--fnl-font-mono); font-size: var(--fnl-fs-micro); color: var(--fnl-gray); margin-top: 3px; }
+.tl-note { font-family: var(--fnl-font-mono); font-size: var(--fnl-fs-micro); color: var(--fnl-gray); margin-top: 3px; }
+
+.cb-row, .src-row { display: flex; align-items: center; margin-bottom: 5px; font-size: var(--fnl-fs-small); }
+.cb-label, .src-name {
+  width: 115px; flex: none; color: var(--fnl-gray);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.cb-track, .src-bar {
+  flex: 1; height: 10px;
+  background: var(--fnl-surface-2);
+  border: var(--fnl-rule) solid var(--fnl-line-soft);
+  overflow: hidden; margin: 0 6px;
+}
+.src-bar { height: 8px; }
+.cb-fill { display: block; height: 100%; background: var(--fnl-red); }
+.src-fill { display: block; height: 100%; background: var(--fnl-gray); }
+.cb-val, .src-val {
+  font-family: var(--fnl-font-mono); font-weight: 700; width: 28px;
+  text-align: right; font-size: var(--fnl-fs-micro); font-variant-numeric: tabular-nums;
+  color: var(--fnl-white);
+}
+
+.trend-tbl { width: 100%; border-collapse: collapse; font-size: var(--fnl-fs-micro); margin-top: 6px; }
+.trend-tbl th, .trend-tbl td {
+  padding: 4px 6px;
+  border: var(--fnl-rule) solid var(--fnl-line-soft);
+  text-align: center;
+}
+.trend-tbl th {
+  font-family: var(--fnl-font-mono);
+  background: var(--fnl-surface-2);
+  border-bottom: var(--fnl-rule-strong) solid var(--fnl-red);
+  font-weight: 600;
+  color: var(--fnl-white);
+  text-transform: none;
+  letter-spacing: 0;
+}
+.trend-tbl td.yr { text-align: left; font-weight: 600; background: var(--fnl-surface-1); font-family: var(--fnl-font-mono); }
+.trend-tbl td.hl { background: var(--fnl-yellow-wash); color: var(--fnl-signal-ink); font-weight: 700; }
+.trend-tbl td.tot { background: var(--fnl-surface-1); font-weight: 600; }
+.trend-tbl tbody tr:nth-child(even) td { background: transparent; }
+.trend-tbl tbody tr:nth-child(even) td.yr,
+.trend-tbl tbody tr:nth-child(even) td.tot { background: var(--fnl-surface-1); }
+.trend-tbl tbody tr:nth-child(even) td.hl { background: var(--fnl-yellow-wash); }
+
+.insight {
+  background: var(--fnl-red-wash);
+  border-left: var(--fnl-rule-heavy) solid var(--fnl-red);
+  padding: var(--fnl-space-3) var(--fnl-space-4);
+  margin-top: var(--fnl-space-4);
+  border-radius: var(--fnl-radius-0);
+  font-size: var(--fnl-fs-small);
+  line-height: 1.6;
+  color: var(--fnl-white);
+}
+.insight strong { color: var(--fnl-white); }
+
+.method {
+  margin-top: var(--fnl-space-4);
+  padding-top: var(--fnl-space-3);
+  border-top: var(--fnl-rule) solid var(--fnl-line);
+  font-size: var(--fnl-fs-micro);
+  color: var(--fnl-gray);
+  line-height: 1.6;
+}
+.method strong { color: var(--fnl-white); }
+
+.rpt-footer {
+  margin-top: var(--fnl-space-3);
+  padding-top: var(--fnl-space-2);
+  border-top: var(--fnl-rule-strong) solid var(--fnl-red);
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--fnl-font-mono);
+  font-size: var(--fnl-fs-micro);
+  letter-spacing: 0.04em;
+  color: var(--fnl-gray);
+}
+
+.dl-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  z-index: 999;
+  background: var(--fnl-red);
+  color: var(--fnl-black);
+  border: var(--fnl-rule-strong) solid var(--fnl-red);
+  padding: 10px 20px;
+  border-radius: var(--fnl-radius-0);
+  font-family: var(--fnl-font-mono);
+  font-size: var(--fnl-fs-meta);
+  letter-spacing: var(--fnl-track-mono);
+  text-transform: uppercase;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.12s ease, color 0.12s ease;
+}
+.dl-btn:hover { background: var(--fnl-black); color: var(--fnl-red); }
+
+/* ---------------------------------------------------------------------------
+   07  PRINT / PDF
+   These documents are printed to PDF by headless Chrome at A4. Black must
+   survive: print-color-adjust: exact is set on html, body and every element
+   that carries a background, because Chrome drops backgrounds otherwise and
+   the report would come out as white text on white paper.
+   --------------------------------------------------------------------------- */
+/* The page box itself is painted, not just the body. Chrome's print path does
+   NOT propagate the root element's background into the @page margin area — a
+   black document printed that way comes out as a black column floating in a
+   white frame. Painting the page box is what makes Infra Black full-bleed on
+   A4 while the content keeps proper margins on every page.
+
+   @page cannot be scoped to a class, so the opt-in light variant supplies its
+   own `@page { background: #FFFFFF }` override — see _brand.document(). */
+@page {
+  size: A4;
+  margin: 14mm 13mm;
+  background: #000000;
+}
+
+@media print {
+  /* 1rem becomes 10.5pt, so the whole type scale rescales for paper at once */
+  html { font-size: 10.5pt; }
+
+  /* Display sizes are tuned for a screen column, not for 184mm of A4. A Thai
+     headline has no spaces to break on until the next word boundary, so an
+     over-large display size does not wrap politely — it runs off the right
+     edge of the sheet and is clipped by the printer. These are the paper
+     sizes; break-word is the belt to that pair of braces. */
+  :root {
+    --fnl-fs-display: 1.95rem;
+    --fnl-fs-h1: 1.6rem;
+    --fnl-fs-h2: 1.15rem;
+    --fnl-fs-h3: 1rem;
+  }
+  h1, h2, h3, h4, .rpt-title, .fnl-cover__title {
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  html, body {
+    background: var(--fnl-black) !important;
+    color: var(--fnl-white) !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  *, *::before, *::after {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .fnl-doc { max-width: none; padding: 0; margin: 0; }
+
+  /* on paper the sheet is the page: @page owns the geometry */
+  .fnl-page, .page {
+    width: auto;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    box-shadow: none;
+  }
+
+  .fnl-btn--float, .dl-btn, .fnl-no-print { display: none !important; }
+
+  h1, h2, h3, h4 { break-after: avoid; page-break-after: avoid; }
+  h2 { margin-top: var(--fnl-space-5); }
+  table, figure, .fnl-stat, .fnl-stats, .fnl-quote, blockquote, .insight, .fnl-note {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  /* a long claim table must be allowed to flow, but never split a row, and
+     repeat the header on every page it reaches */
+  table { break-inside: auto; page-break-inside: auto; }
+  tr { break-inside: avoid; page-break-inside: avoid; }
+  thead { display: table-header-group; }
+  tfoot { display: table-footer-group; }
+
+  a { border-bottom: 0; }
+  .fnl-cover { padding-top: 0; break-after: avoid; }
+  .fnl-divider { min-height: 0; break-before: page; page-break-before: always; }
+}
+
+/* ---------------------------------------------------------------------------
+   08  PRINT-ECONOMY (OPT-IN LIGHT VARIANT)
+   Black A4 pages are expensive to print on a desk printer. This is the only
+   sanctioned light rendering and it is never applied automatically: put
+   class="fnl-print-economy" on the html or body element deliberately.
+
+   Signal Red and Alert Yellow keep their exact hex values. Yellow drops out of
+   the text role entirely here — on white it is illegible — and appears only as
+   a fill behind black text, which is still "indicator, never body text".
+   --------------------------------------------------------------------------- */
+.fnl-print-economy {
+  --fnl-black: #FFFFFF;
+  --fnl-white: #0A0A0A;
+  --fnl-gray: #6A6A6A;
+  --fnl-surface-1: #F7F7F7;
+  --fnl-surface-2: #EDEDED;
+  --fnl-line: rgba(0, 0, 0, 0.22);
+  --fnl-line-soft: rgba(0, 0, 0, 0.12);
+  --fnl-line-strong: #6A6A6A;
+  --fnl-red-wash: rgba(242, 13, 27, 0.07);
+  --fnl-yellow-wash: rgba(255, 212, 0, 0.35);
+  --fnl-white-wash: rgba(0, 0, 0, 0.035);
+  --fnl-halftone-color: rgba(0, 0, 0, 0.16);
+  --fnl-bracket-color: var(--fnl-red);
+  --fnl-signal-ink: #8A6D00;
+  background: #FFFFFF;
+  color: #0A0A0A;
+}
+.fnl-print-economy body { background: #FFFFFF; color: #0A0A0A; }
+/* Yellow keeps its hex as a fill (chip solids, highlighted cells) but its ink
+   role moves to a dark ochre that is legible on paper. */
+.fnl-print-economy .fnl-chip--solid { background: #FFD400; color: #000; }
+.fnl-print-economy td.hl,
+.fnl-print-economy td.fnl-hl,
+.fnl-print-economy .trend-tbl td.hl { color: #000; background: var(--fnl-yellow-wash); }
+.fnl-print-economy .fnl-meter > i { background: var(--fnl-red); }
+/* The mark's Field White bar would vanish on white paper. CSS beats the SVG's
+   presentation attribute, so the inline mark flips to ink without a second
+   asset. */
+.fnl-print-economy svg rect[fill="#F2F2F2"],
+.fnl-print-economy svg circle[fill="#F2F2F2"] { fill: #0A0A0A; }
+.fnl-print-economy .fnl-btn, .fnl-print-economy .dl-btn { color: #FFFFFF; }
+.fnl-print-economy .fnl-btn:hover, .fnl-print-economy .dl-btn:hover { background: #FFFFFF; color: var(--fnl-red); }
+@media print {
+  .fnl-print-economy, .fnl-print-economy body {
+    background: #FFFFFF !important;
+    color: #0A0A0A !important;
+  }
+}
+
+</style>
 <style>
-:root{
-  --paper:#f6f1e5;
-  --paper-2:#efe7d4;
-  --ink:#221d16;
-  --ink-soft:#5c5344;
-  --rule:#c9bda3;
-  --red:#b3372b;
-  --green:#2c6e49;
-  --amber:#a86f1f;
-  --gray:#6f6a5e;
-  --blue:#2b5d8a;
-}
-*{box-sizing:border-box;margin:0}
-html{background:var(--paper)}
-body{
-  font-family:"Sarabun",sans-serif;
-  color:var(--ink);
-  background:
-    radial-gradient(1200px 400px at 50% -140px, #fffdf6 0%, transparent 70%),
-    repeating-linear-gradient(0deg, transparent 0 2px, rgba(34,29,22,.012) 2px 4px),
-    var(--paper);
-  min-height:100vh;
-  padding:0 1.25rem 5rem;
-}
-.sheet{max-width:46rem;margin:0 auto}
+/* ── เช็กก่อนเชื่อ — page-specific only ─────────────────────────────── */
+.sheet { max-width: 46rem; margin: 0 auto; padding: 0 1.25rem 5rem; }
 
-/* ── masthead ─────────────────────────────── */
-header{
-  text-align:center;
-  padding:2.6rem 0 1.4rem;
-  border-bottom:3px double var(--ink);
-  position:relative;
-}
-.kicker{
-  font-size:.72rem;letter-spacing:.35em;text-transform:uppercase;
-  color:var(--ink-soft);margin-bottom:.7rem;
-}
-h1{
-  font-family:"Chonburi",serif;
-  font-size:clamp(2.3rem,7vw,3.4rem);
-  line-height:1.15;font-weight:400;
-}
-h1 em{font-style:normal;color:var(--red)}
-.tagline{margin-top:.6rem;color:var(--ink-soft);font-size:.95rem}
-.tagline b{color:var(--ink)}
+header { padding: 2.4rem 0 1.4rem; border-bottom: var(--fnl-rule-heavy) solid var(--fnl-red); }
+.brandbar { display:flex; align-items:center; gap:.7rem; margin-bottom:1.6rem; }
+.brandbar svg { display:block; flex:none; }
+.brandbar .org { font-family:var(--fnl-font-head); font-weight:800; font-size:.8rem; line-height:1.2; }
+.brandbar .org span { display:block; font-family:var(--fnl-font-mono); font-weight:400;
+  font-size:.62rem; letter-spacing:var(--fnl-track-mono); color:var(--fnl-gray); }
+h1 { font-size: clamp(2.4rem, 8vw, 3.6rem); line-height:1.08; margin:0 0 .5rem; }
+h1 em { font-style:normal; color:var(--fnl-red); }
+.tagline { color:var(--fnl-gray); font-size:.95rem; margin:0; }
+.tagline b { color:var(--fnl-white); font-weight:600; }
 
-/* ── query box ────────────────────────────── */
-.ask{
-  margin-top:2rem;
-  border:1.5px solid var(--ink);
-  background:#fffdf6;
-  box-shadow:5px 5px 0 var(--paper-2), 5px 5px 0 1.5px var(--rule);
-}
-.ask label{
-  display:block;font-size:.78rem;letter-spacing:.12em;
-  padding:.65rem .9rem .1rem;color:var(--ink-soft);
-}
-textarea{
-  display:block;width:100%;border:0;background:transparent;resize:vertical;
-  font:inherit;font-size:1.05rem;line-height:1.7;color:var(--ink);
-  padding:.5rem .9rem .9rem;min-height:6.2rem;outline:none;
-}
-.ask-foot{
-  display:flex;justify-content:space-between;align-items:center;
-  border-top:1px dashed var(--rule);padding:.55rem .9rem;
-}
-.hint{font-size:.78rem;color:var(--ink-soft)}
-button{
-  font-family:"Sarabun",sans-serif;font-weight:700;font-size:1rem;
-  color:var(--paper);background:var(--ink);border:1.5px solid var(--ink);
-  padding:.5rem 1.6rem;cursor:pointer;letter-spacing:.05em;
-  transition:transform .08s ease, background .15s ease;
-}
-button:hover{background:var(--red);border-color:var(--red)}
-button:active{transform:translate(2px,2px)}
-button:disabled{opacity:.5;cursor:wait}
+.ask { margin-top: 2rem; }
+.ask .hint { font-family:var(--fnl-font-mono); font-size:var(--fnl-fs-meta);
+  letter-spacing:.04em; color:var(--fnl-gray); }
 
-/* ── verdict banner ───────────────────────── */
-.banner{
-  margin:2.2rem 0 1.4rem;display:none;align-items:center;gap:1rem;
-}
-.banner.show{display:flex}
-.stamp{
-  font-family:"Chonburi",serif;font-size:1.5rem;line-height:1;
-  padding:.55rem .9rem .4rem;border:3px solid currentColor;border-radius:.3rem;
-  transform:rotate(-4deg);flex-shrink:0;
-  -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .93 0'/%3E%3C/filter%3E%3Crect width='120' height='120' fill='%23fff' filter='url(%23n)'/%3E%3C/svg%3E");
-  mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .93 0'/%3E%3C/filter%3E%3Crect width='120' height='120' fill='%23fff' filter='url(%23n)'/%3E%3C/svg%3E");
-  animation:slam .35s cubic-bezier(.2,2.2,.4,1) both;
-}
-@keyframes slam{from{transform:rotate(-4deg) scale(2.4);opacity:0}to{transform:rotate(-4deg) scale(1);opacity:1}}
-.banner p{font-size:.95rem;color:var(--ink-soft);line-height:1.6}
-.banner p b{color:var(--ink)}
-.lv-strong .stamp{color:var(--red)}
-.lv-strong.true-top .stamp{color:var(--green)}
-.lv-possible .stamp{color:var(--amber)}
-.lv-none .stamp{color:var(--gray)}
+/* ── verdict banner ─────────────────────────────────────────────────── */
+.banner { margin:2rem 0 1.4rem; display:none; gap:1rem; align-items:flex-start; }
+.banner.show { display:flex; }
+.stamp { font-family:var(--fnl-font-mono); font-size:.82rem; letter-spacing:.1em;
+  line-height:1.3; padding:.5rem .8rem; flex:none; max-width:11rem;
+  border:var(--fnl-rule-strong) solid currentColor; color:var(--fnl-gray); }
+.banner p { font-size:.95rem; line-height:1.7; color:var(--fnl-gray); margin:0; }
+.banner p b { color:var(--fnl-white); }
+/* level colours: red = confirmed debunk, yellow = pointer, grey = nothing found.
+   `related` is a pointer, not an alarm — hence Alert Yellow, not Signal Red. */
+.lv-strong .stamp { color:var(--fnl-red); }
+.lv-strong.true-top .stamp { color:var(--fnl-white); }
+.lv-possible .stamp { color:var(--fnl-yellow); }
+.lv-related .stamp { color:var(--fnl-yellow); }
+.lv-none .stamp { color:var(--fnl-gray); }
 
-/* ── result cards ─────────────────────────── */
-.results{display:none}
-.results.show{display:block}
-.results-rule{
-  display:flex;align-items:center;gap:.8rem;margin:0 0 .4rem;
-  font-size:.72rem;letter-spacing:.3em;color:var(--ink-soft);text-transform:uppercase;
-}
-.results-rule::before,.results-rule::after{content:"";flex:1;border-top:1px solid var(--rule)}
-.card{
-  border-bottom:1px solid var(--rule);
-  padding:1.15rem .2rem 1.2rem;
-  animation:rise .4s ease both;
-}
-.card:nth-child(2){animation-delay:.06s}.card:nth-child(3){animation-delay:.12s}
-.card:nth-child(4){animation-delay:.18s}.card:nth-child(5){animation-delay:.24s}
-@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-.card-top{display:flex;gap:.6rem;align-items:baseline;flex-wrap:wrap;margin-bottom:.45rem}
-.badge{
-  font-size:.72rem;font-weight:700;letter-spacing:.05em;
-  padding:.14rem .55rem;border:1.5px solid currentColor;border-radius:2px;
-  white-space:nowrap;
-}
-.b-false{color:var(--red)} .b-true{color:var(--green)}
-.b-misleading{color:var(--amber)} .b-altered_media{color:var(--blue)}
-.b-scam_alert{color:#8a4b2b} .b-satire,.b-unknown{color:var(--gray)}
-.meta{font-size:.78rem;color:var(--ink-soft)}
-.meta b{color:var(--ink);font-weight:500}
-.score{margin-left:auto;font-size:.78rem;color:var(--ink-soft);font-variant-numeric:tabular-nums}
-.claim{font-size:1.06rem;font-weight:500;line-height:1.55}
-.claim a{color:inherit;text-decoration:none;border-bottom:1px solid var(--rule);transition:border-color .15s,color .15s}
-.claim a:hover{color:var(--red);border-color:var(--red)}
-.snippet{
-  margin-top:.5rem;font-size:.88rem;line-height:1.7;color:var(--ink-soft);
-  display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;
-}
-.empty{
-  text-align:center;padding:2.5rem 1rem;color:var(--ink-soft);font-size:.95rem;line-height:1.8;
-}
-.spinner{display:none;text-align:center;padding:2.4rem;color:var(--ink-soft);font-size:.9rem;letter-spacing:.2em}
-.spinner.show{display:block}
-.spinner::after{content:"";display:inline-block;width:.9em;text-align:left;animation:dots 1.2s steps(4) infinite}
-@keyframes dots{0%{content:""}25%{content:"."}50%{content:".."}75%{content:"..."}}
-.error{display:none;margin-top:1.6rem;border:1.5px solid var(--red);color:var(--red);padding:.8rem 1rem;font-size:.9rem}
-.error.show{display:block}
+/* ── result cards ───────────────────────────────────────────────────── */
+.results { display:none; }
+.results.show { display:block; }
+.card { border-bottom: var(--fnl-rule) solid var(--fnl-line-soft); padding:1.1rem .1rem 1.2rem; }
+.card-top { display:flex; gap:.6rem; align-items:baseline; flex-wrap:wrap; margin-bottom:.45rem; }
+.badge { font-family:var(--fnl-font-mono); font-size:var(--fnl-fs-meta); font-weight:700;
+  letter-spacing:.06em; padding:.14rem .55rem; border:var(--fnl-rule) solid currentColor;
+  white-space:nowrap; }
+.b-false, .b-scam_alert { color:var(--fnl-red); }
+.b-misleading { color:var(--fnl-yellow); }
+.b-true { color:var(--fnl-white); }
+.b-altered_media, .b-satire, .b-unknown { color:var(--fnl-gray); }
+.meta { font-family:var(--fnl-font-mono); font-size:var(--fnl-fs-meta);
+  letter-spacing:.04em; color:var(--fnl-gray); }
+.meta b { color:var(--fnl-white); font-weight:500; }
+.score { margin-left:auto; font-family:var(--fnl-font-mono); font-size:var(--fnl-fs-meta);
+  color:var(--fnl-yellow); font-variant-numeric:tabular-nums; }
+.claim { font-size:1.05rem; font-weight:600; line-height:1.55; }
+.snippet { margin-top:.5rem; font-size:.88rem; line-height:1.7; color:var(--fnl-gray);
+  display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+.empty { text-align:center; padding:2.5rem 1rem; color:var(--fnl-gray); }
 
-footer{
-  margin-top:3.5rem;padding-top:1rem;border-top:3px double var(--ink);
-  font-size:.75rem;color:var(--ink-soft);display:flex;justify-content:space-between;flex-wrap:wrap;gap:.5rem;
-}
-@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+.spinner { display:none; text-align:center; padding:2.2rem; font-family:var(--fnl-font-mono);
+  font-size:var(--fnl-fs-meta); letter-spacing:var(--fnl-track-mono); color:var(--fnl-yellow); }
+.spinner.show { display:block; }
+.error { display:none; margin-top:1.6rem; border:var(--fnl-rule-strong) solid var(--fnl-red);
+  color:var(--fnl-red); padding:.8rem 1rem; font-size:.9rem; }
+.error.show { display:block; }
 </style>
 </head>
 <body>
 <div class="sheet">
 
 <header>
-  <div class="kicker">คลังข้อมูลตรวจสอบข่าว · ๕ แหล่ง · ๒๕๕๘—ปัจจุบัน</div>
+  <div class="brandbar">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="34" height="34" role="img" aria-label="Fake News Lab">
+      <g transform="rotate(-45 60 60)"><rect x="8" y="47" width="104" height="26" fill="#F2F2F2"/></g>
+      <g transform="rotate(45 60 60)"><rect x="8" y="47" width="104" height="26" fill="#F20D1B"/></g>
+    </svg>
+    <div class="org">ห้องปฏิบัติการข่าวปลอม<span>FAKE NEWS LAB</span></div>
+  </div>
+  <div class="fnl-sys"><span>คลังข้อมูลตรวจสอบข่าว · ๕ แหล่ง · ๒๕๕๘—ปัจจุบัน</span></div>
   <h1>เช็ก<em>ก่อน</em>เชื่อ</h1>
   <p class="tagline">ค้นจากผลตรวจสอบข้อเท็จจริงกว่า <b>26,000 เรื่อง</b> — ข่าวลวงส่วนใหญ่ เคยถูกตรวจสอบมาแล้ว</p>
 </header>
 
-<section class="ask">
+<section class="ask fnl-field">
   <label for="q">วางข้อความ ข่าว หรือคำกล่าวอ้างที่ได้รับมา</label>
   <textarea id="q" placeholder="เช่น  เพื่อนส่งมาบอกว่า ยาพารามีไวรัสอันตรายผสมอยู่ ห้ามกิน…"></textarea>
-  <div class="ask-foot">
+  <div class="fnl-field__foot">
     <span class="hint">Ctrl/⌘ + Enter เพื่อค้นหา</span>
-    <button id="go">ตรวจสอบ</button>
+    <button id="go" class="fnl-btn">ตรวจสอบ</button>
   </div>
 </section>
 
@@ -186,11 +1341,11 @@ footer{
 </div>
 
 <section class="results" id="results">
-  <div class="results-rule">ผลการค้นหาที่ใกล้เคียง</div>
+  <div class="fnl-sys"><span>ผลการค้นหาที่ใกล้เคียง</span></div>
   <div id="cards"></div>
 </section>
 
-<footer>
+<footer class="fnl-footer">
   <span>แหล่งข้อมูล: ศูนย์ต่อต้านข่าวปลอม · ชัวร์ก่อนแชร์ · Cofact · AFP · Thai PBS Verify</span>
   <span>ผลลัพธ์เป็นการค้นหาความคล้าย ไม่ใช่คำตัดสินอัตโนมัติ</span>
 </footer>
@@ -247,6 +1402,8 @@ async function check(){
 function render(data){
   const top = data.matches[0];
   banner.className = "banner show lv-" + data.match_level;
+  // "true-top" only makes sense when something actually matched; every level
+  // except "none" can carry a top result.
   if(data.match_level !== "none" && top && top.label === "true") banner.classList.add("true-top");
   if(data.match_level === "strong"){
     stamp.textContent = top.label === "true" ? "เคยยืนยันแล้ว" : "เคยตรวจสอบแล้ว";
@@ -256,6 +1413,14 @@ function render(data){
   }else if(data.match_level === "possible"){
     stamp.textContent = "ใกล้เคียง";
     bannerText.innerHTML = `พบเรื่องที่<b>ใกล้เคียง</b>กับข้อความนี้ แต่ไม่ตรงทั้งหมด — โปรดเทียบรายละเอียดด้านล่างก่อนสรุป`;
+  }else if(data.match_level === "related"){
+    // Short queries ("ยาพารา") score below the semantic threshold because the
+    // index holds whole claim sentences. The records below were surfaced by
+    // both the semantic and the keyword search, so they do mention this topic:
+    // point at them calmly instead of stamping "not found" over real results.
+    stamp.textContent = "พบเรื่องที่เกี่ยวข้อง";
+    bannerText.innerHTML = `ยังไม่พบรายการที่ตรงกับข้อความนี้ทั้งข้อความ แต่คลังข้อมูลมี<b>เรื่องที่เกี่ยวข้อง</b>อยู่ด้านล่าง —
+      หากวางข้อความเต็มที่ได้รับมาเป็นประโยค ระบบจะเทียบได้แม่นยำขึ้น`;
   }else{
     stamp.textContent = "ยังไม่พบ";
     bannerText.innerHTML = `ยังไม่พบการตรวจสอบเรื่องนี้ในคลังข้อมูล — <b>ไม่ได้แปลว่าเป็นเรื่องจริง</b> โปรดตรวจสอบกับแหล่งข่าวทางการก่อนแชร์`;

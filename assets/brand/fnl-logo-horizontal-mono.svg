@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 120" width="480" height="120" role="img" aria-label="Fake News Lab — ห้องปฏิบัติการข่าวปลอม">
+  <title>Fake News Lab — ห้องปฏิบัติการข่าวปลอม</title>
+  <!-- Monochrome variant: every shape is currentColor, so this file must be
+       INLINED in the host document (or tinted with CSS `color`). Loaded via
+       <img> or <object> it has no colour to inherit and renders black. -->
+  <g transform="scale(0.86) translate(6 10)">
+  <g transform="rotate(-45 60.0 60.0)">
+    <rect x="12" y="49" width="96" height="22" fill="currentColor"/>
+    <circle cx="113" cy="51.75" r="2.6" fill="currentColor" opacity="0.95"/>
+    <circle cx="7" cy="51.75" r="2.6" fill="currentColor" opacity="0.95"/>
+    <circle cx="113" cy="57.25" r="2.6" fill="currentColor" opacity="0.95"/>
+    <circle cx="7" cy="57.25" r="2.6" fill="currentColor" opacity="0.95"/>
+    <circle cx="113" cy="62.75" r="2.6" fill="currentColor" opacity="0.95"/>
+    <circle cx="7" cy="62.75" r="2.6" fill="currentColor" opacity="0.95"/>
+    <circle cx="113" cy="68.25" r="2.6" fill="currentColor" opacity="0.95"/>
+    <circle cx="7" cy="68.25" r="2.6" fill="currentColor" opacity="0.95"/>
+    <circle cx="119" cy="51.75" r="2.2" fill="currentColor" opacity="0.8"/>
+    <circle cx="1" cy="51.75" r="2.2" fill="currentColor" opacity="0.8"/>
+    <circle cx="119" cy="57.25" r="2.2" fill="currentColor" opacity="0.8"/>
+    <circle cx="1" cy="57.25" r="2.2" fill="currentColor" opacity="0.8"/>
+    <circle cx="119" cy="62.75" r="2.2" fill="currentColor" opacity="0.8"/>
+    <circle cx="1" cy="62.75" r="2.2" fill="currentColor" opacity="0.8"/>
+    <circle cx="119" cy="68.25" r="2.2" fill="currentColor" opacity="0.8"/>
+    <circle cx="1" cy="68.25" r="2.2" fill="currentColor" opacity="0.8"/>
+    <circle cx="125" cy="51.75" r="1.9" fill="currentColor" opacity="0.62"/>
+    <circle cx="-5" cy="51.75" r="1.9" fill="currentColor" opacity="0.62"/>
+    <circle cx="125" cy="62.75" r="1.9" fill="currentColor" opacity="0.62"/>
+    <circle cx="-5" cy="62.75" r="1.9" fill="currentColor" opacity="0.62"/>
+    <circle cx="125" cy="68.25" r="1.9" fill="currentColor" opacity="0.62"/>
+    <circle cx="-5" cy="68.25" r="1.9" fill="currentColor" opacity="0.62"/>
+    <circle cx="131" cy="57.25" r="1.5" fill="currentColor" opacity="0.45"/>
+    <circle cx="-11" cy="57.25" r="1.5" fill="currentColor" opacity="0.45"/>
+    <circle cx="131" cy="62.75" r="1.5" fill="currentColor" opacity="0.45"/>
+    <circle cx="-11" cy="62.75" r="1.5" fill="currentColor" opacity="0.45"/>
+    <circle cx="131" cy="68.25" r="1.5" fill="currentColor" opacity="0.45"/>
+    <circle cx="-11" cy="68.25" r="1.5" fill="currentColor" opacity="0.45"/>
+    <circle cx="137" cy="57.25" r="1.2" fill="currentColor" opacity="0.3"/>
+    <circle cx="-17" cy="57.25" r="1.2" fill="currentColor" opacity="0.3"/>
+    <circle cx="137" cy="68.25" r="1.2" fill="currentColor" opacity="0.3"/>
+    <circle cx="-17" cy="68.25" r="1.2" fill="currentColor" opacity="0.3"/>
+    <circle cx="143" cy="62.75" r="0.9" fill="currentColor" opacity="0.18"/>
+    <circle cx="-23" cy="62.75" r="0.9" fill="currentColor" opacity="0.18"/>
+  </g>
+  <g transform="rotate(45 60.0 60.0)">
+    <rect x="12" y="49" width="96" height="22" fill="currentColor"/>
+    <circle cx="113" cy="51.75" r="2.6" fill="currentColor" opacity="0.95"/>
+    <circle cx="7" cy="51.75" r="2.6" fill="currentColor" opacity="0.95"/>
+    <circle cx="113" cy="57.25" r="2.6" fill="currentColor" opacity="0.95"/>
+    <circle cx="7" cy="57.25" r="2.6" fill="currentColor" opacity="0.95"/>
+    <circle cx="113" cy="62.75" r="2.6" fill="currentColor" opacity="0.95"/>
+    <circle cx="7" cy="62.75" r="2.6" fill="currentColor" opacity="0.95"/>
+    <circle cx="113" cy="68.25" r="2.6" fill="currentColor" opacity="0.95"/>
+    <circle cx="7" cy="68.25" r="2.6" fill="currentColor" opacity="0.95"/>
+    <circle cx="119" cy="51.75" r="2.2" fill="currentColor" opacity="0.8"/>
+    <circle cx="1" cy="51.75" r="2.2" fill="currentColor" opacity="0.8"/>
+    <circle cx="119" cy="57.25" r="2.2" fill="currentColor" opacity="0.8"/>
+    <circle cx="1" cy="57.25" r="2.2" fill="currentColor" opacity="0.8"/>
+    <circle cx="119" cy="62.75" r="2.2" fill="currentColor" opacity="0.8"/>
+    <circle cx="1" cy="62.75" r="2.2" fill="currentColor" opacity="0.8"/>
+    <circle cx="119" cy="68.25" r="2.2" fill="currentColor" opacity="0.8"/>
+    <circle cx="1" cy="68.25" r="2.2" fill="currentColor" opacity="0.8"/>
+    <circle cx="125" cy="51.75" r="1.9" fill="currentColor" opacity="0.62"/>
+    <circle cx="-5" cy="51.75" r="1.9" fill="currentColor" opacity="0.62"/>
+    <circle cx="125" cy="62.75" r="1.9" fill="currentColor" opacity="0.62"/>
+    <circle cx="-5" cy="62.75" r="1.9" fill="currentColor" opacity="0.62"/>
+    <circle cx="125" cy="68.25" r="1.9" fill="currentColor" opacity="0.62"/>
+    <circle cx="-5" cy="68.25" r="1.9" fill="currentColor" opacity="0.62"/>
+    <circle cx="131" cy="57.25" r="1.5" fill="currentColor" opacity="0.45"/>
+    <circle cx="-11" cy="57.25" r="1.5" fill="currentColor" opacity="0.45"/>
+    <circle cx="131" cy="62.75" r="1.5" fill="currentColor" opacity="0.45"/>
+    <circle cx="-11" cy="62.75" r="1.5" fill="currentColor" opacity="0.45"/>
+    <circle cx="131" cy="68.25" r="1.5" fill="currentColor" opacity="0.45"/>
+    <circle cx="-11" cy="68.25" r="1.5" fill="currentColor" opacity="0.45"/>
+    <circle cx="137" cy="57.25" r="1.2" fill="currentColor" opacity="0.3"/>
+    <circle cx="-17" cy="57.25" r="1.2" fill="currentColor" opacity="0.3"/>
+    <circle cx="137" cy="68.25" r="1.2" fill="currentColor" opacity="0.3"/>
+    <circle cx="-17" cy="68.25" r="1.2" fill="currentColor" opacity="0.3"/>
+    <circle cx="143" cy="62.75" r="0.9" fill="currentColor" opacity="0.18"/>
+    <circle cx="-23" cy="62.75" r="0.9" fill="currentColor" opacity="0.18"/>
+  </g>
+  </g>
+  <text x="152" y="60" fill="currentColor" font-family="Sarabun,'IBM Plex Sans Thai','Noto Sans Thai',Thonburi,-apple-system,'Segoe UI',system-ui,sans-serif" font-size="30" font-weight="800" letter-spacing="-0.3" xml:space="preserve">ห้องปฏิบัติการข่าวปลอม</text>
+  <text x="152" y="86" fill="currentColor" font-family="ui-monospace,'SF Mono',SFMono-Regular,'IBM Plex Mono',Menlo,Consolas,monospace" font-size="14" letter-spacing="4.2">FAKE NEWS LAB</text>
+</svg>

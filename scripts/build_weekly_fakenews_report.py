@@ -49,6 +49,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 from _freshness import assert_fresh  # noqa: E402
 from build_brief import fetch, find_recirculating  # noqa: E402
+import _brand  # noqa: E402
 
 OUTPUT_DIR = Path("data/reports")
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://127.0.0.1:11435")
@@ -180,6 +181,16 @@ def llm_narrative(claims: list[dict], stats: dict) -> str | None:
         return None
 
 
+def md_cell(text: str) -> str:
+    """Escape a claim for use inside a Markdown table cell.
+
+    Claim titles are publisher-written and some contain a literal pipe
+    ("… Brain Rot | [REPLAY]"), which silently split the row into an extra
+    column in both the Markdown and the rendered HTML table.
+    """
+    return text.replace("|", "\\|")
+
+
 def build_markdown(cur: list[dict], prev: list[dict], recirc, narrative, start, end) -> str:
     total = len(cur)
     neg = [c for c in cur if c["label"] in NEGATIVE]
@@ -279,7 +290,7 @@ def build_markdown(cur: list[dict], prev: list[dict], recirc, narrative, start, 
         A("| ข่าวสัปดาห์นี้ | เคยตรวจสอบเมื่อ | ความคล้าย |")
         A("| :--- | :--- | ---: |")
         for c, first in recirc[:12]:
-            A(f"| [{c['claim'][:80]}]({c['url']}) | {first['date']} | {first['score']:.2f} |")
+            A(f"| [{md_cell(c['claim'][:80])}]({c['url']}) | {first['date']} | {first['score']:.2f} |")
         A("")
 
     if ai_items:
@@ -296,7 +307,7 @@ def build_markdown(cur: list[dict], prev: list[dict], recirc, narrative, start, 
     A("| :--- | :--- | :--- | :--- |")
     for c in sorted(neg, key=lambda x: x["date"], reverse=True):
         A(f"| {c['date']} | {LABEL_TH.get(c['label'], c['label'])} | "
-          f"[{c['claim'][:90]}]({c['url']}) | {SOURCE_TH.get(c['source'], c['source'])} |")
+          f"[{md_cell(c['claim'][:90])}]({c['url']}) | {SOURCE_TH.get(c['source'], c['source'])} |")
     A("")
     A("---")
     A("")
@@ -306,6 +317,33 @@ def build_markdown(cur: list[dict], prev: list[dict], recirc, narrative, start, 
 
 
 MD_INLINE_LINK = re.compile(r"\[([^\]]+)\]\(([^)]+)\)")
+MD_META = re.compile(r"^\*\*(.+?):\*\*\s*(.*)$")
+SECTION_NO = re.compile(r"^(\d+(?:\.\d+)?)\.?\s+(.*)$")
+
+
+def split_front_matter(md: str) -> tuple[str, str, list[tuple[str, str]], str]:
+    """Peel the title block off the Markdown so HTML can render it as a cover.
+
+    Nothing is dropped -- the same title, subtitle and metadata are re-laid out
+    into the brand's cover component. The Markdown file itself is untouched.
+    """
+    lines = md.split("\n")
+    title = subtitle = ""
+    meta: list[tuple[str, str]] = []
+    body_start = 0
+    for i, raw in enumerate(lines):
+        line = raw.strip()
+        if line.startswith("## ") and not subtitle:
+            subtitle = line[3:].strip()
+        elif line.startswith("# ") and not title:
+            title = line[2:].strip()
+        elif MD_META.match(line):
+            k, v = MD_META.match(line).groups()
+            meta.append((k, v.strip()))
+        elif line == "---":
+            body_start = i + 1
+            break
+    return title, subtitle, meta, "\n".join(lines[body_start:])
 
 
 def markdown_to_html(md: str) -> str:
@@ -333,7 +371,15 @@ def markdown_to_html(md: str) -> str:
             continue
         if line.startswith("#"):
             lvl = len(line) - len(line.lstrip("#"))
-            out.append(f"<h{lvl}>{inline(line[lvl:].strip())}</h{lvl}>")
+            text = line[lvl:].strip()
+            # "## 3.1 องค์กรที่ถูกแอบอ้าง..." -> a mono SEC // 3.1 label ahead of
+            # the heading, which is how the guide numbers a section.
+            m = SECTION_NO.match(text)
+            if lvl == 2 and m:
+                out.append(f'<h2><span class="sec-no">SEC // {m.group(1)}</span>'
+                           f"{inline(m.group(2))}</h2>")
+            else:
+                out.append(f"<h{lvl}>{inline(text)}</h{lvl}>")
         elif line.startswith(">"):
             out.append(f"<blockquote>{inline(line.lstrip('> '))}</blockquote>")
         elif line.startswith("- "):
@@ -355,28 +401,40 @@ def inline(s: str) -> str:
     return s
 
 
-CSS = """
-@page { size: A4; margin: 16mm 14mm; }
-body { font-family: "Sarabun","Noto Sans Thai","Helvetica Neue",sans-serif;
-       font-size: 10.5pt; line-height: 1.55; color: #1a1a1a; }
-h1 { font-size: 20pt; margin: 0 0 2pt; color: #0f172a; }
-h2 { font-size: 13pt; margin: 16pt 0 6pt; padding-bottom: 3pt;
-     border-bottom: 2px solid #0f172a; color: #0f172a; }
-h3 { font-size: 11pt; margin: 10pt 0 4pt; }
-p { margin: 0 0 6pt; }
-p.li { margin: 0 0 3pt; padding-left: 8pt; }
-table { border-collapse: collapse; width: 100%; margin: 6pt 0 12pt;
-        font-size: 9pt; page-break-inside: auto; }
-tr { page-break-inside: avoid; }
-th { background: #0f172a; color: #fff; text-align: left; padding: 5pt 6pt;
-     font-weight: 600; }
-td { border-bottom: 1px solid #e2e8f0; padding: 4pt 6pt; vertical-align: top; }
-tr:nth-child(even) td { background: #f8fafc; }
-a { color: #1d4ed8; text-decoration: none; }
-blockquote { border-left: 3px solid #cbd5e1; margin: 8pt 0; padding: 4pt 10pt;
-             color: #475569; font-size: 9pt; background: #f8fafc; }
-hr { border: 0; border-top: 1px solid #cbd5e1; margin: 12pt 0; }
+# Everything visual now comes from assets/brand/fnl-design-system.css via
+# _brand. Only what is specific to *this* report's markup stays here.
+EXTRA_CSS = """
+.sec-no { display:block; font-family:var(--fnl-font-mono);
+  font-size:var(--fnl-fs-micro); letter-spacing:var(--fnl-track-mono);
+  color:var(--fnl-signal-ink); margin-bottom:2px; }
+p.li { margin:0 0 var(--fnl-space-1); padding-left:var(--fnl-space-3); }
 """
+
+
+def render_html(md: str, cur: list[dict], neg: list[dict], recirc,
+                start: str, end: str, *, economy: bool = False) -> str:
+    """Wrap the converted Markdown in the Fake News Lab document shell."""
+    title, subtitle, meta, body_md = split_front_matter(md)
+    chips = [
+        _brand.chip(f"ข่าวลวงสัปดาห์นี้ {len(neg)} เรื่อง", "alert"),
+        _brand.chip(f"ตรวจสอบทั้งหมด {len(cur)} เรื่อง"),
+    ]
+    if recirc:
+        chips.append(_brand.chip(f"เวียนซ้ำ {len(recirc)} เรื่อง", "arrow"))
+    body = (
+        _brand.cover("รายงานรายสัปดาห์ · WEEKLY REPORT",
+                     title or "รายงานสถานการณ์ข่าวลวงรายสัปดาห์",
+                     subtitle=subtitle, chips=chips, meta=meta)
+        + _brand.sys_rule("SYS // WEEKLY", f"{start} → {end}")
+        + markdown_to_html(body_md)
+        + _brand.footer(
+            f"{_brand.ORG_TH} · {_brand.ORG_EN}",
+            f"TH VERIFY ARCHIVE · {start} → {end}")
+    )
+    return _brand.document(
+        f"รายงานข่าวลวงรายสัปดาห์ {start} – {end}",
+        f'<div class="fnl-doc">{body}</div>',
+        economy=economy, extra_css=EXTRA_CSS)
 
 
 def write_pdf(html_path: Path, pdf_path: Path) -> bool:
@@ -410,6 +468,9 @@ def main() -> int:
     ap.add_argument("--end")
     ap.add_argument("--no-llm", action="store_true")
     ap.add_argument("--outdir", type=Path, default=OUTPUT_DIR)
+    ap.add_argument("--print-economy", action="store_true",
+                    help="render the opt-in light variant (white paper) instead "
+                         "of the brand's black base — for desk printing only")
     args = ap.parse_args()
 
     end = args.end or datetime.now().strftime("%Y-%m-%d")
@@ -450,11 +511,9 @@ def main() -> int:
     pdf_path = args.outdir / f"{stem}.pdf"
 
     md_path.write_text(md, encoding="utf-8")
-    html_path.write_text(
-        f"<!doctype html><html lang='th'><head><meta charset='utf-8'>"
-        f"<title>รายงานข่าวลวงรายสัปดาห์ {start} – {end}</title>"
-        f"<style>{CSS}</style></head><body>{markdown_to_html(md)}</body></html>",
-        encoding="utf-8")
+    html_path.write_text(render_html(md, cur, neg, recirc, start, end,
+                                     economy=args.print_economy),
+                         encoding="utf-8")
 
     print(f"\nmarkdown : {md_path}")
     print(f"html     : {html_path}")

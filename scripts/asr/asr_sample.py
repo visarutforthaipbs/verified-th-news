@@ -21,38 +21,41 @@ from __future__ import annotations
 import argparse
 import html
 import json
+import sys
 from collections import defaultdict
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+import _brand  # noqa: E402
+
 LABEL_TH = {"false": "ปลอม", "true": "จริง",
             "misleading": "บิดเบือน", "altered_media": "ภาพ/คลิปดัดแปลง"}
-COLOR = {"false": "#dc2626", "true": "#16a34a",
-         "misleading": "#d97706", "altered_media": "#7c3aed"}
+# Verdict colours come from the palette, not from a rainbow. Red is the alert
+# (a debunk), yellow the indicator (a qualified verdict), white the plain
+# statement, grey the residual — same four roles the guide gives them.
+VERDICT_CLASS = {"false": "v-false", "true": "v-true",
+                 "misleading": "v-misleading", "altered_media": "v-altered"}
 
-CSS = """
-body{font-family:"Sarabun","Noto Sans Thai",-apple-system,sans-serif;
- max-width:900px;margin:0 auto;padding:24px;line-height:1.6;color:#111}
-h1{font-size:22px;margin-bottom:4px}
-.sub{color:#666;font-size:14px;margin-bottom:24px}
-.grp{font-size:17px;margin:28px 0 6px;padding-bottom:6px;border-bottom:2px solid #111}
-.card{border:1px solid #e5e7eb;border-radius:8px;padding:14px 16px;margin:10px 0}
-.v{display:inline-block;color:#fff;padding:2px 10px;border-radius:12px;
- font-size:13px;font-weight:600;margin-bottom:6px}
-.t{font-weight:600;margin:4px 0 8px}
-.q{background:#f8fafc;border-left:3px solid #cbd5e1;padding:8px 12px;
- margin:8px 0;font-size:14px;color:#334155}
-.q b{color:#111}
-a{color:#1d4ed8;text-decoration:none;font-size:13px}
-.hint{background:#fffbeb;border:1px solid #fde68a;border-radius:6px;
- padding:10px 14px;font-size:14px;margin:16px 0}
-@media(prefers-color-scheme:dark){
- body{background:#0b0f19;color:#e5e7eb}
- .card{border-color:#1f2937;background:#111827}
- .q{background:#0f172a;border-left-color:#334155;color:#cbd5e1}
- .q b{color:#f3f4f6}
- .hint{background:#1c1917;border-color:#78350f;color:#fde68a}
- .grp{border-bottom-color:#e5e7eb}
- a{color:#93c5fd}}
+# Only what is specific to this page; everything else is the design system.
+EXTRA_CSS = """
+.card { border:var(--fnl-rule) solid var(--fnl-line); background:var(--fnl-surface-1);
+  padding:var(--fnl-space-4); margin:var(--fnl-space-3) 0; }
+.v { display:inline-block; font-family:var(--fnl-font-mono);
+  font-size:var(--fnl-fs-meta); letter-spacing:0.08em; font-weight:700;
+  padding:0.15em 0.7em; margin-bottom:var(--fnl-space-2);
+  border:var(--fnl-rule) solid currentColor; }
+.v-false { color:var(--fnl-red); }
+.v-misleading { color:var(--fnl-yellow); }
+.v-true { color:var(--fnl-white); }
+.v-altered { color:var(--fnl-gray); }
+.t { font-weight:700; margin:var(--fnl-space-1) 0 var(--fnl-space-2); }
+.q { background:var(--fnl-black); border-left:var(--fnl-rule-heavy) solid var(--fnl-gray);
+  padding:var(--fnl-space-2) var(--fnl-space-3); margin:var(--fnl-space-2) 0;
+  font-size:var(--fnl-fs-small); color:var(--fnl-white); }
+.q b { color:var(--fnl-yellow); font-family:var(--fnl-font-mono);
+  font-size:var(--fnl-fs-meta); letter-spacing:0.06em; }
+.card a { font-family:var(--fnl-font-mono); font-size:var(--fnl-fs-meta);
+  color:var(--fnl-red); border-bottom:0; }
 """
 
 
@@ -71,14 +74,22 @@ def main() -> int:
         if r.get("status") == "labelled":
             by[r["verdict"]].append(r)
 
-    parts = [f"<h1>ตรวจสอบตัวอย่างผลจากระบบถอดเสียง</h1>",
-             f"<div class='sub'>Spot-check sample &mdash; "
-             f"{sum(len(v) for v in by.values()):,} labels total, "
-             f"showing a stratified sample. Nothing is written to the database yet.</div>",
-             "<div class='hint'><b>How to check:</b> read the quote &mdash; it is copied "
-             "verbatim from what the host actually said in the closing seconds. "
-             "If the quote supports the verdict, the label is good. "
-             "Open the video only when the quote looks ambiguous.</div>"]
+    total_labels = sum(len(v) for v in by.values())
+    parts = [
+        _brand.cover(
+            "การตรวจทานภายใน · INTERNAL SPOT-CHECK",
+            "ตรวจสอบตัวอย่างผลจากระบบถอดเสียง",
+            subtitle="ASR pipeline label spot-check",
+            chips=[_brand.chip(f"{total_labels:,} LABELS"),
+                   _brand.chip("ยังไม่บันทึกลงฐานข้อมูล", "mute")],
+            meta=[("SOURCE", html.escape(args.results.name)),
+                  ("SAMPLING", "stratified by verdict")]),
+        '<div class="fnl-note fnl-note--signal">'
+        "<b>How to check:</b> read the quote &mdash; it is copied "
+        "verbatim from what the host actually said in the closing seconds. "
+        "If the quote supports the verdict, the label is good. "
+        "Open the video only when the quote looks ambiguous.</div>",
+    ]
 
     order = ["true", "misleading", "false", "altered_media"]
     for verdict in order:
@@ -88,24 +99,27 @@ def main() -> int:
         n = args.per_class + (args.true_extra if verdict == "true" else 0)
         step = max(1, len(items) / n)
         picked = [items[int(i * step)] for i in range(min(n, len(items)))]
-        parts.append(f"<div class='grp'>{LABEL_TH.get(verdict, verdict)} "
-                     f"({verdict}) &mdash; showing {len(picked)} of {len(items)}</div>")
+        parts.append(_brand.sys_rule(
+            f"{LABEL_TH.get(verdict, verdict)} · {verdict}",
+            f"{len(picked)} / {len(items)}"))
         for r in picked:
             q = html.escape(r.get("quote", ""))
+            cls = VERDICT_CLASS.get(verdict, "v-altered")
             parts.append(
                 "<div class='card'>"
-                f"<span class='v' style='background:{COLOR.get(verdict,'#555')}'>"
-                f"{LABEL_TH.get(verdict, verdict)}</span>"
+                f"<span class='v {cls}'>{LABEL_TH.get(verdict, verdict)}</span>"
                 f"<div class='t'>{html.escape(r.get('title',''))}</div>"
                 f"<div class='q'><b>ผู้ดำเนินรายการพูดว่า:</b><br>&ldquo;{q}&rdquo;</div>"
                 f"<a href='{html.escape(r.get('url',''))}'>เปิดคลิปเพื่อตรวจสอบ &rarr;</a>"
                 "</div>")
 
+    parts.append(_brand.footer(f"{_brand.ORG_TH} · {_brand.ORG_EN}",
+                               "ASR SPOT-CHECK · INTERNAL"))
     args.out.write_text(
-        f"<!doctype html><html lang='th'><head><meta charset='utf-8'>"
-        f"<meta name='viewport' content='width=device-width,initial-scale=1'>"
-        f"<title>Spot-check: ASR labels</title><style>{CSS}</style></head>"
-        f"<body>{''.join(parts)}</body></html>", encoding="utf-8")
+        _brand.document("Spot-check: ASR labels",
+                        f'<div class="fnl-doc">{"".join(parts)}</div>',
+                        extra_css=EXTRA_CSS),
+        encoding="utf-8")
     print(f"wrote {args.out}")
     for v in order:
         if by.get(v):

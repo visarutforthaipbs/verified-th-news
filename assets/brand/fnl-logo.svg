@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120" role="img" aria-label="Fake News Lab">
+  <title>Fake News Lab — X mark</title>
+  <!-- Field White bar, then Signal Red crossing over it. -->
+  <g transform="rotate(-45 60.0 60.0)">
+    <rect x="12" y="49" width="96" height="22" fill="#F2F2F2"/>
+    <circle cx="113" cy="51.75" r="2.6" fill="#F2F2F2" opacity="0.95"/>
+    <circle cx="7" cy="51.75" r="2.6" fill="#F2F2F2" opacity="0.95"/>
+    <circle cx="113" cy="57.25" r="2.6" fill="#F2F2F2" opacity="0.95"/>
+    <circle cx="7" cy="57.25" r="2.6" fill="#F2F2F2" opacity="0.95"/>
+    <circle cx="113" cy="62.75" r="2.6" fill="#F2F2F2" opacity="0.95"/>
+    <circle cx="7" cy="62.75" r="2.6" fill="#F2F2F2" opacity="0.95"/>
+    <circle cx="113" cy="68.25" r="2.6" fill="#F2F2F2" opacity="0.95"/>
+    <circle cx="7" cy="68.25" r="2.6" fill="#F2F2F2" opacity="0.95"/>
+    <circle cx="119" cy="51.75" r="2.2" fill="#F2F2F2" opacity="0.8"/>
+    <circle cx="1" cy="51.75" r="2.2" fill="#F2F2F2" opacity="0.8"/>
+    <circle cx="119" cy="57.25" r="2.2" fill="#F2F2F2" opacity="0.8"/>
+    <circle cx="1" cy="57.25" r="2.2" fill="#F2F2F2" opacity="0.8"/>
+    <circle cx="119" cy="62.75" r="2.2" fill="#F2F2F2" opacity="0.8"/>
+    <circle cx="1" cy="62.75" r="2.2" fill="#F2F2F2" opacity="0.8"/>
+    <circle cx="119" cy="68.25" r="2.2" fill="#F2F2F2" opacity="0.8"/>
+    <circle cx="1" cy="68.25" r="2.2" fill="#F2F2F2" opacity="0.8"/>
+    <circle cx="125" cy="51.75" r="1.9" fill="#F2F2F2" opacity="0.62"/>
+    <circle cx="-5" cy="51.75" r="1.9" fill="#F2F2F2" opacity="0.62"/>
+    <circle cx="125" cy="62.75" r="1.9" fill="#F2F2F2" opacity="0.62"/>
+    <circle cx="-5" cy="62.75" r="1.9" fill="#F2F2F2" opacity="0.62"/>
+    <circle cx="125" cy="68.25" r="1.9" fill="#F2F2F2" opacity="0.62"/>
+    <circle cx="-5" cy="68.25" r="1.9" fill="#F2F2F2" opacity="0.62"/>
+    <circle cx="131" cy="57.25" r="1.5" fill="#F2F2F2" opacity="0.45"/>
+    <circle cx="-11" cy="57.25" r="1.5" fill="#F2F2F2" opacity="0.45"/>
+    <circle cx="131" cy="62.75" r="1.5" fill="#F2F2F2" opacity="0.45"/>
+    <circle cx="-11" cy="62.75" r="1.5" fill="#F2F2F2" opacity="0.45"/>
+    <circle cx="131" cy="68.25" r="1.5" fill="#F2F2F2" opacity="0.45"/>
+    <circle cx="-11" cy="68.25" r="1.5" fill="#F2F2F2" opacity="0.45"/>
+    <circle cx="137" cy="57.25" r="1.2" fill="#F2F2F2" opacity="0.3"/>
+    <circle cx="-17" cy="57.25" r="1.2" fill="#F2F2F2" opacity="0.3"/>
+    <circle cx="137" cy="68.25" r="1.2" fill="#F2F2F2" opacity="0.3"/>
+    <circle cx="-17" cy="68.25" r="1.2" fill="#F2F2F2" opacity="0.3"/>
+    <circle cx="143" cy="62.75" r="0.9" fill="#F2F2F2" opacity="0.18"/>
+    <circle cx="-23" cy="62.75" r="0.9" fill="#F2F2F2" opacity="0.18"/>
+  </g>
+  <g transform="rotate(45 60.0 60.0)">
+    <rect x="12" y="49" width="96" height="22" fill="#F20D1B"/>
+    <circle cx="113" cy="51.75" r="2.6" fill="#F20D1B" opacity="0.95"/>
+    <circle cx="7" cy="51.75" r="2.6" fill="#F20D1B" opacity="0.95"/>
+    <circle cx="113" cy="57.25" r="2.6" fill="#F20D1B" opacity="0.95"/>
+    <circle cx="7" cy="57.25" r="2.6" fill="#F20D1B" opacity="0.95"/>
+    <circle cx="113" cy="62.75" r="2.6" fill="#F20D1B" opacity="0.95"/>
+    <circle cx="7" cy="62.75" r="2.6" fill="#F20D1B" opacity="0.95"/>
+    <circle cx="113" cy="68.25" r="2.6" fill="#F20D1B" opacity="0.95"/>
+    <circle cx="7" cy="68.25" r="2.6" fill="#F20D1B" opacity="0.95"/>
+    <circle cx="119" cy="51.75" r="2.2" fill="#F20D1B" opacity="0.8"/>
+    <circle cx="1" cy="51.75" r="2.2" fill="#F20D1B" opacity="0.8"/>
+    <circle cx="119" cy="57.25" r="2.2" fill="#F20D1B" opacity="0.8"/>
+    <circle cx="1" cy="57.25" r="2.2" fill="#F20D1B" opacity="0.8"/>
+    <circle cx="119" cy="62.75" r="2.2" fill="#F20D1B" opacity="0.8"/>
+    <circle cx="1" cy="62.75" r="2.2" fill="#F20D1B" opacity="0.8"/>
+    <circle cx="119" cy="68.25" r="2.2" fill="#F20D1B" opacity="0.8"/>
+    <circle cx="1" cy="68.25" r="2.2" fill="#F20D1B" opacity="0.8"/>
+    <circle cx="125" cy="51.75" r="1.9" fill="#F20D1B" opacity="0.62"/>
+    <circle cx="-5" cy="51.75" r="1.9" fill="#F20D1B" opacity="0.62"/>
+    <circle cx="125" cy="62.75" r="1.9" fill="#F20D1B" opacity="0.62"/>
+    <circle cx="-5" cy="62.75" r="1.9" fill="#F20D1B" opacity="0.62"/>
+    <circle cx="125" cy="68.25" r="1.9" fill="#F20D1B" opacity="0.62"/>
+    <circle cx="-5" cy="68.25" r="1.9" fill="#F20D1B" opacity="0.62"/>
+    <circle cx="131" cy="57.25" r="1.5" fill="#F20D1B" opacity="0.45"/>
+    <circle cx="-11" cy="57.25" r="1.5" fill="#F20D1B" opacity="0.45"/>
+    <circle cx="131" cy="62.75" r="1.5" fill="#F20D1B" opacity="0.45"/>
+    <circle cx="-11" cy="62.75" r="1.5" fill="#F20D1B" opacity="0.45"/>
+    <circle cx="131" cy="68.25" r="1.5" fill="#F20D1B" opacity="0.45"/>
+    <circle cx="-11" cy="68.25" r="1.5" fill="#F20D1B" opacity="0.45"/>
+    <circle cx="137" cy="57.25" r="1.2" fill="#F20D1B" opacity="0.3"/>
+    <circle cx="-17" cy="57.25" r="1.2" fill="#F20D1B" opacity="0.3"/>
+    <circle cx="137" cy="68.25" r="1.2" fill="#F20D1B" opacity="0.3"/>
+    <circle cx="-17" cy="68.25" r="1.2" fill="#F20D1B" opacity="0.3"/>
+    <circle cx="143" cy="62.75" r="0.9" fill="#F20D1B" opacity="0.18"/>
+    <circle cx="-23" cy="62.75" r="0.9" fill="#F20D1B" opacity="0.18"/>
+  </g>
+</svg>
