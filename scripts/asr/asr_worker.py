@@ -63,31 +63,41 @@ def _tool(name: str) -> str:
 
 YTDLP = os.getenv("YTDLP") or _tool("yt-dlp")
 
-# Spoken Thai, not article prose, so the cues differ from the text extractor:
-# presenters say "สรุปคือ", "ไม่จริงนะครับ", "แชร์ได้เลย". The anti-collapse rules
-# are carried over from the text prompt work, where adding altered_media and
-# forbidding a blanket "false" moved accuracy from 50% to 83%.
-PROMPT = """ต่อไปนี้คือถอดเสียงช่วงท้ายของรายการตรวจสอบข้อเท็จจริง "ชัวร์ก่อนแชร์"
-ผู้ดำเนินรายการจะสรุปผลการตรวจสอบไว้ในช่วงนี้
+# Prompt v2, chosen by measurement against the 115 human-labelled episodes.
+# v1 scored 91% on false but only 20% on true: it downgraded a clear "จริง" to
+# "misleading" whenever the host added a caveat, because it did not know the
+# programme's own convention -- ชัวร์ก่อนแชร์ ends by telling viewers whether to
+# share, and "แชร์ได้" IS the true verdict. Stating that lifted true to 100%,
+# false to 97% and overall accuracy to 89.9%.
+#
+# A v3 that also tried to rescue "misleading" (43% here) regressed everything
+# else to 74.7%, so v2 stands. Its residual weakness is calling some บิดเบือน
+# "ปลอม" -- both are "do not share", so the direction is never reversed.
+# See scripts/asr/asr_rescore.py to retry prompts against saved transcripts.
+PROMPT = """ต่อไปนี้คือถอดเสียงช่วงท้ายของรายการ "ชัวร์ก่อนแชร์"
+ผู้ดำเนินรายการจะสรุปผลการตรวจสอบและบอกผู้ชมว่าควรแชร์หรือไม่
 
 หัวข้อของคลิป: {title}
 
 ถอดเสียง:
 {transcript}
 
-จงระบุว่าผู้ดำเนินรายการสรุปว่าอย่างไร ตอบเป็น JSON เท่านั้น:
+ตอบเป็น JSON เท่านั้น:
 {{"verdict": "false" | "true" | "misleading" | "altered_media" | "unclear", "quote": "ประโยคที่คัดลอกตรงตัวจากถอดเสียงซึ่งระบุผลสรุป"}}
 
-กติกา:
-- "false" = ข้อกล่าวอ้างไม่จริง เป็นข่าวปลอม ไม่ควรแชร์
-- "true" = ข้อกล่าวอ้างเป็นจริง แชร์ได้
-- "misleading" = จริงบางส่วน ขาดบริบท เกินจริง หรือต้องมีเงื่อนไข
-- "altered_media" = ภาพหรือคลิปถูกตัดต่อ/สร้างด้วย AI
-- "unclear" = ผู้ดำเนินรายการไม่ได้สรุปผลชัดเจนในช่วงนี้
+สัญญาณสำคัญที่สุด คือคำแนะนำเรื่องการแชร์ตอนท้าย:
+- ถ้าผู้ดำเนินรายการบอกว่า "แชร์ได้", "แชร์ต่อได้", "เรื่องนี้ชัวร์", "ยืนยัน", "จริง" → ตอบ "true"
+- ถ้าบอกว่า "ไม่ควรแชร์", "อย่าแชร์", "ไม่จริง", "ข่าวปลอม" → ตอบ "false"
+- ถ้าบอกว่า "แชร์ได้แต่ต้องอธิบายเพิ่ม", "จริงบางส่วน", "ขาดบริบท", "ไม่ครบถ้วน" → ตอบ "misleading"
+- ถ้าบอกว่าภาพหรือคลิปถูกตัดต่อ/สร้างด้วย AI → ตอบ "altered_media"
+- ถ้าไม่ได้สรุปเลย → ตอบ "unclear"
 
-ข้อควรระวัง:
-- อย่าเหมารวมเป็น "false" ถ้าผู้ดำเนินรายการบอกว่าจริงบางส่วนหรือมีเงื่อนไข ให้ตอบ "misleading"
-- ถ้าบอกว่าเป็นเรื่องจริง ให้ตอบ "true" อย่าเปลี่ยนเป็นอย่างอื่น
+ข้อควรระวังที่สำคัญมาก:
+- ถ้าผู้ดำเนินรายการบอกว่า "แชร์ได้" ให้ตอบ "true" เสมอ
+  แม้จะมีคำเสริม เช่น "แต่ไม่บ่อย" "แต่ต้องระวัง" "แต่ขึ้นอยู่กับ"
+  คำเสริมเหล่านี้ไม่ได้ทำให้คำตอบเปลี่ยนเป็น "misleading"
+- ตอบ "misleading" เฉพาะเมื่อผู้ดำเนินรายการบอกว่า "ตัวข้อกล่าวอ้างเอง" ไม่ถูกต้องครบถ้วน
+  ไม่ใช่เพราะมีข้อยกเว้นเล็กน้อย
 - quote ต้องคัดลอกตรงตัวจากถอดเสียงเท่านั้น ห้ามแต่งขึ้นเอง"""
 
 

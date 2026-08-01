@@ -45,6 +45,26 @@ from build_dataset import normalize_verdict  # noqa: E402
 DB = "data/th_verify.db"
 
 
+# Sure & Share publishes several formats under one channel and they are not
+# equally labellable. Only the standard "จริงหรือ?" episode ends with an explicit
+# verdict; LIVE shows, PODCASTs, CHECK-LIST compilations, HIGHLIGHT cuts and
+# #shorts are excerpts or discussions that often never state one.
+#
+# This matters because the 115 human-labelled episodes are 88% standard format
+# and contain zero shorts, while the unlabelled backlog is 51% shorts. Measuring
+# the pipeline on the human set and extrapolating to the whole queue overstated
+# coverage badly -- 83% predicted against 25% observed on a mixed sample.
+NON_VERDICT_MARKERS = ("LIVE", "PODCAST", "CHECK-LIST", "HIGHLIGHT",
+                       "#shorts", "#Shorts", "Motor Check")
+
+
+def is_standard_episode(title: str) -> bool:
+    title = title or ""
+    if any(m in title for m in NON_VERDICT_MARKERS):
+        return False
+    return "จริงหรือ" in title
+
+
 def cmd_prepare(args) -> int:
     con = sqlite3.connect(f"file:{args.db}?mode=ro", uri=True)
     con.row_factory = sqlite3.Row
@@ -61,6 +81,10 @@ def cmd_prepare(args) -> int:
             "WHERE source='sure_share' AND verdict_origin='' "
             "ORDER BY id").fetchall()
     rows = list(rows)
+    if args.standard_only:
+        before = len(rows)
+        rows = [r for r in rows if is_standard_episode(r["title"])]
+        print(f"format filter: {before} -> {len(rows)} standard episodes")
     if args.limit:
         # Spread across the archive rather than taking the newest block, so a
         # sample is not dominated by one period's presenting style.
@@ -168,6 +192,8 @@ def main() -> int:
     p.add_argument("--validation", action="store_true",
                    help="use human-labelled episodes as an answer key")
     p.add_argument("--limit", type=int)
+    p.add_argument("--standard-only", action="store_true",
+                   help="only the 'จริงหรือ?' format, which actually states a verdict")
     p.set_defaults(fn=cmd_prepare)
 
     p = sub.add_parser("validate")
