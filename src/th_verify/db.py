@@ -119,6 +119,7 @@ class Repository:
         if not terms:
             return []
         fts_query = " OR ".join(f'"{t}"*' for t in terms[:10])
+        results: list[dict] = []
         with self.connect() as conn:
             try:
                 rows = conn.execute(
@@ -131,22 +132,41 @@ class Repository:
                     "ORDER BY fts.rank ASC LIMIT ?",
                     (fts_query, limit),
                 ).fetchall()
-                if rows:
-                    return [dict(r) for r in rows]
+                results = [dict(r) for r in rows]
             except sqlite3.OperationalError:
-                pass
+                results = []
 
-            where_like = " OR ".join(["title LIKE ? OR claim LIKE ? OR explanation LIKE ?"] * len(terms[:5]))
-            params_like = []
-            for t in terms[:5]:
-                params_like.extend([f"%{t}%"] * 3)
-            rows = conn.execute(
-                f"SELECT id, source, source_url AS url, title, claim AS claim_text, "
-                f"       verdict AS label, published_at, explanation AS explanation_snippet, 0.0 AS rank "
-                f"FROM fact_checks WHERE {where_like} LIMIT ?",
-                [*params_like, limit],
-            ).fetchall()
-            return [dict(r) for r in rows]
+            # Thai is written without spaces, so FTS5's default tokenizer treats a
+            # whole phrase as one token and only matches an exact token boundary.
+            # Searching "ยาพารา" returned 1 row while 24 records contain it as a
+            # substring. This used to `return` as soon as FTS produced ANY row, so a
+            # single thin hit suppressed the substring fallback entirely and the
+            # caller saw one result where two dozen existed.
+            #
+            # Top up from a LIKE scan whenever FTS did not fill the quota, rather
+            # than only when it returned nothing. FTS ordering is kept first so
+            # BM25 ranking still leads for space-separated text.
+            if len(results) < limit:
+                seen = {r["id"] for r in results}
+                where_like = " OR ".join(
+                    ["title LIKE ? OR claim LIKE ? OR explanation LIKE ?"] * len(terms[:5]))
+                params_like = []
+                for t in terms[:5]:
+                    params_like.extend([f"%{t}%"] * 3)
+                rows = conn.execute(
+                    f"SELECT id, source, source_url AS url, title, claim AS claim_text, "
+                    f"       verdict AS label, published_at, explanation AS explanation_snippet, "
+                    f"       0.0 AS rank "
+                    f"FROM fact_checks WHERE {where_like} LIMIT ?",
+                    [*params_like, limit * 2],
+                ).fetchall()
+                for r in rows:
+                    if r["id"] not in seen:
+                        results.append(dict(r))
+                        seen.add(r["id"])
+                        if len(results) >= limit:
+                            break
+        return results
 
 
 

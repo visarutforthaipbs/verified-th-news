@@ -185,6 +185,23 @@ def check(req: CheckRequest) -> dict:
         level = "strong"
     elif best >= POSSIBLE_MATCH:
         level = "possible"
+    elif any(m.get("match_type") == "hybrid" for m in matches):
+        # Below the semantic threshold, but records were surfaced independently by
+        # BOTH the embedding search and the keyword search. Reporting that as
+        # "none" made the page announce "ยังไม่พบการตรวจสอบเรื่องนี้" directly above
+        # a list of plainly relevant results.
+        #
+        # Short queries are the usual cause: the embedding model compares the input
+        # against whole claim sentences, so a bare keyword scores low however
+        # relevant it is. "ยาพารา" scores 0.856 while the same claim written out in
+        # full scores 0.937.
+        #
+        # Requiring 'hybrid' rather than merely "some matches exist" matters: the
+        # dense search always returns its top-k, so `matches` is never empty and a
+        # nonsense query would otherwise be reported as related. A stray substring
+        # can also produce a lone 'keyword' hit ("zzz" matches something). Only
+        # agreement between the two retrieval methods is treated as relevance.
+        level = "related"
     else:
         level = "none"
     return {
