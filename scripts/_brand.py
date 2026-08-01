@@ -24,6 +24,7 @@ from pathlib import Path
 
 BRAND_DIR = Path(__file__).resolve().parent.parent / "assets" / "brand"
 CSS_PATH = BRAND_DIR / "fnl-design-system.css"
+FONTS_PATH = BRAND_DIR / "fnl-fonts.css"
 LOGO_PATH = BRAND_DIR / "fnl-logo.svg"
 LOGO_ICON_PATH = BRAND_DIR / "fnl-logo-icon.svg"
 
@@ -38,8 +39,14 @@ ECONOMY_CLASS = "fnl-print-economy"
 
 @lru_cache(maxsize=None)
 def css() -> str:
-    """The design system, read once."""
-    return CSS_PATH.read_text(encoding="utf-8")
+    """The brand webfonts followed by the design system, read once.
+
+    Fonts come first so their @font-face rules are registered before any rule
+    references the families. Both are inlined -- see scripts/brand/fetch_fonts.py
+    for why the faces are embedded rather than linked.
+    """
+    fonts = FONTS_PATH.read_text(encoding="utf-8") if FONTS_PATH.exists() else ""
+    return fonts + "\n" + CSS_PATH.read_text(encoding="utf-8")
 
 
 @lru_cache(maxsize=None)
