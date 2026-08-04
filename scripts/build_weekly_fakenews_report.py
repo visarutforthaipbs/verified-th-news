@@ -50,6 +50,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 from _freshness import assert_fresh  # noqa: E402
 from build_brief import fetch, find_recirculating  # noqa: E402
 import _brand  # noqa: E402
+import _charts  # noqa: E402
 
 OUTPUT_DIR = Path("data/reports")
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://127.0.0.1:11435")
@@ -141,7 +142,8 @@ def theme_of(claim: str) -> str:
     return "อื่น ๆ"
 
 
-def llm_narrative(claims: list[dict], stats: dict) -> str | None:
+def llm_narrative(claims: list[dict], stats: dict,
+                  period: dict | None = None) -> str | None:
     """Ask the local model for an editorial read of the week.
 
     Grounded deliberately: it receives only headlines from this window plus the
@@ -150,21 +152,24 @@ def llm_narrative(claims: list[dict], stats: dict) -> str | None:
     """
     sample = "\n".join(f"- [{LABEL_TH.get(c['label'], c['label'])}] {c['claim'][:110]}"
                        for c in claims[:60])
+    P = period or {"th": "ประจำสัปดาห์", "this_th": "สัปดาห์นี้"}
+    period_th = P["th"] if P["th"].startswith("ประจำ") else "ประจำ" + P["th"].replace("ราย", "")
+    period_this = P["this_th"]
     prompt = f"""คุณเป็นบรรณาธิการข่าวตรวจสอบข้อเท็จจริงของไทย
-เขียนบทวิเคราะห์ภาพรวมข่าวลวงประจำสัปดาห์ ความยาว 3 ย่อหน้า
+เขียนบทวิเคราะห์ภาพรวมข่าวลวง{period_th} ความยาว 3 ย่อหน้า
 
-ข้อมูลสถิติสัปดาห์นี้:
+ข้อมูลสถิติ{period_this}:
 - ตรวจสอบทั้งหมด {stats['total']} เรื่อง
 - ข่าวปลอม/บิดเบือน/ดัดแปลง {stats['negative']} เรื่อง
 - หมวดที่พบมากที่สุด: {stats['top_theme']}
 - ข่าวลวงเวียนซ้ำจากอดีต {stats['recirculating']} เรื่อง
 
-รายการข่าวที่ตรวจสอบสัปดาห์นี้:
+รายการข่าวที่ตรวจสอบ{period_this}:
 {sample}
 
 กติกา:
 - วิเคราะห์เฉพาะจากรายการข้างต้นเท่านั้น ห้ามเพิ่มข้อมูลหรือตัวเลขที่ไม่ได้ให้มา
-- ย่อหน้า 1: ภาพรวมและแนวโน้มเด่นของสัปดาห์
+- ย่อหน้า 1: ภาพรวมและแนวโน้มเด่นของช่วงเวลานี้
 - ย่อหน้า 2: รูปแบบการหลอกลวงที่น่าสังเกตและกลุ่มเป้าหมาย
 - ย่อหน้า 3: ข้อเสนอแนะต่อประชาชนและสื่อ
 - เขียนเป็นภาษาไทย ไม่ต้องใส่หัวข้อ ไม่ต้องใส่ bullet"""
@@ -191,6 +196,25 @@ def md_cell(text: str) -> str:
     return text.replace("|", "\\|")
 
 
+def period_labels(start: str, end: str) -> dict:
+    """Name the report after the window it actually covers.
+
+    The generator is usable over any range, but every label was hardcoded to
+    "รายสัปดาห์"/WEEKLY. Asked for July, it produced a month of data under a
+    weekly headline -- the same class of error as the stale "Week 31" report
+    that summarised a two-week-old snapshot.
+    """
+    span = (datetime.strptime(end, "%Y-%m-%d") - datetime.strptime(start, "%Y-%m-%d")).days
+    if span <= 10:
+        return {"th": "รายสัปดาห์", "en": "WEEKLY", "prev_th": "สัปดาห์ก่อน",
+                "this_th": "สัปดาห์นี้", "overview_th": "ภาพรวมสัปดาห์นี้"}
+    if span <= 45:
+        return {"th": "รายเดือน", "en": "MONTHLY", "prev_th": "เดือนก่อน",
+                "this_th": "เดือนนี้", "overview_th": "ภาพรวมเดือนนี้"}
+    return {"th": "ตามช่วงเวลา", "en": "PERIOD", "prev_th": "ช่วงก่อนหน้า",
+            "this_th": "ช่วงนี้", "overview_th": "ภาพรวมช่วงนี้"}
+
+
 def build_markdown(cur: list[dict], prev: list[dict], recirc, narrative, start, end) -> str:
     total = len(cur)
     neg = [c for c in cur if c["label"] in NEGATIVE]
@@ -208,8 +232,9 @@ def build_markdown(cur: list[dict], prev: list[dict], recirc, narrative, start, 
 
     L: list[str] = []
     A = L.append
-    A("# รายงานสถานการณ์ข่าวลวงรายสัปดาห์")
-    A("## TH Verify Weekly Misinformation Report")
+    P = period_labels(start, end)
+    A(f"# รายงานสถานการณ์ข่าวลวง{P['th']}")
+    A(f"## TH Verify {P['en'].title()} Misinformation Report")
     A("")
     A(f"**ช่วงข้อมูล:** {start} ถึง {end}  ")
     A(f"**จัดทำเมื่อ:** {datetime.now():%Y-%m-%d %H:%M}  ")
@@ -218,9 +243,9 @@ def build_markdown(cur: list[dict], prev: list[dict], recirc, narrative, start, 
     A("")
     A("---")
     A("")
-    A("## 1. ภาพรวมสัปดาห์นี้")
+    A(f"## 1. {P['overview_th']}")
     A("")
-    A(f"| ตัวชี้วัด | สัปดาห์นี้ | สัปดาห์ก่อน | เปลี่ยนแปลง |")
+    A(f"| ตัวชี้วัด | {P['this_th']} | {P['prev_th']} | เปลี่ยนแปลง |")
     A("| :--- | ---: | ---: | ---: |")
     A(f"| เรื่องที่ถูกตรวจสอบทั้งหมด | {total} | {len(prev)} | {delta(total, len(prev))} |")
     A(f"| ข่าวปลอม/บิดเบือน/ดัดแปลง | {len(neg)} | {len(prev_neg)} | {delta(len(neg), len(prev_neg))} |")
@@ -234,7 +259,7 @@ def build_markdown(cur: list[dict], prev: list[dict], recirc, narrative, start, 
         for para in [p for p in narrative.split("\n") if p.strip()]:
             A(para.strip())
             A("")
-        A("> *บทวิเคราะห์ส่วนนี้ร่างโดยโมเดลภาษาท้องถิ่นจากรายการข่าวในสัปดาห์นี้เท่านั้น "
+        A(f"> *บทวิเคราะห์ส่วนนี้ร่างโดยโมเดลภาษาท้องถิ่นจากรายการข่าวใน{P['this_th']}เท่านั้น "
           "และควรผ่านการตรวจแก้โดยบรรณาธิการก่อนเผยแพร่*")
         A("")
 
@@ -251,7 +276,7 @@ def build_markdown(cur: list[dict], prev: list[dict], recirc, narrative, start, 
         A("## 3.1 องค์กรที่ถูกแอบอ้างมากที่สุด")
         A("")
         A("ชื่อหน่วยงานที่มิจฉาชีพนำไปใช้สร้างความน่าเชื่อถือ "
-          "หน่วยงานที่ถูกแอบอ้างซ้ำหลายครั้งในสัปดาห์เดียว "
+          f"หน่วยงานที่ถูกแอบอ้างซ้ำหลายครั้งใน{P['this_th']} "
           "บ่งชี้ว่ากำลังตกเป็นเป้าของแคมเปญหลอกลวง ไม่ใช่เหตุการณ์เดี่ยว")
         A("")
         A("| หน่วยงานที่ถูกแอบอ้าง | จำนวนครั้ง |")
@@ -261,7 +286,7 @@ def build_markdown(cur: list[dict], prev: list[dict], recirc, narrative, start, 
         A("")
         top_name, top_items = impers[0]
         if len(top_items) > 1:
-            A(f"**ข้อสังเกต:** {top_name} ถูกแอบอ้างถึง {len(top_items)} ครั้งในสัปดาห์เดียว "
+            A(f"**ข้อสังเกต:** {top_name} ถูกแอบอ้างถึง {len(top_items)} ครั้งใน{P['this_th']} "
               f"ในรูปแบบที่ต่างกัน ควรแจ้งเตือนผู้ใช้บริการโดยตรง")
             A("")
 
@@ -284,10 +309,10 @@ def build_markdown(cur: list[dict], prev: list[dict], recirc, narrative, start, 
     if recirc:
         A(f"## 6. ข่าวลวงเวียนซ้ำ ({len(recirc)} เรื่อง)")
         A("")
-        A("ข่าวลวงที่ถูกตรวจสอบไปแล้วในอดีต แต่กลับมาแพร่ซ้ำในสัปดาห์นี้ "
+        A(f"ข่าวลวงที่ถูกตรวจสอบไปแล้วในอดีต แต่กลับมาแพร่ซ้ำใน{P['this_th']} "
           "เป็นสัญญาณว่าการแก้ข่าวครั้งแรกยังเข้าไม่ถึงผู้รับสาร")
         A("")
-        A("| ข่าวสัปดาห์นี้ | เคยตรวจสอบเมื่อ | ความคล้าย |")
+        A(f"| ข่าว{P['this_th']} | เคยตรวจสอบเมื่อ | ความคล้าย |")
         A("| :--- | :--- | ---: |")
         for c, first in recirc[:12]:
             A(f"| [{md_cell(c['claim'][:80])}]({c['url']}) | {first['date']} | {first['score']:.2f} |")
@@ -301,7 +326,7 @@ def build_markdown(cur: list[dict], prev: list[dict], recirc, narrative, start, 
               f"[{c['claim'][:100]}]({c['url']}) — {SOURCE_TH.get(c['source'], c['source'])}, {c['date']}")
         A("")
 
-    A("## 8. รายการข่าวลวงทั้งหมดในสัปดาห์นี้")
+    A(f"## 8. รายการข่าวลวงทั้งหมดใน{P['this_th']}")
     A("")
     A("| วันที่ | ผลตรวจสอบ | เรื่อง | สำนัก |")
     A("| :--- | :--- | :--- | :--- |")
@@ -403,7 +428,7 @@ def inline(s: str) -> str:
 
 # Everything visual now comes from assets/brand/fnl-design-system.css via
 # _brand. Only what is specific to *this* report's markup stays here.
-EXTRA_CSS = """
+EXTRA_CSS = _charts.CHART_CSS + """
 .sec-no { display:block; font-family:var(--fnl-font-mono);
   font-size:var(--fnl-fs-micro); letter-spacing:var(--fnl-track-mono);
   color:var(--fnl-signal-ink); margin-bottom:2px; }
@@ -411,28 +436,92 @@ p.li { margin:0 0 var(--fnl-space-1); padding-left:var(--fnl-space-3); }
 """
 
 
+def _inject_after_heading(html_body: str, heading_starts: str, chart: str) -> str:
+    """Place a figure immediately after the section heading it illustrates.
+
+    Charts live only in the HTML/PDF; the Markdown stays a plain-text report that
+    reads correctly in a terminal or a diff. Injection is done on the converted
+    HTML rather than by embedding raw SVG in the Markdown, because the Markdown
+    converter escapes HTML by design and should keep doing so.
+    """
+    if not chart:
+        return html_body
+    idx = html_body.find(heading_starts)
+    if idx == -1:
+        return html_body
+    close = html_body.find("</h2>", idx)
+    if close == -1:
+        return html_body
+    cut = close + len("</h2>")
+    return html_body[:cut] + chart + html_body[cut:]
+
+
+def build_charts(cur: list[dict], neg: list[dict], start: str, end: str) -> dict:
+    """Every figure the report can show, keyed by the section it belongs to."""
+    by_theme = Counter(theme_of(c["claim"]) for c in neg)
+    by_source = Counter(c["source"] for c in cur)
+    by_label = Counter(c["label"] for c in cur)
+    daily = Counter(c["date"] for c in neg if c["date"])
+    impers = impersonation_counts(neg)
+
+    verdict_parts = [
+        (LABEL_TH["false"], by_label.get("false", 0), _charts.STATUS["false"]),
+        (LABEL_TH["misleading"], by_label.get("misleading", 0), _charts.STATUS["misleading"]),
+        (LABEL_TH["altered_media"], by_label.get("altered_media", 0), _charts.STATUS["altered_media"]),
+        (LABEL_TH["true"], by_label.get("true", 0), _charts.STATUS["true"]),
+        (LABEL_TH["unknown"], by_label.get("unknown", 0), _charts.STATUS["unknown"]),
+    ]
+    return {
+        "timeline": _charts.timeline(dict(daily), start, end,
+                                     title="ปริมาณข่าวลวงที่ถูกตรวจสอบรายวัน"),
+        "themes": _charts.hbar(by_theme.most_common(), title="หมวดข่าวลวง"),
+        "impersonation": _charts.hbar([(n, len(v)) for n, v in impers],
+                                      unit="ครั้ง", title="องค์กรที่ถูกแอบอ้าง",
+                                      label_width=210),
+        "verdicts": _charts.stacked_share(verdict_parts,
+                                          title="สัดส่วนผลการตรวจสอบ"),
+        "sources": _charts.hbar([(SOURCE_TH.get(s, s), n)
+                                 for s, n in by_source.most_common()],
+                                title="สำนักที่ตรวจสอบ", label_width=210),
+    }
+
+
+def _with_charts(html_body: str, ch: dict, P: dict) -> str:
+    # markdown_to_html lifts the section number into <span class="sec-no">SEC // N</span>,
+    # so anchor on that rather than on the raw "3.1 ..." text the Markdown carried.
+    for marker, key in (("SEC // 1</span>", "timeline"),
+                        ("SEC // 3</span>", "themes"),
+                        ("SEC // 3.1</span>", "impersonation"),
+                        ("SEC // 4</span>", "verdicts"),
+                        ("SEC // 5</span>", "sources")):
+        html_body = _inject_after_heading(html_body, marker, ch[key])
+    return html_body
+
+
 def render_html(md: str, cur: list[dict], neg: list[dict], recirc,
                 start: str, end: str, *, economy: bool = False) -> str:
     """Wrap the converted Markdown in the Fake News Lab document shell."""
+    _P = period_labels(start, end)
     title, subtitle, meta, body_md = split_front_matter(md)
     chips = [
-        _brand.chip(f"ข่าวลวงสัปดาห์นี้ {len(neg)} เรื่อง", "alert"),
+        _brand.chip(f"ข่าวลวง{_P['this_th']} {len(neg)} เรื่อง", "alert"),
         _brand.chip(f"ตรวจสอบทั้งหมด {len(cur)} เรื่อง"),
     ]
     if recirc:
         chips.append(_brand.chip(f"เวียนซ้ำ {len(recirc)} เรื่อง", "arrow"))
     body = (
-        _brand.cover("รายงานรายสัปดาห์ · WEEKLY REPORT",
-                     title or "รายงานสถานการณ์ข่าวลวงรายสัปดาห์",
+        _brand.cover(f"รายงาน{_P['th']} · {_P['en']} REPORT",
+                     title or f"รายงานสถานการณ์ข่าวลวง{_P['th']}",
                      subtitle=subtitle, chips=chips, meta=meta)
-        + _brand.sys_rule("SYS // WEEKLY", f"{start} → {end}")
-        + markdown_to_html(body_md)
+        + _brand.sys_rule(f"SYS // {_P['en']}", f"{start} → {end}")
+        + _with_charts(markdown_to_html(body_md),
+                       build_charts(cur, neg, start, end), _P)
         + _brand.footer(
             f"{_brand.ORG_TH} · {_brand.ORG_EN}",
             f"TH VERIFY ARCHIVE · {start} → {end}")
     )
     return _brand.document(
-        f"รายงานข่าวลวงรายสัปดาห์ {start} – {end}",
+        f"รายงานข่าวลวง{_P['th']} {start} – {end}",
         f'<div class="fnl-doc">{body}</div>',
         economy=economy, extra_css=EXTRA_CSS)
 
@@ -476,8 +565,13 @@ def main() -> int:
     end = args.end or datetime.now().strftime("%Y-%m-%d")
     start = args.start or (datetime.strptime(end, "%Y-%m-%d")
                            - timedelta(days=args.days)).strftime("%Y-%m-%d")
+    # The comparison window must match the length of the reporting window, not
+    # --days. With an explicit --start/--end the two diverge: asking for July
+    # compared a 31-day month against the 7 days before it and reported "+356%".
+    span_days = (datetime.strptime(end, "%Y-%m-%d")
+                 - datetime.strptime(start, "%Y-%m-%d")).days
     prev_start = (datetime.strptime(start, "%Y-%m-%d")
-                  - timedelta(days=args.days)).strftime("%Y-%m-%d")
+                  - timedelta(days=span_days)).strftime("%Y-%m-%d")
 
     con = sqlite3.connect(args.db)
     con.row_factory = sqlite3.Row
@@ -500,7 +594,7 @@ def main() -> int:
         narrative = llm_narrative(cur, {
             "total": len(cur), "negative": len(neg),
             "top_theme": by_theme.most_common(1)[0][0] if by_theme else "—",
-            "recirculating": len(recirc)})
+            "recirculating": len(recirc)}, period_labels(start, end))
     con.close()
 
     md = build_markdown(cur, prev, recirc, narrative, start, end)
