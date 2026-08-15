@@ -194,7 +194,11 @@ def main() -> int:
         try:
             out = ollama(PROMPT.format(title=r["title"], body=r["explanation"][:3500]))
         except Exception as exc:
-            rejected["error"] = rejected.get("error", 0) + 1
+            # Named, because "error: 13" three runs running tells you nothing
+            # about whether the model is timing out, refusing, or emitting
+            # something that is not JSON -- and only one of those is worth a fix.
+            kind = f"error ({type(exc).__name__})"
+            rejected[kind] = rejected.get(kind, 0) + 1
             continue
         claim = tidy(str(out.get("claim", "")))
         why = judge(claim, r["title"], r["explanation"])
