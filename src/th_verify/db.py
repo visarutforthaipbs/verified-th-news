@@ -77,6 +77,30 @@ CREATE VIRTUAL TABLE IF NOT EXISTS fact_checks_fts USING fts5(
     claim,
     explanation
 );
+
+-- These three triggers are what keep the index in step with the table. _setup_fts
+-- drops them before running this script, so they MUST be recreated here: without
+-- them the FTS table is only ever populated by the one-off backfill, and every
+-- row inserted afterwards is invisible to keyword search. That is exactly what
+-- happened -- 309 records ingested from 2026-07-27 onward were missing from the
+-- index while sitting perfectly happily in fact_checks.
+CREATE TRIGGER IF NOT EXISTS fact_checks_ai AFTER INSERT ON fact_checks BEGIN
+    INSERT INTO fact_checks_fts(rowid, title, claim, explanation)
+    VALUES (new.id, new.title, new.claim, new.explanation);
+END;
+
+-- Deletion is a plain DELETE, not the INSERT ... VALUES('delete', ...) form.
+-- That special command belongs to external-content FTS5 tables; this one stores
+-- its own content, and using it there raises "SQL logic error" on every update.
+CREATE TRIGGER IF NOT EXISTS fact_checks_ad AFTER DELETE ON fact_checks BEGIN
+    DELETE FROM fact_checks_fts WHERE rowid = old.id;
+END;
+
+CREATE TRIGGER IF NOT EXISTS fact_checks_au AFTER UPDATE ON fact_checks BEGIN
+    DELETE FROM fact_checks_fts WHERE rowid = old.id;
+    INSERT INTO fact_checks_fts(rowid, title, claim, explanation)
+    VALUES (new.id, new.title, new.claim, new.explanation);
+END;
 """
 
 
@@ -103,12 +127,21 @@ class Repository:
             conn.execute("DROP TRIGGER IF EXISTS fact_checks_ad;")
             conn.execute("DROP TRIGGER IF EXISTS fact_checks_au;")
             conn.executescript(FTS_SCHEMA)
-            fc_count = conn.execute("SELECT COUNT(*) FROM fact_checks").fetchone()[0]
-            fts_count = conn.execute("SELECT COUNT(*) FROM fact_checks_fts").fetchone()[0]
-            if fc_count > 0 and fts_count == 0:
+            # Repair any gap, not just an empty index. The previous condition only
+            # backfilled when the FTS table had zero rows, so once the triggers went
+            # missing the index silently froze: it looked populated, and nothing
+            # would ever notice the arrears. Insert only the rows actually absent,
+            # which is a no-op on a healthy database.
+            missing = conn.execute(
+                "SELECT COUNT(*) FROM fact_checks f WHERE NOT EXISTS "
+                "(SELECT 1 FROM fact_checks_fts t WHERE t.rowid = f.id)"
+            ).fetchone()[0]
+            if missing:
                 conn.execute(
                     "INSERT INTO fact_checks_fts(rowid, title, claim, explanation) "
-                    "SELECT id, title, claim, explanation FROM fact_checks"
+                    "SELECT id, title, claim, explanation FROM fact_checks f "
+                    "WHERE NOT EXISTS (SELECT 1 FROM fact_checks_fts t "
+                    "                  WHERE t.rowid = f.id)"
                 )
         except sqlite3.OperationalError:
             pass

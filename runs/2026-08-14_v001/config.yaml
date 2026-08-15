@@ -1,0 +1,18 @@
+# PRD Run Configuration: 2026-08-14_v001
+dataset:
+  raw_db_path: "data/th_verify.db"
+  clean_layer: "th_verify.normalized.get_normalized_records"
+  filter_broadcasts: true
+  total_clean_records: 26894
+  temporal_span: "2015-05-30 to 2026-08-03"
+embedding_model:
+  name: "intfloat/multilingual-e5-small"
+  dimensions: 384
+  normalization: "L2"
+clustering_method: "semantic_taxonomy_medoid"
+statistical_testing:
+  method: "blocked_permutation_test"
+  iterations: 2000
+  multiple_testing_correction: "Benjamini-Hochberg (FDR)"
+  alpha: 0.05
+divergence_metric: "Jensen-Shannon Divergence (JSD)"

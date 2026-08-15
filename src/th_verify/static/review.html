@@ -167,6 +167,7 @@
      06  report component layer (classes the existing report builders emit)
      07  print / PDF
      08  print-economy (opt-in light)
+     09  feature article layer (the news-feature report rendering)
    =========================================================================== */
 
 /* ---------------------------------------------------------------------------
@@ -1367,6 +1368,279 @@ select.fnl-select {
     color: #0A0A0A !important;
   }
 }
+
+/* ---------------------------------------------------------------------------
+   09  FEATURE ARTICLE LAYER
+   The news-feature rendering of a report (scripts/build_issue_feature.py). The
+   white-paper report in section 06 leads with the numbers; a feature leads with
+   the story and uses the numbers as evidence, so it needs a reading column, a
+   hero, section rules, case cards and sidebars rather than a stat grid.
+
+   Two surfaces, one stylesheet: on screen this is a single long-scroll column,
+   and in print the same markup becomes an A4 feature. Nothing here is
+   screen-only or print-only markup — the difference is entirely in the print
+   block at the end of this section.
+
+   No drop cap. A Thai first letter carries vowels above and tone marks above
+   those; ::first-letter takes only the base consonant and leaves the marks
+   behind at body size, which shears the glyph apart. The lead is distinguished
+   by size and a red rule instead.
+   --------------------------------------------------------------------------- */
+.fnl-article {
+  max-width: var(--fnl-measure);
+  margin: 0 auto;
+  padding: var(--fnl-space-6) var(--fnl-space-5) var(--fnl-space-8);
+}
+.fnl-article > p { margin-bottom: var(--fnl-space-4); }
+
+/* --- hero ----------------------------------------------------------------- */
+.feat-hero {
+  border-bottom: var(--fnl-rule-heavy) solid var(--fnl-red);
+  padding-bottom: var(--fnl-space-4);
+  margin-bottom: var(--fnl-space-5);
+}
+.feat-hero__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--fnl-space-3);
+  margin-bottom: var(--fnl-space-5);
+}
+.feat-hero__brand svg { display: block; flex: none; }
+.feat-hero__org {
+  font-family: var(--fnl-font-head);
+  font-weight: var(--fnl-weight-head);
+  font-size: var(--fnl-fs-small);
+  line-height: 1.25;
+  letter-spacing: var(--fnl-track-head);
+}
+.feat-hero__org span {
+  display: block;
+  font-family: var(--fnl-font-mono);
+  font-weight: 400;
+  font-size: var(--fnl-fs-micro);
+  letter-spacing: var(--fnl-track-mono);
+  text-transform: uppercase;
+  color: var(--fnl-gray);
+}
+.feat-kicker {
+  font-family: var(--fnl-font-mono);
+  font-size: var(--fnl-fs-meta);
+  letter-spacing: var(--fnl-track-mono);
+  text-transform: uppercase;
+  color: var(--fnl-red);
+  font-weight: 600;
+  margin-bottom: var(--fnl-space-2);
+}
+.feat-headline {
+  font-family: var(--fnl-font-head);
+  font-size: var(--fnl-fs-h1);
+  font-weight: var(--fnl-weight-head);
+  line-height: var(--fnl-lh-tight);
+  letter-spacing: var(--fnl-track-head);
+  color: var(--fnl-white);
+  margin: 0 0 var(--fnl-space-3);
+  border: 0;
+}
+.feat-headline em { font-style: normal; color: var(--fnl-red); }
+/* standfirst: the paragraph that sells the story, one size above body */
+.feat-dek {
+  font-size: var(--fnl-fs-h3);
+  line-height: 1.55;
+  color: var(--fnl-white);
+  margin: 0 0 var(--fnl-space-4);
+}
+.feat-byline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--fnl-space-2) var(--fnl-space-4);
+  font-family: var(--fnl-font-mono);
+  font-size: var(--fnl-fs-meta);
+  letter-spacing: var(--fnl-track-mono);
+  text-transform: uppercase;
+  color: var(--fnl-gray);
+}
+.feat-byline b { color: var(--fnl-white); font-weight: 600; }
+.feat-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--fnl-space-2);
+  margin: var(--fnl-space-4) 0 0;
+}
+
+/* --- body ----------------------------------------------------------------- */
+.feat-lead {
+  font-size: var(--fnl-fs-h3);
+  line-height: 1.6;
+  color: var(--fnl-white);
+  border-left: var(--fnl-rule-heavy) solid var(--fnl-red);
+  padding-left: var(--fnl-space-4);
+  margin: 0 0 var(--fnl-space-5);
+}
+.feat-sec { margin-top: var(--fnl-space-6); }
+.feat-sec__head {
+  font-family: var(--fnl-font-head);
+  font-size: var(--fnl-fs-h2);
+  font-weight: var(--fnl-weight-head);
+  line-height: var(--fnl-lh-head);
+  color: var(--fnl-white);
+  margin: 0 0 var(--fnl-space-3);
+  border: 0;
+}
+.feat-sec p { margin-bottom: var(--fnl-space-4); }
+
+/* --- case cards ----------------------------------------------------------- */
+/* One claim per card: what circulated, what the checker ruled, where to verify.
+   A card rather than a table row because the claim text is a sentence and the
+   link has to be clickable in the web version and printable in the PDF. */
+.feat-cases {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--fnl-space-4);
+  margin: var(--fnl-space-4) 0 var(--fnl-space-5);
+}
+@media (max-width: 640px) { .feat-cases { grid-template-columns: 1fr; } }
+.feat-case {
+  border: var(--fnl-rule) solid var(--fnl-line);
+  border-top: var(--fnl-rule-heavy) solid var(--fnl-gray);
+  background: var(--fnl-surface-1);
+  padding: var(--fnl-space-3) var(--fnl-space-4) var(--fnl-space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--fnl-space-2);
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+.feat-case--false { border-top-color: var(--fnl-red); }
+.feat-case--misleading { border-top-color: var(--fnl-yellow); }
+.feat-case--true { border-top-color: var(--fnl-white); }
+.feat-case__verdict {
+  font-family: var(--fnl-font-mono);
+  font-size: var(--fnl-fs-meta);
+  font-weight: 700;
+  letter-spacing: var(--fnl-track-mono);
+  text-transform: uppercase;
+  color: var(--fnl-gray);
+}
+.feat-case--false .feat-case__verdict { color: var(--fnl-red); }
+.feat-case--misleading .feat-case__verdict { color: var(--fnl-signal-ink); }
+.feat-case--true .feat-case__verdict { color: var(--fnl-white); }
+.feat-case__label {
+  font-family: var(--fnl-font-mono);
+  font-size: var(--fnl-fs-micro);
+  letter-spacing: var(--fnl-track-mono);
+  text-transform: uppercase;
+  color: var(--fnl-gray);
+  margin-bottom: calc(var(--fnl-space-2) * -1 + 2px);
+}
+.feat-case__claim {
+  font-size: var(--fnl-fs-small);
+  line-height: 1.6;
+  color: var(--fnl-white);
+  margin: 0;
+}
+.feat-case__foot {
+  margin-top: auto;
+  padding-top: var(--fnl-space-2);
+  border-top: var(--fnl-rule) solid var(--fnl-line-soft);
+  font-family: var(--fnl-font-mono);
+  font-size: var(--fnl-fs-micro);
+  letter-spacing: 0.06em;
+  color: var(--fnl-gray);
+  display: flex;
+  justify-content: space-between;
+  gap: var(--fnl-space-2);
+}
+.feat-case__foot a { color: var(--fnl-gray); border-bottom: 0; }
+.feat-case__foot a:hover { color: var(--fnl-red); }
+
+/* --- sidebar / boxed facts ------------------------------------------------ */
+.feat-box {
+  border-left: var(--fnl-rule-heavy) solid var(--fnl-yellow);
+  background: var(--fnl-surface-1);
+  padding: var(--fnl-space-4);
+  margin: var(--fnl-space-5) 0;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+.feat-box__title {
+  font-family: var(--fnl-font-mono);
+  font-size: var(--fnl-fs-meta);
+  letter-spacing: var(--fnl-track-mono);
+  text-transform: uppercase;
+  color: var(--fnl-signal-ink);
+  margin-bottom: var(--fnl-space-3);
+}
+.feat-box ol, .feat-box ul { margin: 0; padding-left: 1.2em; }
+.feat-box li { margin-bottom: var(--fnl-space-2); font-size: var(--fnl-fs-small); }
+.feat-box li:last-child { margin-bottom: 0; }
+
+/* numbered takeaways — the "what to do" close of the communication formula */
+.feat-actions { list-style: none; margin: 0; padding: 0; counter-reset: act; }
+.feat-actions li {
+  counter-increment: act;
+  position: relative;
+  padding-left: 2.2rem;
+  margin-bottom: var(--fnl-space-3);
+  font-size: var(--fnl-fs-small);
+  line-height: 1.6;
+}
+.feat-actions li::before {
+  content: counter(act, decimal-leading-zero);
+  position: absolute;
+  left: 0;
+  top: 0.05em;
+  font-family: var(--fnl-font-mono);
+  font-size: var(--fnl-fs-meta);
+  font-weight: 700;
+  color: var(--fnl-red);
+}
+
+/* an unfilled analyst slot. Deliberately loud: a draft must never be mistaken
+   for a finished piece when it is forwarded as a PDF. */
+.feat-slot {
+  border: var(--fnl-rule-strong) dashed var(--fnl-yellow);
+  background: var(--fnl-yellow-wash);
+  color: var(--fnl-white);
+  padding: var(--fnl-space-3) var(--fnl-space-4);
+  margin: var(--fnl-space-4) 0;
+  font-size: var(--fnl-fs-small);
+}
+.feat-slot b { color: var(--fnl-signal-ink); font-family: var(--fnl-font-mono); }
+
+/* --- print ---------------------------------------------------------------- */
+@media print {
+  /* The reading column becomes the sheet. A4 at 13mm margins is ~184mm of
+     measure, which is too wide for a single column of Thai body text, so the
+     body runs in two columns on paper and one on screen. The hero, figures and
+     case grid span both. */
+  .fnl-article {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    column-count: 2;
+    column-gap: 9mm;
+    column-fill: auto;
+  }
+  .feat-hero, .fnl-fig, .feat-cases, .feat-box, .fnl-footer,
+  .fnl-quote--display, .feat-kpi-span, .feat-lead {
+    column-span: all;
+  }
+  /* the mono section rule belongs to the heading that follows it; without this
+     the rule ends one column and its heading starts the next */
+  .feat-sec .fnl-sys { break-after: avoid; page-break-after: avoid; }
+  .feat-cases { grid-template-columns: 1fr 1fr; }
+  .feat-headline { font-size: 1.85rem; }
+  .feat-dek { font-size: 1.05rem; }
+  .feat-lead { font-size: 1rem; }
+  .feat-sec { margin-top: var(--fnl-space-4); break-inside: auto; }
+  .feat-sec__head { break-after: avoid; page-break-after: avoid; }
+  .feat-case, .feat-box, .feat-slot { break-inside: avoid; page-break-inside: avoid; }
+  /* orphan/widow control matters more in a narrow column */
+  .feat-sec p, .feat-lead { orphans: 2; widows: 2; }
+}
+
+.fnl-print-economy .feat-case { background: var(--fnl-surface-1); }
+.fnl-print-economy .feat-slot { color: #0A0A0A; }
 
 </style>
 <style>

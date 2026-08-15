@@ -66,12 +66,29 @@ def load_topic(name: str) -> dict:
     return json.loads(p.read_text(encoding="utf-8"))
 
 
+DEFAULT_MATCH_FIELDS = ("title", "claim", "explanation")
+
+
 def build_where(cfg: dict) -> tuple[str, list[str]]:
-    """OR of: each keyword over title/claim/explanation, plus each combo
-    (AND of any-of keyword groups over title/claim)."""
+    """OR of: each keyword over the topic's match fields, plus each combo
+    (AND of any-of keyword groups over title/claim).
+
+    `match_fields` in the topic config narrows where `keywords_any` may match;
+    it defaults to all three fields, which is what every topic written before
+    2026-08-14 assumes. Narrowing it to ("title", "claim") matters for any topic
+    whose vocabulary overlaps the *machinery* of fact-checking rather than its
+    subject: AFNC explanations routinely name the agency that confirmed the
+    story, so "นายกรัฐมนตรี" matches 908 records over all three fields and 19
+    over title+claim. The first number is boilerplate; the second is the topic.
+    """
+    fields = tuple(cfg.get("match_fields") or DEFAULT_MATCH_FIELDS)
+    bad = [f for f in fields if f not in DEFAULT_MATCH_FIELDS]
+    if bad:
+        sys.exit(f"match_fields may only contain {DEFAULT_MATCH_FIELDS}; got {bad}")
+
     clauses, params = [], []
     for kw in cfg.get("keywords_any", []):
-        for field in ("title", "claim", "explanation"):
+        for field in fields:
             clauses.append(f"{field} LIKE ?")
             params.append(f"%{kw}%")
     for combo in cfg.get("keyword_combos", []):

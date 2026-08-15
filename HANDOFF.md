@@ -1,6 +1,6 @@
 # HANDOFF — Thai Fact-Check Database & Fake-News Detection
 
-Last updated: 2026-07-31. State of the project for anyone (human or agent)
+Last updated: 2026-08-14. State of the project for anyone (human or agent)
 picking this up in a new session.
 
 Architecture diagram (all three machines and every flow):
@@ -12,11 +12,20 @@ the canonical database lives on **lighthouse-core** (see Machine topology). A
 fresh clone needs: `.env` with API keys, then `th-verify init` + `th-verify
 sync all --mode backfill`, or rsync `data/` from lighthouse-core.
 
-**Start here (2026-07-31):** production is healthy — daily sync ran, both
-instances answer, check-before.org returns 200. One open data issue: Thai PBS
-verdict contamination is diagnosed and the collector is fixed, but the
-already-stored bad rows still need `scripts/repair_thaipbs_verdicts.py --apply`
-run against the production DB. See "Thai PBS verdict contamination" below.
+**Start here (2026-08-14).** The session of 2026-08-13/14 added a **news-feature
+edition of the Issue Focus Report** and a **narrative-shift analyser**. Nothing
+from that session is committed yet, and two decisions are waiting on the owner —
+both are listed under "Open decisions (2026-08-14)" below. Read that section
+first; it is where the work stopped, not where it failed.
+
+Everything in that session was built and rendered against **this MacBook's dev
+copy, which was 9–11 days stale** (newest record 2026-08-03). Every report
+produced is therefore built on that snapshot. Regenerate on lighthouse-core, or
+rsync `data/` down first, before any of it goes to a client.
+
+The earlier open item from 2026-07-31 is closed: Thai PBS verdict contamination
+was diagnosed, the collector fixed, and `repair_thaipbs_verdicts.py --apply` was
+run against production (see that section below for the record).
 
 ## What this project is
 
@@ -76,6 +85,41 @@ and a usable checking tool.
   web-served folder. Heuristic-origin verdicts are demoted to "อื่นๆ"
   (same client-facing rule as briefs). First topic: `migrant`.
   `scripts/build_html_report.py` was the hardcoded prototype it replaces.
+- `scripts/build_issue_feature.py` — **news-feature edition of the same SKU**
+  (added 2026-08-14). Same topic configs and same database; a story rather than
+  a white paper — headline, standfirst, narrative sections, pull quotes, case
+  cards with links to the original fact-checks, and a "what to do" close.
+  Outputs `data/reports/<slug>_feature.html` (long-scroll on screen, two-column
+  A4 when printed) plus a PDF of the same file. Prose lives in
+  `scripts/issue_topics/<slug>.story.json`, written by hand — **nothing in this
+  script drafts prose**. Story strings carry `${total}`, `${peak_year_be}`,
+  `${cat2_name}` … which are substituted at build time so hand-written sentences
+  don't go stale; a story can also declare its own `counters` (keyword groups
+  counted over title+claim) for lines about one pattern inside the topic. No
+  story file → the report still builds, with loudly-marked analyst slots.
+  `--init-story` writes a skeleton pre-filled with the topic's real numbers.
+  Case cards are restricted to `source`/`human` verdicts — an aggregate can
+  carry the `llm` tier's ~21% error rate, a card naming a publisher cannot.
+  Stories written: `callcenter_scam`, `political_state`.
+- `scripts/narrative_shift.py` — **finds the periods where a topic's narrative
+  changed** (added 2026-08-14). Embeds the topic's claims, clusters them, and
+  measures when each cluster's mass sits in time, with a permutation test. Does
+  not name the clusters — see "Narrative-shift analysis" below.
+- `scripts/_pdf.py` — the one Chrome-to-PDF invocation in the repo, shared by
+  `build_weekly_fakenews_report.py` and `build_issue_feature.py`. Set `$CHROME`
+  on a non-Mac host.
+- `scripts/_charts.py` — inline SVG, no JS, no network. Added 2026-08-14:
+  `columns()` (named categorical columns — years, months; `timeline()` is the
+  daily version and cannot show a decade).
+- **Topic configs now accept `match_fields`** (default: title+claim+explanation,
+  i.e. unchanged for existing topics). Narrow it to `["title", "claim"]` for any
+  topic whose vocabulary overlaps the *machinery* of fact-checking: AFNC
+  explanations name the agency that confirmed the story, so `นายกรัฐมนตรี`
+  matched 908 records over three fields and 19 over title+claim. The original
+  `political_state` config matched 4,131 records of which a random 20-sample was
+  mostly weather bulletins and farm subsidies; retuned (title+claim, political
+  vocabulary, ครม. moved into a policy combo) it matches 518 with ~18/20
+  precision, keeping 247 of the original 254 `false` records.
 - `data/exports/` — classification_{train,val,test}.jsonl, rag_corpus.jsonl,
   verdict_mapping.csv, REPORT.md.
 - `scripts/llm_assist.py` — local-LLM helpers via Ollama on aipower
@@ -108,6 +152,16 @@ and a usable checking tool.
 
 # quick claim lookup from terminal
 .venv/bin/python -m th_verify.cli check "ข้อความที่สงสัย"
+
+# reports — white paper (2-page A4) and news feature (web + PDF) for one topic
+.venv/bin/python scripts/build_issue_report.py callcenter_scam
+.venv/bin/python scripts/build_issue_feature.py callcenter_scam
+.venv/bin/python scripts/build_issue_feature.py --list          # topics + story status
+.venv/bin/python scripts/build_issue_feature.py <topic> --init-story
+
+# find where a topic's narrative changed (prints clusters for a human to name)
+.venv/bin/python scripts/narrative_shift.py migrant
+.venv/bin/python scripts/narrative_shift.py migrant --k 8
 
 # tests
 .venv/bin/python -m pytest -q
@@ -401,6 +455,160 @@ per-topic 2-page deep-dive; tooling done, needs analyst ✍️ slots per topic
 config; first topic `migrant`. The risk
 triage layer is specified in docs/risk-triage-design.md but unbuilt.
 
+**2026-08-14: the Issue Focus SKU now has two editions from one topic config.**
+The white paper (`build_issue_report.py`) and the news feature
+(`build_issue_feature.py`) — same data, same label policy, different reader. Two
+stories are written (`callcenter_scam`, `political_state`), each publishable as
+a web article and a PDF. The feature is the more sellable artefact of the two:
+it is the one a newsroom or a funder reads end to end.
+
+What is still missing for this SKU to be sold is not tooling. It is (a) an
+editorial decision per topic about scope — see "Open decisions" — and (b) the
+narrative-shift result being folded into the story, which is what makes the
+report say something no one could get by looking at the archive themselves.
+
+## Narrative-shift analysis (added 2026-08-14, `scripts/narrative_shift.py`)
+
+**Why it exists.** The Issue Focus Report answers "how much". The question worth
+answering is *what the claims were about, and when that changed* — and until now
+a human answered it by eye. The migrant report's "4 ยุค" line
+(`insight_html`: โรคระบาด → แย่งงาน → ชาตินิยม) was written by an analyst reading
+the per-year category matrix. This derives those eras from the data.
+
+**Why the old way was limited**, and this is the part worth keeping in mind:
+
+1. It can only see narratives someone already named in the topic config. A new
+   narrative has no keyword yet, so it is invisible by construction.
+2. Nothing tested whether a share change was real or sampling noise.
+3. The era boundaries were where the analyst drew the line, not where the data
+   turns.
+4. The topic filter matched `explanation` text, so the counts included records
+   that were not about the topic at all (see `match_fields` above).
+
+**Method.**
+
+    topic records → embed claim text (e5-small, the model already behind /check)
+      → k-means on the normalized vectors  (clusters = candidate narratives)
+      → per cluster: year histogram, share of the early half vs the late half
+      → permutation test: shuffle the dates 2,000× — is the gap beyond chance?
+      → Jensen-Shannon divergence between adjacent years → where the mix breaks
+      → a human reads the medoid + exemplars and writes the name
+
+Embeddings rather than word frequencies because **Thai has no word spaces** and
+no tokenizer is installed (`pythainlp` is absent), and because keyword methods
+cannot find a narrative that no config has named. The `passage:` prefix matches
+what the search index uses, so the vectors live in the same space.
+
+**It deliberately does not name clusters.** It prints the medoid — the real claim
+closest to the cluster centre — plus exemplars, and a human names it. A
+machine-invented cluster label is exactly the confidently-wrong artefact this
+project fences everywhere else, and here it would propagate into a headline.
+
+**What it found on `migrant`** (316 records, the current all-fields config, k=5):
+
+| narrative (named by hand from exemplars) | early → late share | p | peak |
+|---|---:|---:|---:|
+| COVID vaccine access for migrants | 41.3% → 2.8% | <0.001 | 2564 |
+| work permits / reserved occupations | 28.6% → 10.7% | <0.001 | 2567 |
+| citizenship, ID cards, entitlements | 4.8% → 28.8% | <0.001 | 2569 |
+| **Cambodia: deportation, re-entry, brokers** | **0.0% → 19.0%** | **<0.001** | **2569** |
+
+It recovered the analyst's eras without being told them, and found one the four
+eras missed: the Cambodia cluster has **zero records before 2566** and is now a
+fifth of the topic. The turning point is located rather than guessed — the
+largest year-to-year move in the whole mix is **2567→2568, JSD 0.186**, exactly
+when both new narratives took off.
+
+**Three traps, all hit during the build:**
+
+- **Digest posts.** The first run produced a confident-looking "narrative" made
+  entirely of AFNC weekly round-ups (`ข่าวเด่นประจำสัปดาห์`) — not claims, but
+  records that cluster on their own boilerplate. `DIGEST_PATTERNS` drops them
+  (21 in migrant) and the count is reported.
+- **Linkage collapses.** Average-linkage agglomerative on normalized embeddings
+  chained 312 of 337 migrant records into one cluster. k-means partitions where
+  linkage chains. Do not "fix" this back.
+- **Raw coherence is meaningless.** e5 vectors sit in a narrow cone, so every
+  cluster scores ~0.93 against its own centroid and looks excellent. The tool
+  reports coherence *in excess of the topic baseline*, and flags the loosest
+  cluster relative to the others — an absolute threshold flags all or none.
+
+**Known weakness:** silhouette scores are ~0.08 for short-text embeddings, so k
+is a weak choice. Re-run with several `--k` values before treating any single
+partition as the answer; the tool prints this warning itself.
+
+**Does this need the GPU node?** No. Embedding 240 claims with e5-small takes
+about 4 seconds on the MacBook; the whole 28.5k archive would be minutes. The
+GPU would buy two specific upgrades, both of which should be *measured* rather
+than assumed: (a) **bge-m3 instead of e5-small** — wider score margins should
+mean cleaner cluster boundaries, and the silhouette figures above are the
+baseline to beat; (b) **whole-archive scale**, finding narratives across topics
+rather than inside one.
+
+## Open decisions (2026-08-14) — nothing below is committed
+
+**1. Retune the `migrant` topic config?** It has the same `explanation`-matching
+problem the political config had: its largest cluster (114 records) was mostly
+AI-viral-clip checks that merely mention ต่างด้าว in the explanation. Depending
+on the filter, migrant is:
+
+| config | records | note |
+|---|---:|---|
+| current (all fields) | 337 | what the published white paper reports |
+| title+claim only | 121 | precise but thin for a 7-year analysis |
+| title+claim + wider vocabulary + ชายแดน | 372 | **inflated — see below** |
+| title+claim + wider vocabulary, no ชายแดน | 240 | the proposed set |
+
+A draft of the last one is parked at
+`scripts/issue_topics/migrant.proposed-v2.json.draft` (rename to `.json` to
+adopt). **Adopting it changes the published white paper's numbers** (337 → 240),
+which is why it was not applied unilaterally.
+
+**2. Where does the Thai–Cambodia border conflict belong?** The 2568 conflict
+produced a large wave of misinformation. Letting `ชายแดน` into the migrant
+filter takes the topic to 372 records and balloons 2568–69 — but most of that
+content is military and diplomatic, not migration. It was **excluded**, on the
+judgment that a migrant report should not become a war report by construction;
+the Cambodia *labour* narrative (deportation, paying brokers to re-enter, false
+claims about Thai benefits for Cambodian workers) stays in. This is an editorial
+line, not a statistical result, and the owner may want it drawn differently. A
+separate `border_conflict` topic is the obvious alternative.
+
+**3. `political_state` config was retuned and its original overwritten.** The
+draft config (untracked, never committed) matched 4,131 records of which a random
+20-sample was mostly weather bulletins, cataract surgery and farm subsidies —
+because AFNC explanations name the agency that verified the story, so
+`นายกรัฐมนตรี` matched 908 records over three fields and 19 over title+claim.
+The retuned config matches **518 with ~18/20 precision**, keeping 247 of the
+original 254 `false` records. **The original is preserved at
+`scripts/issue_topics/political_state.v1.json.bak`** — delete it once you are
+happy with the replacement.
+
+**4. Nothing from this session is committed.** Uncommitted work:
+
+    new:      scripts/build_issue_feature.py, scripts/narrative_shift.py,
+              scripts/_pdf.py,
+              scripts/issue_topics/callcenter_scam.story.json,
+              scripts/issue_topics/political_state.json (+ .story.json, .v1.json.bak),
+              scripts/issue_topics/migrant.proposed-v2.json.draft
+    modified: assets/brand/fnl-design-system.css (section 09 + feat-case label),
+              scripts/_charts.py (columns()),
+              scripts/build_issue_report.py (match_fields),
+              scripts/build_weekly_fakenews_report.py (uses _pdf),
+              src/th_verify/static/*.html (stylesheet re-inlined),
+              docs/brand-system.md, HANDOFF.md
+
+    Test state: 38 passed. build_issue_report, build_issue_feature and
+    build_weekly_fakenews_report all rebuild cleanly.
+
+**5. Unfinished, and the reason it stopped:** the owner asked for the
+methodology to be explained before more was built. Still to do — (a) a
+narrative-arc figure in the feature generator: small multiples, one panel per
+narrative, one hue, shared scale (deliberately *not* a stacked chart, because
+the brand has four colours and all of them are status-reserved, so a categorical
+palette would have to be invented); (b) the `migrant` story file written around
+the 2567→2568 turn, once decisions 1 and 2 are settled.
+
 ## Sensible next steps
 
 1. Continue human labeling (biggest data-quality win per hour).
@@ -415,3 +623,11 @@ triage layer is specified in docs/risk-triage-design.md but unbuilt.
 5. Gold eval set: human-verify a stratified ~500–800 sample across all
    sources/years (frozen benchmark for classification, complementing the
    retrieval benchmark that already exists).
+6. Settle the two topic-config decisions above, then finish the narrative-arc
+   figure and the `migrant` story — the narrative-shift finding (a narrative
+   that did not exist before 2566 is now a fifth of the topic) is the strongest
+   editorial result the archive has produced so far, and it is the argument for
+   the Issue Focus SKU being worth paying for.
+7. Audit the remaining topic configs for the `explanation`-matching problem.
+   Only `political_state` has been retuned; `migrant` has a draft; nobody has
+   looked at `callcenter_scam` (843 records, all fields) with this in mind.

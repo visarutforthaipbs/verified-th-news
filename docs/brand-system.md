@@ -151,9 +151,34 @@ trade: the markup is dense Thai-bearing f-string HTML and rewriting every class
 name is the highest-risk edit available in this repo for zero visual gain.
 **New markup should use the `fnl-` components.**
 
+### The feature article layer (section 09 of the CSS)
+
+The news-feature rendering of a report (`scripts/build_issue_feature.py`) —
+`.fnl-article .feat-hero .feat-headline .feat-dek .feat-lead .feat-sec
+.feat-cases .feat-case .feat-box .feat-actions .feat-slot`. Unlike section 06
+this markup is new, so it is `fnl-`/`feat-` prefixed and composed from the
+tokens throughout.
+
+Two things in it are decisions rather than styling:
+
+* **One markup, two surfaces.** On screen the article is a single reading
+  column; in print the same element becomes two columns (`column-count: 2` at
+  A4, because 184mm is far too wide a measure for Thai body text), with the
+  hero, figures, case grid, boxes and pull quotes spanning both. There is no
+  print-only markup — nothing to keep in sync.
+* **No drop cap.** A Thai first letter carries vowels above and tone marks above
+  those; `::first-letter` takes only the base consonant and leaves the marks
+  behind at body size, shearing the glyph apart. The lead is set apart by size
+  and a red rule instead.
+
+`.feat-slot` — the unfilled analyst slot — is deliberately loud (dashed yellow
+on a yellow wash). A draft has to stay recognisable as a draft after someone
+forwards the PDF.
+
 ## Print / PDF
 
-Reports are printed at A4 by headless Chrome:
+Reports are printed at A4 by headless Chrome (via `scripts/_pdf.py`, which is
+the single place those flags live):
 
 ```bash
 "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \

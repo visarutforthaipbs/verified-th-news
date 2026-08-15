@@ -51,6 +51,9 @@ from _freshness import assert_fresh  # noqa: E402
 from build_brief import fetch, find_recirculating  # noqa: E402
 import _brand  # noqa: E402
 import _charts  # noqa: E402
+# Chrome-to-PDF lives in _pdf so this builder and build_issue_feature.py share
+# one invocation and one set of flags.
+from _pdf import write_pdf  # noqa: E402
 
 OUTPUT_DIR = Path("data/reports")
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://127.0.0.1:11435")
@@ -524,28 +527,6 @@ def render_html(md: str, cur: list[dict], neg: list[dict], recirc,
         f"รายงานข่าวลวง{_P['th']} {start} – {end}",
         f'<div class="fnl-doc">{body}</div>',
         economy=economy, extra_css=EXTRA_CSS)
-
-
-def write_pdf(html_path: Path, pdf_path: Path) -> bool:
-    """Print the HTML to PDF with headless Chrome.
-
-    Chrome is used because no Python PDF library is installed here and, more
-    importantly, it shapes Thai script correctly -- most lightweight PDF writers
-    render Thai vowels and tone marks in the wrong positions.
-    """
-    chrome = ("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome")
-    if not Path(chrome).exists():
-        print("  (PDF skipped: Google Chrome not found)", file=sys.stderr)
-        return False
-    try:
-        subprocess.run(
-            [chrome, "--headless", "--disable-gpu", "--no-pdf-header-footer",
-             f"--print-to-pdf={pdf_path.resolve()}", html_path.resolve().as_uri()],
-            check=True, capture_output=True, timeout=120)
-        return pdf_path.exists()
-    except Exception as exc:
-        print(f"  (PDF failed: {exc})", file=sys.stderr)
-        return False
 
 
 def main() -> int:

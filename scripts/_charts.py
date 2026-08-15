@@ -214,6 +214,57 @@ def timeline(counts: dict[str, int], start: str, end: str, *,
                  f"สูงสุด {top} {unit} เมื่อ {days[peak_i]}")
 
 
+def columns(rows: list[tuple[str, int]], *, title: str = "", unit: str = "เรื่อง",
+            highlight: str | None = None, note: str = "") -> str:
+    """Named columns across a common baseline — a short, ordered series.
+
+    `timeline` above is the daily version and takes a date range; this one takes
+    the categories already named (years, months, quarters), which is what a
+    multi-year series needs: a decade of daily columns would be 3,650 slivers.
+
+    Every column is labelled underneath because the set is short enough to
+    afford it, but only the peak carries its value, plus `highlight` if given —
+    a partial final year, say, which must not be read as a fall.
+    """
+    rows = [r for r in rows if r[0] is not None]
+    if not rows:
+        return ""
+    vals = [v for _, v in rows]
+    top = max(vals) or 1
+    width, plot_h, pad_b = 760, 150, 34
+    height = plot_h + pad_b + 16
+    slot = width / len(rows)
+    bw = min(64.0, max(6.0, slot - 14))
+
+    peak_i = vals.index(top)
+    out = [f'<line x1="0" y1="{plot_h}" x2="{width}" y2="{plot_h}" '
+           f'stroke="{MUTED}" stroke-width="1" opacity="0.45"/>']
+    for i, (label, v) in enumerate(rows):
+        h = 0 if v == 0 else max(2, v / top * plot_h)
+        x = i * slot + (slot - bw) / 2
+        is_peak = i == peak_i
+        is_hl = label == highlight
+        fill = RED if is_peak else GRAY
+        opacity = "" if is_peak or is_hl else ' opacity="0.75"'
+        out.append(
+            f'<rect x="{x:.1f}" y="{plot_h - h:.1f}" width="{bw:.1f}" '
+            f'height="{h:.1f}" rx="{RADIUS}" fill="{fill}"{opacity}>'
+            f"<title>{_esc(label)}: {v} {_esc(unit)}</title></rect>")
+        if is_peak or is_hl:
+            out.append(
+                f'<text x="{x + bw / 2:.1f}" y="{plot_h - h - 7:.1f}" '
+                f'text-anchor="middle" font-size="12.5" font-weight="700" '
+                f'fill="{RED if is_peak else INK}">{v}</text>')
+        out.append(
+            f'<text x="{x + bw / 2:.1f}" y="{plot_h + 18}" text-anchor="middle" '
+            f'font-size="11.5" fill="{RED if is_peak else MUTED}">{_esc(label)}</text>')
+    if note:
+        out.append(f'<text x="0" y="{plot_h + 34}" font-size="11" '
+                   f'fill="{MUTED}">{_esc(note)}</text>')
+    return _wrap("".join(out), width, height, title or "ปริมาณตามช่วงเวลา",
+                 f"สูงสุด {top} {unit} ที่ {rows[peak_i][0]}")
+
+
 def kpi_row(items: list[tuple[str, str, str | None, str]]) -> str:
     """Hero numbers: (label, value, delta, tone). Not a chart -- four numbers
     compared to nothing do not need axes, and a stat tile reads faster."""
