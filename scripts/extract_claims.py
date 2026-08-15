@@ -73,7 +73,10 @@ VERDICT_WORDS = re.compile(
     # "พบเป็นเพียงคลื่นลม", "พบเป็นปรากฏการณ์เกิดขึ้นทุกปี" -- Thai PBS's usual way
     # of writing the finding into the headline. Two of the first 376 extractions
     # came back with the headline intact because nothing here matched it.
-    r"พบเป็น|พบว่าเป็น|เท่านั้น")
+    # เท่านั้น ("only") was tried here and removed: it is ordinary vocabulary,
+    # and it rejected real claims such as
+    # "มุสลิมสามารถซื้อที่ดินได้ไม่จำกัด ส่วนชาวพุทธ…เท่านั้น".
+    r"พบเป็น|พบว่าเป็น")
 
 PROMPT = """บทความต่อไปนี้เป็นงานตรวจสอบข้อเท็จจริง
 งานของคุณคือ "คัดลอก" ข้อกล่าวอ้างที่ถูกนำมาตรวจสอบ ไม่ใช่สรุปผลการตรวจสอบ
