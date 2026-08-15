@@ -61,10 +61,23 @@ VERDICT_MAP: dict[tuple[str, str], str] = {
     ("cofact", "เนื้อหาที่ทำให้เข้าใจผิด"): "misleading",
     ("cofact", "unknown"): "unknown",
     # --- thaipbs ---
+    # Thai PBS Verify's own stamp taxonomy, taken from ClaimReview
+    # reviewRating.alternateName. Six values, all of them recorded here so a
+    # reader can see the whole vocabulary rather than discover it by a miss.
+    # /verify/category/* are TOPIC categories (politics, environment, world-news)
+    # and carry no verdict -- do not confuse the two.
     ("thaipbs", "ข่าวปลอม"): "false",
     ("thaipbs", "ข่าวจริง"): "true",
     ("thaipbs", "ข่าวบิดเบือน"): "misleading",
     ("thaipbs", "ภาพปลอม"): "altered_media",
+    # The two non-polar stamps. Neither states whether the claim is true, so
+    # neither can become a training label -- but they are real editorial
+    # outcomes, not missing data, and mapping them to unknown is a decision
+    # recorded here rather than an accident of a lookup failing.
+    #   ไม่สแตมป์ข่าว  - examined, and Thai PBS declines to stamp a verdict
+    #   ตรวจสอบแล้ว    - a check was performed; used as a catch-all badge
+    ("thaipbs", "ไม่สแตมป์ข่าว"): "unknown",
+    ("thaipbs", "ตรวจสอบแล้ว"): "unknown",
     ("thaipbs", "unknown"): "unknown",
     # --- sure_share ---
     ("sure_share", "unknown"): "unknown",
@@ -94,6 +107,13 @@ _PREFIX_RES = [
     re.compile(r"^ข่าวบิดเบือน\s*[,!:]?\s*(อย่าแชร์)?\s*[!:]*\s*"),
     re.compile(r"^ข่าวจริง\s*[,!:?]?\s*"),
     re.compile(r"^(ภาพปลอม|คลิปปลอม|ข่าวเตือนภัย|เตือนภัย)\s*[,!:]?\s*"),
+    # Thai PBS prefixes 117 headlines with "ตรวจสอบแล้ว" ("we checked this:").
+    # It is boilerplate, not a verdict -- those same records carry badges of
+    # ข่าวปลอม (93), ข่าวบิดเบือน (12) and ข่าวจริง (9), so the phrase says only
+    # that a check happened. Left in place it rides into claim_text, the
+    # classification exports and the search index, where it is a marker that a
+    # fact-check exists rather than part of the claim anybody actually made.
+    re.compile(r"^ตรวจสอบแล้ว\s*[:：]?\s*"),
     re.compile(r"^ชัวร์ก่อนแชร์\s*[A-Za-z\- ]*\s*[:|]\s*"),
     re.compile(r"^\[?REPLAY\]?\s*.{0,3}ชัวร์ก่อนแชร์[^:|]*[:|]\s*"),
     re.compile(r"^ศูนย์ต่อต้านข่าวปลอม\s*(?:ตรวจสอบพบว่า)?\s*[:|]\s*"),

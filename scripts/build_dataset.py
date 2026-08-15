@@ -24,6 +24,10 @@ import json
 import re
 import sqlite3
 import unicodedata
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0, str(_Path(__file__).resolve().parent.parent / "src"))
+from th_verify.normalized import is_factcheck  # noqa: E402
 from collections import Counter, defaultdict
 from pathlib import Path
 
@@ -203,6 +207,13 @@ _PREFIX_RES = [
     re.compile(r"^ข่าวบิดเบือน\s*[,!:]?\s*(อย่าแชร์)?\s*[!:]*\s*"),
     re.compile(r"^ข่าวจริง\s*[,!:?]?\s*"),
     re.compile(r"^(ภาพปลอม|คลิปปลอม|ข่าวเตือนภัย|เตือนภัย)\s*[,!:]?\s*"),
+    # Thai PBS prefixes 117 headlines with "ตรวจสอบแล้ว" ("we checked this:").
+    # It is boilerplate, not a verdict -- those same records carry badges of
+    # ข่าวปลอม (93), ข่าวบิดเบือน (12) and ข่าวจริง (9), so the phrase says only
+    # that a check happened. Left in place it rides into claim_text, the
+    # classification exports and the search index, where it is a marker that a
+    # fact-check exists rather than part of the claim anybody actually made.
+    re.compile(r"^ตรวจสอบแล้ว\s*[:：]?\s*"),
     # sure_share episode branding
     re.compile(r"^ชัวร์ก่อนแชร์\s*[A-Za-z\- ]*\s*[:|]\s*"),
     re.compile(r"^\[?REPLAY\]?\s*.{0,3}ชัวร์ก่อนแชร์[^:|]*[:|]\s*"),
@@ -332,6 +343,8 @@ def main() -> None:
             "explanation": r["explanation"],
             "label": label,
             "label_origin": label_origin or "none",
+            "verdict_raw": r["verdict"],
+            "verdict_origin_raw": r["verdict_origin"],
             "category": r["category"],
             "published_at": published,
         })
@@ -373,11 +386,28 @@ def main() -> None:
                 f.write(json.dumps({k: rec[k] for k in cls_fields},
                                    ensure_ascii=False) + "\n")
 
+    # The RAG corpus is what /check searches, so it must contain only things a
+    # user could sensibly be told about. Unlabelled claims stay -- "we have this
+    # on file, not yet rated" is a useful answer. Articles, event notices and
+    # roundups do not: they outrank real fact-checks in the results and surface
+    # with label "unknown", which tells the reader nothing.
+    #
+    # Observed before this filter: searching "เรียนฟรีถึงปริญญาเอก" returned a
+    # Thai PBS policy explainer at 0.873 in FIRST place -- above the actual
+    # relevant fact-check at 0.857. Thai PBS themselves rate that record
+    # "ไม่สแตมป์ข่าว", i.e. they decline to stamp a verdict on it.
+    n_nonclaim = 0
     with open(out / "rag_corpus.jsonl", "w") as f:
         for rec in records:
             if rec["is_duplicate"]:
                 continue
+            if not is_factcheck(rec["source"], rec["title_raw"],
+                                rec.get("verdict_raw", ""), rec["explanation"],
+                                rec.get("verdict_origin_raw", "")):
+                n_nonclaim += 1
+                continue
             f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+    print(f"rag_corpus: excluded {n_nonclaim} non-claim records")
 
     # -- report ---------------------------------------------------------------
     label_counts = Counter(r["label"] for r in records if not r["is_duplicate"])

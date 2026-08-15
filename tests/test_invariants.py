@@ -484,3 +484,30 @@ def test_not_claim_is_distinct_from_skip(repo):
     assert origin != "human_skipped"
     # and it is still matched by the 'human%' guard the queue uses to exclude
     assert origin.startswith("human")
+
+
+def test_thaipbs_checked_prefix_is_stripped():
+    """"ตรวจสอบแล้ว" is Thai PBS boilerplate meaning "we checked this:", not a
+    verdict -- the 117 headlines carrying it are stamped ข่าวปลอม (93),
+    ข่าวบิดเบือน (12) and ข่าวจริง (9). Left in claim_text it tells a model that a
+    fact-check exists, which is a marker no real-world claim would carry."""
+    from th_verify.normalized import clean_claim_text
+    for raw, want in [
+        ("ตรวจสอบแล้ว: ภาพ “อนุทิน” ถ่ายรูปคู่ “เบน สมิธ” พบสร้างจาก AI",
+         "ภาพ “อนุทิน” ถ่ายรูปคู่ “เบน สมิธ” พบสร้างจาก AI"),
+        ("ตรวจสอบแล้ว อินเดียสั่งกักตัว 100 คน", "อินเดียสั่งกักตัว 100 คน"),
+    ]:
+        assert clean_claim_text(raw, "thaipbs") == want
+
+
+def test_thaipbs_taxonomy_is_complete():
+    """All six Thai PBS stamps resolve deliberately, none by fallthrough."""
+    from th_verify.normalized import normalize_verdict, VERDICT_MAP
+    assert normalize_verdict("thaipbs", "ข่าวปลอม") == "false"
+    assert normalize_verdict("thaipbs", "ข่าวจริง") == "true"
+    assert normalize_verdict("thaipbs", "ข่าวบิดเบือน") == "misleading"
+    assert normalize_verdict("thaipbs", "ภาพปลอม") == "altered_media"
+    # non-polar stamps: unknown by decision, and present in the map to prove it
+    for stamp in ("ไม่สแตมป์ข่าว", "ตรวจสอบแล้ว"):
+        assert ("thaipbs", stamp) in VERDICT_MAP
+        assert normalize_verdict("thaipbs", stamp) == "unknown"
