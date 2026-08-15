@@ -377,3 +377,55 @@ def test_thaipbs_published_date_is_never_in_the_future():
     # ClaimReview supplies the real one, so the fallback is never reached.
     verdict, published = parse_claim_review(HTMLParser(CLAIM_REVIEW_PAGE % "ข่าวจริง"))
     assert published == "2026-05-20"
+
+
+# ── 8. non-fact-check content is excluded, the labelling backlog is not ────
+
+def test_is_factcheck_excludes_broadcast_and_sections():
+    from th_verify.normalized import is_factcheck
+    # roundup formats state no verdict on any single claim
+    assert not is_factcheck("sure_share", "🔴ไมโครพลาสติก | ชัวร์ก่อนแชร์ LIVE EP. 265", "unknown")
+    assert not is_factcheck("sure_share", "ระวัง AI ล้วงข้อมูล | ชัวร์ก่อนแชร์ PODCAST", "unknown")
+    assert not is_factcheck("sure_share", "สมองมนุษย์มีกี่เซลล์ ? | HIGHLIGHT", "unknown")
+    # AFNC ships its knowledge base and event notices through the same feed,
+    # with the section name landing in the verdict column
+    assert not is_factcheck("afnc", "วิธีดูแลสุขภาพหน้าฝน", "คลังความรู้")
+    assert not is_factcheck("afnc", "กิจกรรมวันเด็ก", "กิจกรรม")
+
+
+def test_is_factcheck_keeps_unlabelled_claims():
+    """The backlog must survive the filter.
+
+    5,646 Sure & Share records have no verdict yet; they are fact-checks
+    awaiting a label, not noise. Excluding rows merely because their verdict
+    does not normalise would delete the very queue the ASR pipeline exists to
+    work through -- and would silently shrink every count that depends on it.
+    """
+    from th_verify.normalized import is_factcheck
+    assert is_factcheck("sure_share", "ต้องรีบเปลี่ยนบัตรเอทีเอ็ม จริงหรือ?", "unknown")
+    assert is_factcheck("sure_share", "กินก๋วยเตี๋ยวต้องเลี่ยงเส้นเล็ก จริงหรือ ?", "")
+    assert is_factcheck("thaipbs", "คลิปอ้างเหตุการณ์หนึ่ง", "ข่าวปลอม")
+    assert is_factcheck("afnc", "ข่าวปลอม อย่าแชร์! เรื่องหนึ่ง", "ข่าวปลอม")
+
+
+def test_brief_fetch_drops_non_factcheck_rows(repo):
+    """fetch() is the single door every report goes through, so the filter has
+    to live there rather than in each generator."""
+    repo.upsert_many([
+        make_record(source="afnc", source_id="k1", title="บทความคลังความรู้",
+                    verdict="คลังความรู้", published_at="2026-06-05T00:00:00"),
+        make_record(source="sure_share", source_id="b1",
+                    title="เรื่องหนึ่ง | ชัวร์ก่อนแชร์ LIVE EP. 100",
+                    verdict="unknown", published_at="2026-06-05T00:00:00"),
+        make_record(source="afnc", source_id="a2", verdict="ข่าวปลอม",
+                    title="ข่าวปลอม อย่าแชร์! เรื่องจริงจัง",
+                    published_at="2026-06-06T00:00:00"),
+    ])
+    with repo.connect() as conn:
+        conn.execute("UPDATE fact_checks SET verdict_origin='source'")
+    from build_brief import fetch
+    with repo.connect() as conn:
+        rows = fetch(conn, "2026-06-01", "2026-07-01")
+    ids = {r["source"] for r in rows}
+    assert ids == {"afnc"}, "only the real fact-check should survive"
+    assert len(rows) == 1

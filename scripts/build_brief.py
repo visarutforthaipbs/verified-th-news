@@ -32,6 +32,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
 from build_dataset import clean_claim, dedup_key, normalize_verdict  # noqa: E402
+from th_verify.normalized import is_factcheck  # noqa: E402
 
 import sys
 from pathlib import Path as _P
@@ -80,6 +81,15 @@ def fetch(con: sqlite3.Connection, start: str, end: str) -> list[dict]:
     ).fetchall()
     out = []
     for r in rows:
+        # Not every row in the archive is an adjudicated claim. AFNC ships its
+        # knowledge base, event notices and general news through the same feed,
+        # and Sure & Share ships LIVE/PODCAST/HIGHLIGHT roundups. Counting those
+        # as fact-checks inflated every report: the July edition presented
+        # "Take Me to Your Leader คู่มือต้อนรับมนุษย์ต่างดาว | HIGHLIGHT" as a
+        # false claim. The filter lives in normalized.py and was already used by
+        # the analysis scripts -- the reporting path simply never called it.
+        if not is_factcheck(r["source"], r["title"], r["verdict"]):
+            continue
         label = normalize_verdict(r["source"], r["verdict"])
         # heuristic labels are keyword guesses - never present them in a
         # client-facing document as if the source issued that verdict

@@ -161,6 +161,45 @@ _BROADCAST_RX = re.compile(
 def is_broadcast_episode(title: str) -> bool:
     return bool(_BROADCAST_RX.search(title or ""))
 
+
+# ---------------------------------------------------------------------------
+# 4b. Is this record a fact-check at all?
+# ---------------------------------------------------------------------------
+#
+# AFNC publishes more than fact-checks on the same feed -- a knowledge base,
+# event notices, general news -- and its section name lands in the `verdict`
+# column. Those records are not claims anybody adjudicated, so counting them as
+# fact-checks inflates every total and pollutes topic analysis.
+#
+# The list is explicit rather than inferred from "the verdict does not
+# normalise". That distinction matters: 5,646 Sure & Share records also fail to
+# normalise, but they ARE fact-checks whose verdict is simply not labelled yet.
+# Dropping those would delete the labelling backlog rather than the noise.
+NON_FACTCHECK_SECTIONS = {
+    "คลังความรู้",            # knowledge base articles
+    "ข่าวอื่นๆ",              # general news
+    "กิจกรรม",                # event notices
+    "ข่าวสาร",                # announcements
+    "นโยบายรัฐบาล-ข่าวสาร",   # policy bulletins
+    "ความสงบและความมั่นคง",   # section name, not a verdict
+    "ผลิตภัณฑ์สุขภาพ",
+    "การเงิน-หุ้น",
+    "ภัยพิบัติ",
+}
+
+
+def is_factcheck(source: str, title: str, verdict: str) -> bool:
+    """True when the record is an adjudicated claim rather than other content.
+
+    Deliberately conservative: unlabelled is still a fact-check. Only material
+    that was never a claim in the first place is excluded.
+    """
+    if is_broadcast_episode(title):
+        return False
+    if (verdict or "").strip() in NON_FACTCHECK_SECTIONS:
+        return False
+    return True
+
 def dedup_key(text: str) -> str:
     t = unicodedata.normalize("NFC", text).lower()
     t = re.sub(r"[\s​]+", "", t)
