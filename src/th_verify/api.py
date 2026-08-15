@@ -11,7 +11,7 @@ from pydantic import BaseModel, Field
 
 from .config import Settings
 from .db import Repository
-from .normalized import is_factcheck
+from .normalized import is_factcheck, normalize_verdict
 
 # TH_VERIFY_READONLY=1 runs a public-safe instance: labeling/review endpoints
 # are disabled and /check is rate-limited. The private full instance runs
@@ -104,8 +104,13 @@ def review_queue(
         # Counts must exclude material that is not a claim, or the progress bar
         # measures the wrong denominator: Cofact's 1,017 rows include analysis
         # articles and programme announcements nobody can adjudicate.
+        # Only the first ~120 characters of explanation are needed -- is_factcheck
+        # reads Cofact's category prefix, which sits ahead of the title. Selecting
+        # the whole column pulled ~37 MB per request for no benefit.
         counted = conn.execute(
-            f"SELECT source, title, verdict, verdict_origin, explanation FROM fact_checks{where_clause}",
+            "SELECT source, title, verdict, verdict_origin, "
+            "       substr(explanation, 1, 120) AS explanation "
+            f"FROM fact_checks{where_clause}",
             params_count,
         ).fetchall()
         counted = [r for r in counted
@@ -121,16 +126,24 @@ def review_queue(
             " json_extract(raw_json, '$.contentDetails.videoId') AS video_id "
             "FROM fact_checks "
             f"{where_rows} verdict_origin NOT LIKE 'human%' "
-            " AND (verdict='unknown' OR verdict_origin='heuristic') "
             f"ORDER BY COALESCE(published_at, collected_at) {sort_dir} LIMIT ?"
         )
         # Over-fetch, then drop non-claims in Python. is_factcheck is a Python
         # predicate (it reads a section list and a title regex), so it cannot be
         # pushed into SQL without duplicating the rule in two places -- and a
         # filter that exists twice is a filter that will disagree with itself.
-        params_rows.append(limit * 4)
+        # Select on the NORMALISED verdict, not the literal string "unknown".
+        # Thai PBS stamps its policy explainers ไม่สแตมป์ข่าว -- a real editorial
+        # outcome that still carries no polarity, so a human should see it. Once
+        # those records hold the publisher's actual wording, a literal
+        # verdict='unknown' test would drop them from the queue entirely, which is
+        # the opposite of what storing the truthful value should achieve.
+        params_rows.append(limit * 40)
         rows = [r for r in conn.execute(sql_rows, params_rows).fetchall()
-                if is_factcheck(r["source"], r["title"], r["verdict"], r["explanation"])][:limit]
+                if is_factcheck(r["source"], r["title"], r["verdict"],
+                                r["explanation"], r["verdict_origin"])
+                and (normalize_verdict(r["source"], r["verdict"]) == "unknown"
+                     or r["verdict_origin"] == "heuristic")][:limit]
 
 
     return {"total": total or 0, "labeled": done or 0,
