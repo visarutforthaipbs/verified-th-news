@@ -74,7 +74,7 @@ def prev_month(ym: str) -> str:
 def fetch(con: sqlite3.Connection, start: str, end: str) -> list[dict]:
     rows = con.execute(
         "SELECT id, source, source_url, title, verdict, category, published_at,"
-        "       verdict_origin "
+        "       verdict_origin, explanation "
         "FROM fact_checks WHERE published_at >= ? AND published_at < ? "
         "ORDER BY published_at",
         (start, end),
@@ -88,7 +88,7 @@ def fetch(con: sqlite3.Connection, start: str, end: str) -> list[dict]:
         # "Take Me to Your Leader คู่มือต้อนรับมนุษย์ต่างดาว | HIGHLIGHT" as a
         # false claim. The filter lives in normalized.py and was already used by
         # the analysis scripts -- the reporting path simply never called it.
-        if not is_factcheck(r["source"], r["title"], r["verdict"]):
+        if not is_factcheck(r["source"], r["title"], r["verdict"], r["explanation"]):
             continue
         label = normalize_verdict(r["source"], r["verdict"])
         # heuristic labels are keyword guesses - never present them in a

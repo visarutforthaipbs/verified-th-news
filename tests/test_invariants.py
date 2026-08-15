@@ -429,3 +429,28 @@ def test_brief_fetch_drops_non_factcheck_rows(repo):
     ids = {r["source"] for r in rows}
     assert ids == {"afnc"}, "only the real fact-check should survive"
     assert len(rows) == 1
+
+
+def test_cofact_article_categories_excluded():
+    """Cofact is a blog: its WordPress category sits ahead of the title in the
+    stored explanation. Commentary, event notices and the weekly roundup are not
+    adjudicable claims, and were being served to human reviewers to skip by hand.
+    Detected from the publisher's own taxonomy, not guessed from wording."""
+    from th_verify.normalized import is_factcheck
+    art = "บทความ ปฏิบัติการปล่อยข่าวเท็จ-บิดเบือนเรื่องศาสนา จากเลือกตั้ง"
+    assert not is_factcheck("cofact", "ปฏิบัติการปล่อยข่าวเท็จ-บิดเบือนเรื่องศาสนา จากเลือกตั้ง", "unknown", art)
+    ev = "กิจกรรม อบรมเชิงปฏิบัติการตรวจสอบข่าว"
+    assert not is_factcheck("cofact", "อบรมเชิงปฏิบัติการตรวจสอบข่าว", "unknown", ev)
+    wk = "ข่าวลวงประจำสัปดาห์ สรุปข่าวลวงรอบสัปดาห์ที่ผ่านมา"
+    assert not is_factcheck("cofact", "สรุปข่าวลวงรอบสัปดาห์ที่ผ่านมา", "unknown", wk)
+
+
+def test_cofact_real_factchecks_survive():
+    """The claim-check categories must not be swept up with the essays."""
+    from th_verify.normalized import is_factcheck
+    fc = "Top Fact Checks Political กกต. ให้ผู้สมัคร ส.ส. ส่งประวัติเป็น ซีดีรอม ?"
+    assert is_factcheck("cofact", "กกต. ให้ผู้สมัคร ส.ส. ส่งประวัติเป็น ซีดีรอม ?", "unknown", fc)
+    q = "จริงหรือไม่ ? ภาพจากวิดีโอเกมถูกนำมาอ้างเท็จ"
+    assert is_factcheck("cofact", "ภาพจากวิดีโอเกมถูกนำมาอ้างเท็จ", "unknown", q)
+    # and a record with no explanation must not be dropped for lack of a category
+    assert is_factcheck("cofact", "ข้อความบางอย่าง", "unknown", "")

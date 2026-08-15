@@ -188,7 +188,31 @@ NON_FACTCHECK_SECTIONS = {
 }
 
 
-def is_factcheck(source: str, title: str, verdict: str) -> bool:
+# Cofact is a blog, and its WordPress category is the first thing in the stored
+# explanation, before the title. The claim-check categories are "Top Fact Checks*"
+# and "จริงหรือไม่ ?"; the rest are commentary, essays, event notices, or a weekly
+# roundup that bundles many claims into one post and so cannot carry a single
+# verdict. Detected from the publisher's own taxonomy rather than guessed from
+# wording -- the same principle as AFNC's status_label.
+COFACT_NON_CLAIM_CATEGORIES = (
+    "บทความ",                # articles and special reports (incl. "บทความ-รายงานพิเศษ")
+    "กิจกรรม",               # event notices
+    "ข่าวลวงประจำสัปดาห์",   # weekly roundup of many claims — not atomic
+)
+
+
+def _cofact_category(explanation: str, title: str) -> str:
+    """The category prefix Cofact stores ahead of the title, or '' if absent."""
+    e = (explanation or "").strip()
+    t = (title or "").strip()[:18]
+    if not t:
+        return ""
+    idx = e.find(t)
+    return e[:idx].strip() if 0 < idx < 90 else ""
+
+
+def is_factcheck(source: str, title: str, verdict: str,
+                 explanation: str = "") -> bool:
     """True when the record is an adjudicated claim rather than other content.
 
     Deliberately conservative: unlabelled is still a fact-check. Only material
@@ -198,6 +222,10 @@ def is_factcheck(source: str, title: str, verdict: str) -> bool:
         return False
     if (verdict or "").strip() in NON_FACTCHECK_SECTIONS:
         return False
+    if source == "cofact" and explanation:
+        cat = _cofact_category(explanation, title)
+        if cat.startswith(COFACT_NON_CLAIM_CATEGORIES):
+            return False
     return True
 
 def dedup_key(text: str) -> str:
