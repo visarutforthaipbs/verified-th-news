@@ -69,7 +69,11 @@ OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "scb10x/typhoon2.5-qwen3-30b-a3b:latest
 # If any of these survive into the "claim", the model has restated the finding.
 VERDICT_WORDS = re.compile(
     r"ข่าวปลอม|ข่าวจริง|ข่าวบิดเบือน|ภาพปลอม|ไม่เป็นความจริง|เป็นความจริง|"
-    r"ตรวจสอบพบ|ที่แท้|แท้จริง|สร้างจาก\s*AI|เป็นคลิปเก่า|เป็นภาพเก่า|บิดเบือน")
+    r"ตรวจสอบพบ|ที่แท้|แท้จริง|สร้าง(?:จาก|ด้วย)\s*AI|เป็นคลิปเก่า|เป็นภาพเก่า|บิดเบือน|"
+    # "พบเป็นเพียงคลื่นลม", "พบเป็นปรากฏการณ์เกิดขึ้นทุกปี" -- Thai PBS's usual way
+    # of writing the finding into the headline. Two of the first 376 extractions
+    # came back with the headline intact because nothing here matched it.
+    r"พบเป็น|พบว่าเป็น|เท่านั้น")
 
 PROMPT = """บทความต่อไปนี้เป็นงานตรวจสอบข้อเท็จจริง
 งานของคุณคือ "คัดลอก" ข้อกล่าวอ้างที่ถูกนำมาตรวจสอบ ไม่ใช่สรุปผลการตรวจสอบ
@@ -113,8 +117,24 @@ def tidy(claim: str) -> str:
     return re.sub(r"\s{2,}", " ", claim).strip()
 
 
-def _tokens(s: str) -> set[str]:
-    return {t for t in re.split(r"[\s“”\"'·,()\[\]]+", s or "") if len(t) > 1}
+def _grams(s: str, n: int = 3) -> set[str]:
+    """Character n-grams, because Thai does not put spaces between words.
+
+    The first version of this guard split on whitespace. In Thai that yields one
+    token for a whole clause, so a faithful short claim -- "ตำรวจยศสูงไหว้นักการเมือง"
+    against a headline containing exactly that phrase -- scored an overlap of 1
+    and was thrown away as unrelated. 85 of the first 555 extractions were
+    rejected for that reason, and the good ones among them were being discarded
+    for a property of the writing system.
+    """
+    s = re.sub(r"[\s“”\"'·,()\[\]?!.]+", "", s or "")
+    return {s[i:i + n] for i in range(len(s) - n + 1)}
+
+
+def _same(a: str, b: str) -> bool:
+    """Equal once punctuation and spacing stop mattering."""
+    norm = lambda s: re.sub(r"[\s\u201c\u201d\"'?!.\u00b7:;,\-–—]+", "", s or "")
+    return norm(a) == norm(b)
 
 
 def judge(claim: str, title: str, body: str) -> str | None:
@@ -125,8 +145,18 @@ def judge(claim: str, title: str, body: str) -> str | None:
         return "too long"
     if VERDICT_WORDS.search(claim):
         return "contains a verdict"
-    overlap = _tokens(claim) & (_tokens(title) | _tokens(body[:1500]))
-    if len(overlap) < 2:
+    # Handing the headline back is not an extraction. The caller already
+    # compares against the *cleaned* title; this catches the raw one, which
+    # differs by a quote mark often enough to slip past.
+    if _same(claim, title):
+        return "same as the headline"
+    # Share of the claim that can be found in the article. A model that drifted
+    # onto another story scores near zero; a faithful rewording scores high even
+    # when it reorders or trims.
+    g = _grams(claim)
+    if not g:
+        return "too short"
+    if len(g & (_grams(title) | _grams(body[:2500]))) / len(g) < 0.45:
         return "unrelated to the article"
     return None
 

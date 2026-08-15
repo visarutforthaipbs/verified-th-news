@@ -254,6 +254,41 @@ def test_review_queue_sorting(monkeypatch, tmp_path):
         assert items_desc[0]["title"] == "ข่าวใหม่"
 
 
+# ── 7. extracted claims must not carry the answer ──────────────────────────
+
+@pytest.mark.parametrize("name,claim,title,body,expect", [
+    # The whole point: a short faithful claim in Thai. The first version of the
+    # overlap guard split on whitespace, which in Thai makes a clause into one
+    # token, so this scored an overlap of 1 and was discarded as unrelated.
+    ("faithful short claim", "ตำรวจยศสูงไหว้นักการเมือง",
+     "โพสต์อ้าง ตำรวจยศสูงไหว้นักการเมือง ชี้เป็นภาพ AI",
+     "มีการแชร์ภาพ ตำรวจยศสูงไหว้นักการเมือง ในโซเชียล", None),
+    ("claim stated only in the body", "ดื่มน้ำมะนาวอุ่นตอนเช้าช่วยละลายไขมัน",
+     "ตรวจสอบข้อเท็จจริงเรื่องสุขภาพยอดฮิต",
+     "มีการแชร์ว่า ดื่มน้ำมะนาวอุ่นตอนเช้าช่วยละลายไขมัน ได้จริง", None),
+    ("drifted onto another story", "ราคาทองคำวันนี้ปรับขึ้น 500 บาท",
+     "โพสต์อ้าง ตำรวจยศสูงไหว้นักการเมือง",
+     "เนื้อหาเกี่ยวกับภาพตำรวจไหว้นักการเมืองที่ถูกแชร์", "unrelated to the article"),
+    # Thai PBS writes the finding into the headline; two of the first 376
+    # extractions came back with it intact because nothing matched "พบเป็น".
+    ("headline carrying the finding", "คลิปน้ำทะเลหนุนท่วมถนน พบเป็นปรากฏการณ์ทุกปี",
+     "คลิปน้ำทะเลหนุนท่วมถนน พบเป็นปรากฏการณ์ทุกปี", "เนื้อหา", "contains a verdict"),
+    ("headline handed straight back", "มิจฉาชีพหลอกจองบัตรคอนเสิร์ต GOT7",
+     "มิจฉาชีพหลอกจองบัตรคอนเสิร์ต GOT7 ?", "เนื้อหา", "same as the headline"),
+    ("verdict smuggled into the claim", "ภาพน้ำท่วมนครพนม แท้จริงสร้างด้วย AI",
+     "ภาพน้ำท่วมลานพญาศรีสัตตนาคราช", "เนื้อหา", "contains a verdict"),
+])
+def test_extracted_claim_guards(name, claim, title, body, expect):
+    from extract_claims import judge
+    assert judge(claim, title, body) == expect, name
+
+
+def test_extracted_claim_drops_post_decoration():
+    from extract_claims import tidy
+    assert tidy("เกาหลีเหนือยิงขีปนาวุธต้องสงสัย! .🇯🇵🚀") == "เกาหลีเหนือยิงขีปนาวุธต้องสงสัย!"
+    assert tidy("มุสลิมขวางรถไฟใต้ดิน ⚠️ ผู้โดยสารเดือดร้อน —") == "มุสลิมขวางรถไฟใต้ดิน ผู้โดยสารเดือดร้อน"
+
+
 def _conflict_db(monkeypatch, tmp_path, our_verdict="true", our_origin="llm"):
     """A one-pair label-conflict fixture: our machine label vs a publisher's."""
     db_path = tmp_path / "conflicts.db"
