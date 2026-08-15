@@ -493,8 +493,10 @@ def test_thaipbs_checked_prefix_is_stripped():
     fact-check exists, which is a marker no real-world claim would carry."""
     from th_verify.normalized import clean_claim_text
     for raw, want in [
+        # the trailing "พบสร้างจาก AI" is the verdict, not the claim, so the
+        # suffix rules remove it as well as the prefix
         ("ตรวจสอบแล้ว: ภาพ “อนุทิน” ถ่ายรูปคู่ “เบน สมิธ” พบสร้างจาก AI",
-         "ภาพ “อนุทิน” ถ่ายรูปคู่ “เบน สมิธ” พบสร้างจาก AI"),
+         "ภาพ “อนุทิน” ถ่ายรูปคู่ “เบน สมิธ”"),
         ("ตรวจสอบแล้ว อินเดียสั่งกักตัว 100 คน", "อินเดียสั่งกักตัว 100 คน"),
     ]:
         assert clean_claim_text(raw, "thaipbs") == want
@@ -511,3 +513,24 @@ def test_thaipbs_taxonomy_is_complete():
     for stamp in ("ไม่สแตมป์ข่าว", "ตรวจสอบแล้ว"):
         assert ("thaipbs", stamp) in VERDICT_MAP
         assert normalize_verdict("thaipbs", stamp) == "unknown"
+
+
+def test_conclusion_clauses_are_stripped_from_claims():
+    """A headline often ends with the answer. Left in claim_text it is the same
+    leak as a verdict prefix: the model learns the outcome from the input."""
+    from th_verify.normalized import clean_claim_text
+    for raw, want in [
+        ("ภาพปลอม: ภาพระเบิดกลางเมือง อ้างเป็นผลจากอิหร่านโจมตีบาห์เรน แท้จริงสร้างจาก AI",
+         "ภาพระเบิดกลางเมือง อ้างเป็นผลจากอิหร่านโจมตีบาห์เรน"),
+        ("คลิปไวรัล “ฝังคนทั้งเป็นในซูดาน” พบสร้างจาก AI",
+         "คลิปไวรัล “ฝังคนทั้งเป็นในซูดาน”"),
+    ]:
+        assert clean_claim_text(raw, "thaipbs") == want
+
+
+def test_claim_body_mentioning_ai_is_not_truncated():
+    """Only TRAILING conclusions are removed. A claim that legitimately mentions
+    AI partway through must survive intact, or stripping becomes destructive."""
+    from th_verify.normalized import clean_claim_text
+    raw = "คลิป AI ของนายกฯ ถูกแชร์ในกลุ่มไลน์ผู้สูงอายุ"
+    assert clean_claim_text(raw, "thaipbs") == raw

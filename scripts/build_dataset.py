@@ -223,6 +223,14 @@ _PREFIX_RES = [
 _SUFFIX_RES = [
     re.compile(r"\s*(จริงหรือ|จริงหรือไม่|จริงไหม|ใช่หรือไม่)\s*[?？!]*\s*$"),
     re.compile(r"\s*(แท้จริง(?:เป็น|คือ|สร้างจาก)[^,]{0,80})$"),
+    # Conclusion clauses tacked onto a headline. Thai PBS in particular writes
+    # "<the claim> ที่แท้สร้างจาก AI" or "<the claim> ตรวจสอบพบเป็นคลิปเก่า", which
+    # states the answer. 133 records still carried one after prefix stripping.
+    # Only trailing clauses are removed -- a claim that merely mentions AI in the
+    # middle ("คลิป AI ของนายกฯ") is left alone.
+    re.compile(r"\s*[-–—,]?\s*(ที่แท้|แท้จริง)(?:เป็น|คือ|จริง|สร้างจาก|แล้ว)?[^,]{0,60}$"),
+    re.compile(r"\s*[-–—,]?\s*(ตรวจสอบ(?:แล้ว)?พบ|พบ)(?:เป็น|ว่าเป็น)?\s*(?:ภาพ|คลิป|ข่าว)?[^,]{0,50}$"),
+    re.compile(r"\s*[-–—,]?\s*สร้าง(?:ขึ้น)?(?:ด้วย|จาก)\s*(?:AI|เอไอ|ปัญญาประดิษฐ์)[^,]{0,40}$", re.IGNORECASE),
 ]
 
 

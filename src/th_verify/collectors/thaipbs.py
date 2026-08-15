@@ -39,6 +39,37 @@ def parse_thai_date(text: str) -> str | None:
         return None
 
 
+def parse_claim_reviewed(tree: HTMLParser) -> str | None:
+    """The claim as Thai PBS themselves state it, from ClaimReview.claimReviewed.
+
+    The article headline is written for readers and frequently contains the
+    conclusion: "โพสต์อ้างข่าวปลอม ตำรวจยศสูงไหว้นักการเมือง ชี้เป็นภาพ AI ตรวจสอบพบ
+    เป็นภาพจริง ปี 61". Stored as the claim, that teaches a model the answer and
+    makes the review room show a summary where a claim belongs. claimReviewed for
+    the same record is simply "ตำรวจยศสูงไหว้นักการเมือง".
+
+    Often the two are identical -- Thai PBS reuses the headline when it is already
+    claim-shaped -- so callers should keep the headline as `title` regardless and
+    only let this fill `claim`.
+    """
+    for node in tree.css('script[type="application/ld+json"]'):
+        try:
+            payload = json.loads(node.text())
+        except (ValueError, TypeError):
+            continue
+        candidates = payload.get("@graph", []) if isinstance(payload, dict) else payload
+        if isinstance(payload, dict) and not payload.get("@graph"):
+            candidates = [payload]
+        if not isinstance(candidates, list):
+            continue
+        for item in candidates:
+            if isinstance(item, dict) and item.get("@type") == "ClaimReview":
+                c = item.get("claimReviewed")
+                if isinstance(c, str) and c.strip():
+                    return c.strip()
+    return None
+
+
 def _spans_multiple_articles(node) -> bool:
     """True when a listing container covers more than one article card."""
     if node is None:
@@ -92,13 +123,14 @@ class ThaiPbsCollector(Collector):
     name = "thaipbs"
     base = "https://www.thaipbs.or.th/verify/category/all"
 
-    async def detail(self, url: str) -> tuple[str, str | None, str | None, str | None]:
+    async def detail(self, url: str) -> tuple[str, str | None, str | None, str | None, str | None]:
         response = await self.get(url)
         tree = HTMLParser(response.text)
         claim_verdict, claim_published = parse_claim_review(tree)
+        claim_reviewed = parse_claim_reviewed(tree)
         article = tree.css_first("article.single-content")
         if not article:
-            return "", claim_published, None, claim_verdict
+            return "", claim_published, None, claim_verdict, claim_reviewed
         # Recommendations are nested after the authored content; drop them before text extraction.
         for selector in ("section.single-recommend", "section.single-author", "section.single-tags"):
             for node in article.css(selector):
@@ -112,6 +144,7 @@ class ThaiPbsCollector(Collector):
             claim_published or meta_published,
             (image.attributes.get("content") if image else None),
             claim_verdict,
+            claim_reviewed,
         )
 
     async def collect(self, *, mode: str = "delta", limit: int | None = None) -> AsyncIterator[FactCheckRecord]:
@@ -150,14 +183,15 @@ class ThaiPbsCollector(Collector):
                     container = None
                 block = re.sub(r"\s+", " ", container.text(separator=" ", strip=True) if container else title)
                 source_id = urlparse(href).path.rstrip("/").split("/")[-1]
-                detail, published_at, image_url, claim_verdict = await self.detail(href)
+                detail, published_at, image_url, claim_verdict, claim_reviewed = await self.detail(href)
                 # The article's own ClaimReview wins; the listing block is only a fallback.
                 verdict = claim_verdict or next((v for v in VERDICT_LABELS if v in block), "unknown")
                 if not published_at:
                     published_at = parse_thai_date(block)
                 yield FactCheckRecord(
                     source=self.name, source_id=source_id, source_url=href, title=title,
-                    claim=title, explanation=detail or block, verdict=verdict,
+                    claim=claim_reviewed or title,
+                    explanation=detail or block, verdict=verdict,
                     published_at=published_at, image_url=image_url,
                     raw={"archive_text": block, "detail_fetched": bool(detail)},
                 )
