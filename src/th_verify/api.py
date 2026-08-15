@@ -109,7 +109,8 @@ def review_queue(
             params_count,
         ).fetchall()
         counted = [r for r in counted
-                   if is_factcheck(r["source"], r["title"], r["verdict"], r["explanation"])]
+                   if is_factcheck(r["source"], r["title"], r["verdict"], r["explanation"],
+                                   r["verdict_origin"])]
         total = len(counted)
         done = sum(1 for r in counted
                    if (r["verdict_origin"] or "").startswith("human"))
@@ -148,6 +149,15 @@ def review_label(req: LabelRequest) -> dict:
                 "UPDATE fact_checks SET verdict='unknown', verdict_origin='',"
                 " labeled_at=NULL WHERE id=? AND verdict_origin LIKE 'human%'",
                 (req.id,),
+            )
+        elif req.verdict == "not_claim":
+            # Distinct from "skip". skip means "this is a claim but I cannot
+            # judge it"; not_claim means "this was never a claim". Collapsing
+            # them loses the only signal that can retire an item permanently.
+            conn.execute(
+                "UPDATE fact_checks SET verdict_origin='human_not_claim',"
+                " labeled_at=? WHERE id=?",
+                (utc_now(), req.id),
             )
         elif req.verdict == "skip":
             conn.execute(

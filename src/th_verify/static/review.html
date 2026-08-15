@@ -1766,7 +1766,8 @@ main { display:grid; grid-template-columns:1.25fr 1fr; gap:1.6rem; margin-top:1.
       <button class="key-btn k-misleading" data-v="misleading"><kbd>3</kbd> จริงบางส่วน / บิดเบือน / อย่าเพิ่งแชร์</button>
       <button class="key-btn k-altered" data-v="altered_media"><kbd>4</kbd> ภาพ/คลิปดัดแปลง · AI</button>
       <button class="key-btn k-scam" data-v="scam_alert"><kbd>5</kbd> เตือนภัยมิจฉาชีพ</button>
-      <button class="key-btn k-aux" data-v="skip"><kbd>S</kbd> ข้าม (ตัดสินไม่ได้จากเนื้อหา)</button>
+      <button class="key-btn k-aux" data-v="not_claim"><kbd>N</kbd> ไม่ใช่ข้อกล่าวอ้าง (บทความ / ประกาศ / สรุปรวม)</button>
+      <button class="key-btn k-aux" data-v="skip"><kbd>S</kbd> ข้าม (เป็นข้อกล่าวอ้าง แต่ตัดสินไม่ได้)</button>
       <button class="key-btn k-aux" data-v="undo"><kbd>U</kbd> ย้อนกลับรายการก่อนหน้า</button>
     </div>
   </div>
@@ -1779,7 +1780,7 @@ main { display:grid; grid-template-columns:1.25fr 1fr; gap:1.6rem; margin-top:1.
 
 <div class="flash" id="flash"><span id="flash-text"></span></div>
 <footer class="fnl-footer">
-  <span>ป้าย: 1 ปลอม · 2 จริง · 3 บิดเบือน · 4 สื่อดัดแปลง · 5 เตือนภัย · S ข้าม · U ย้อนกลับ</span>
+  <span>ป้าย: 1 ปลอม · 2 จริง · 3 บิดเบือน · 4 สื่อดัดแปลง · 5 เตือนภัย · N ไม่ใช่ข้อกล่าวอ้าง · S ข้าม · U ย้อนกลับ</span>
   <span>บันทึกอัตโนมัติทุกครั้งที่กด</span>
 </footer>
 </div>
@@ -1788,7 +1789,7 @@ main { display:grid; grid-template-columns:1.25fr 1fr; gap:1.6rem; margin-top:1.
 const FLASH = {
   false:["ไม่จริง","var(--fnl-red)"], true:["จริง","var(--fnl-white)"],
   misleading:["บิดเบือน","var(--fnl-yellow)"], altered_media:["ดัดแปลง","var(--fnl-gray)"],
-  scam_alert:["เตือนภัย","var(--fnl-red)"], skip:["ข้าม","var(--fnl-gray)"], undo:["ย้อนกลับ","var(--fnl-gray)"],
+  scam_alert:["เตือนภัย","var(--fnl-red)"], skip:["ข้าม","var(--fnl-gray)"], not_claim:["ไม่ใช่ข้อกล่าวอ้าง","var(--fnl-yellow)"], undo:["ย้อนกลับ","var(--fnl-gray)"],
 };
 let queue = [], history = [], total = 0, labeled = 0, current = null, fetching = false;
 
@@ -1858,7 +1859,7 @@ async function label(v){
     flash("undo");
     await fetch("/review/label",{method:"POST",headers:{"Content-Type":"application/json"},
       body:JSON.stringify({id:prev.item.id, verdict:"undo"})});
-    if(prev.v !== "skip") labeled = Math.max(0, labeled-1);
+    if(prev.v !== "skip" && prev.v !== "not_claim") labeled = Math.max(0, labeled-1);
     if(current) queue.unshift(current);
     updateProgress(); show(prev.item);
     return;
@@ -1867,7 +1868,7 @@ async function label(v){
   const item = current;
   flash(v);
   history.push({item, v});
-  if(v !== "skip"){ labeled++; updateProgress(); }
+  if(v !== "skip" && v !== "not_claim"){ labeled++; updateProgress(); }
   next();  // advance immediately; save in the background
   fetch("/review/label",{method:"POST",headers:{"Content-Type":"application/json"},
     body:JSON.stringify({id:item.id, verdict:v})})
@@ -1877,7 +1878,7 @@ document.querySelectorAll(".key-btn").forEach(b=>b.addEventListener("click",()=>
 document.addEventListener("keydown",e=>{
   if(e.target.tagName === "TEXTAREA" || e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
   const map = {"1":"false","2":"true","3":"misleading","4":"altered_media","5":"scam_alert",
-               "s":"skip","S":"skip","u":"undo","U":"undo"};
+               "s":"skip","S":"skip","n":"not_claim","N":"not_claim","u":"undo","U":"undo"};
   if(map[e.key]){ e.preventDefault(); label(map[e.key]); }
 });
 $("source-select").addEventListener("change", async ()=>{

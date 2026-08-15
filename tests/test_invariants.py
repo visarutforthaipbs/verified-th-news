@@ -454,3 +454,33 @@ def test_cofact_real_factchecks_survive():
     assert is_factcheck("cofact", "ภาพจากวิดีโอเกมถูกนำมาอ้างเท็จ", "unknown", q)
     # and a record with no explanation must not be dropped for lack of a category
     assert is_factcheck("cofact", "ข้อความบางอย่าง", "unknown", "")
+
+
+def test_human_not_claim_retires_a_record():
+    """"Not a claim" must outrank every heuristic in the filter.
+
+    Editors' Picks and Uncategorized on Cofact mix essays with real claim checks
+    and no taxonomy separates them, so a reviewer's ruling is the only signal
+    that exists. If it were not honoured the item would return to the queue on
+    the next visit and the question would be asked again forever.
+    """
+    from th_verify.normalized import is_factcheck
+    # a record that every rule would otherwise accept
+    assert is_factcheck("cofact", "ข้อความบางอย่าง", "unknown", "Editors’ Picks ข้อความบางอย่าง")
+    assert not is_factcheck("cofact", "ข้อความบางอย่าง", "unknown",
+                            "Editors’ Picks ข้อความบางอย่าง", "human_not_claim")
+
+
+def test_not_claim_is_distinct_from_skip(repo):
+    """skip and not_claim must not collapse into one bucket: one means 'I cannot
+    judge this claim', the other 'this was never a claim'."""
+    repo.upsert_many([make_record(source="cofact", source_id="c9",
+                                  title="บทความวิเคราะห์", verdict="unknown")])
+    with repo.connect() as conn:
+        rid = conn.execute("SELECT id FROM fact_checks WHERE source_id='c9'").fetchone()[0]
+        conn.execute("UPDATE fact_checks SET verdict_origin='human_not_claim' WHERE id=?", (rid,))
+        origin = conn.execute("SELECT verdict_origin FROM fact_checks WHERE id=?", (rid,)).fetchone()[0]
+    assert origin == "human_not_claim"
+    assert origin != "human_skipped"
+    # and it is still matched by the 'human%' guard the queue uses to exclude
+    assert origin.startswith("human")

@@ -212,12 +212,19 @@ def _cofact_category(explanation: str, title: str) -> str:
 
 
 def is_factcheck(source: str, title: str, verdict: str,
-                 explanation: str = "") -> bool:
+                 explanation: str = "", verdict_origin: str = "") -> bool:
     """True when the record is an adjudicated claim rather than other content.
 
     Deliberately conservative: unlabelled is still a fact-check. Only material
     that was never a claim in the first place is excluded.
+
+    A human ruling outranks every rule below it. Editors' Picks and Uncategorized
+    on Cofact are mixed bags that no taxonomy separates, so a reviewer marking
+    one "not a claim" is the only signal that exists -- and throwing that away
+    would mean asking them the same question again next month.
     """
+    if verdict_origin == "human_not_claim":
+        return False
     if is_broadcast_episode(title):
         return False
     if (verdict or "").strip() in NON_FACTCHECK_SECTIONS:
