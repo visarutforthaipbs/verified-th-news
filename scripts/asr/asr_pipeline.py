@@ -41,6 +41,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "src"))
 from build_dataset import normalize_verdict  # noqa: E402
+from _canonical import assert_canonical  # noqa: E402
 
 DB = "data/th_verify.db"
 
@@ -149,6 +150,10 @@ def cmd_validate(args) -> int:
 
 
 def cmd_apply(args) -> int:
+    # Applying labels mutates the archive, so it only happens on the one
+    # authoritative database. A dry run inspects and is therefore unrestricted.
+    if not args.dry_run:
+        assert_canonical(args.db, action="apply labels to")
     con = sqlite3.connect(args.db)
     con.row_factory = sqlite3.Row
     results = [json.loads(l) for l in args.results.read_text(encoding="utf-8").splitlines() if l.strip()]

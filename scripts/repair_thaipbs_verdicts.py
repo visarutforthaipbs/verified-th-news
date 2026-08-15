@@ -50,6 +50,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from th_verify.collectors.thaipbs import parse_claim_review  # noqa: E402
 from build_dataset import normalize_verdict  # noqa: E402
+from _canonical import assert_canonical  # noqa: E402
 
 DEFAULT_DB = Path("data/th_verify.db")
 USER_AGENT = "th-verify-repair/1.0 (+https://github.com/visarutforthaipbs/verified-th-news)"
@@ -101,6 +102,9 @@ def main() -> int:
     if not args.db.exists():
         print(f"database not found: {args.db}", file=sys.stderr)
         return 1
+    # Scanning is read-only and unrestricted; committing corrections is not.
+    if args.apply:
+        assert_canonical(args.db, action="rewrite verdicts in")
 
     conn = sqlite3.connect(args.db)
     conn.row_factory = sqlite3.Row
