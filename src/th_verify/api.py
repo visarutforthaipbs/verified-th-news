@@ -116,9 +116,18 @@ def review_queue(
         counted = [r for r in counted
                    if is_factcheck(r["source"], r["title"], r["verdict"], r["explanation"],
                                    r["verdict_origin"])]
-        total = len(counted)
+        # The denominator is the human's workload, not the size of the archive.
+        # Most AFNC and AFP records arrive with the publisher's own verdict and
+        # need nobody to look at them, so counting every fact-check made the bar
+        # read "3 / 14781" when exactly one record was actually waiting. What a
+        # reviewer wants to know is how far through the queue THEY are.
         done = sum(1 for r in counted
                    if (r["verdict_origin"] or "").startswith("human"))
+        pending = sum(1 for r in counted
+                      if not (r["verdict_origin"] or "").startswith("human")
+                      and (normalize_verdict(r["source"], r["verdict"]) == "unknown"
+                           or r["verdict_origin"] == "heuristic"))
+        total = done + pending
 
         where_rows = (where_clause + " AND " if where_clause else " WHERE ")
         sql_rows = (
