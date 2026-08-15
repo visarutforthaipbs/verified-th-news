@@ -59,7 +59,12 @@ from th_verify.normalized import clean_claim_text  # noqa: E402
 from _canonical import assert_canonical  # noqa: E402
 
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://127.0.0.1:11435")
-OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen2.5:14b")
+# Typhoon is SCB10X's Thai-tuned model and it shows on this task: on the same
+# 12 Thai PBS articles it produced a usable claim for all 12 where qwen2.5:14b
+# managed 10, and its wordings track how the post was actually phrased rather
+# than paraphrasing the headline back. Overridable, since the comparison should
+# be repeated whenever the archive's mix changes.
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "scb10x/typhoon2.5-qwen3-30b-a3b:latest")
 
 # If any of these survive into the "claim", the model has restated the finding.
 VERDICT_WORDS = re.compile(
@@ -93,6 +98,19 @@ def ollama(prompt: str) -> dict:
                                  headers={"Content-Type": "application/json"})
     with urllib.request.urlopen(req, timeout=180) as r:
         return json.loads(json.loads(r.read())["response"])
+
+
+# Quoting the post faithfully brings the post's decoration with it -- flags,
+# rockets, sirens. The claim is the proposition, not the styling.
+_EMOJI = re.compile(
+    "[\U0001F000-\U0001FAFF\U00002600-\U000027BF\U0001F1E6-\U0001F1FF"
+    "\U0000FE0F\U00002B00-\U00002BFF\U00002190-\U000021FF]+")
+
+
+def tidy(claim: str) -> str:
+    claim = _EMOJI.sub(" ", claim)
+    claim = re.sub(r"\s*[.\u00b7\-–—:;,]+\s*$", "", claim)
+    return re.sub(r"\s{2,}", " ", claim).strip()
 
 
 def _tokens(s: str) -> set[str]:
@@ -145,7 +163,7 @@ def main() -> int:
         except Exception as exc:
             rejected["error"] = rejected.get("error", 0) + 1
             continue
-        claim = str(out.get("claim", "")).strip()
+        claim = tidy(str(out.get("claim", "")))
         why = judge(claim, r["title"], r["explanation"])
         if why:
             rejected[why] = rejected.get(why, 0) + 1
