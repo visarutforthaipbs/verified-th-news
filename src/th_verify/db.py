@@ -32,6 +32,7 @@ CREATE TABLE IF NOT EXISTS fact_checks (
   last_seen_at TEXT NOT NULL,
   verdict_origin TEXT NOT NULL DEFAULT '',
   labeled_at TEXT,
+  claim_origin TEXT NOT NULL DEFAULT '',
   UNIQUE(source, source_id)
 );
 CREATE INDEX IF NOT EXISTS idx_fact_checks_published ON fact_checks(published_at DESC);
@@ -212,6 +213,18 @@ class Repository:
             )
         if "labeled_at" not in cols:
             conn.execute("ALTER TABLE fact_checks ADD COLUMN labeled_at TEXT")
+        if "claim_origin" not in cols:
+            # Where the claim text came from, mirroring verdict_origin:
+            #   ''       the collector copied the headline (the common case)
+            #   'source' the publisher stated the claim separately (AFP does)
+            #   'llm'    extracted from the article by the local model
+            #   'human'  written or corrected by a reviewer
+            conn.execute("ALTER TABLE fact_checks ADD COLUMN "
+                         "claim_origin TEXT NOT NULL DEFAULT ''")
+            # AFP is the one collector that already stored a real claim rather
+            # than a copy of the headline, so mark those as publisher-supplied.
+            conn.execute("UPDATE fact_checks SET claim_origin='source' "
+                         "WHERE source='afp' AND claim <> '' AND claim <> title")
 
     def upsert_many(self, records: Iterable[FactCheckRecord]) -> int:
         sql = """INSERT INTO fact_checks (
@@ -220,7 +233,12 @@ class Repository:
           collected_at, first_seen_at, last_seen_at
         ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
         ON CONFLICT(source, source_id) DO UPDATE SET
-          source_url=excluded.source_url, title=excluded.title, claim=excluded.claim,
+          source_url=excluded.source_url, title=excluded.title,
+          -- A claim written by a human or extracted by the model is not
+          -- re-derivable from the feed, so a re-sync must not clobber it.
+          -- The headline still refreshes; only the curated claim is held.
+          claim=CASE WHEN fact_checks.claim_origin IN ('human','llm')
+                     THEN fact_checks.claim ELSE excluded.claim END,
           explanation=excluded.explanation,
           verdict=CASE WHEN fact_checks.verdict_origin='human'
                        THEN fact_checks.verdict ELSE excluded.verdict END,

@@ -534,3 +534,39 @@ def test_claim_body_mentioning_ai_is_not_truncated():
     from th_verify.normalized import clean_claim_text
     raw = "คลิป AI ของนายกฯ ถูกแชร์ในกลุ่มไลน์ผู้สูงอายุ"
     assert clean_claim_text(raw, "thaipbs") == raw
+
+
+# ── 9. curated claims are protected like curated verdicts ─────────────────
+
+def test_human_claim_survives_resync(repo):
+    """A claim written by a reviewer is not re-derivable from the feed, so the
+    collector must not overwrite it. The headline still refreshes -- only the
+    curated claim is held."""
+    repo.upsert_many([make_record(source="cofact", source_id="k1",
+                                  title="พาดหัวเดิม", claim="พาดหัวเดิม")])
+    with repo.connect() as conn:
+        rid = conn.execute("SELECT id FROM fact_checks WHERE source_id='k1'").fetchone()[0]
+        conn.execute("UPDATE fact_checks SET claim=?, claim_origin='human' WHERE id=?",
+                     ("ข้อกล่าวอ้างที่คนแก้ไว้", rid))
+    repo.upsert_many([make_record(source="cofact", source_id="k1",
+                                  title="พาดหัวใหม่", claim="พาดหัวใหม่")])
+    with repo.connect() as conn:
+        row = conn.execute("SELECT title, claim, claim_origin FROM fact_checks "
+                           "WHERE id=?", (rid,)).fetchone()
+    assert row["claim"] == "ข้อกล่าวอ้างที่คนแก้ไว้", "reviewer's claim was clobbered"
+    assert row["claim_origin"] == "human"
+    assert row["title"] == "พาดหัวใหม่", "headline should still refresh"
+
+
+def test_collector_claim_is_still_refreshed(repo):
+    """Only curated claims are pinned. An untouched record must keep tracking
+    the source, or corrections upstream would never reach us."""
+    repo.upsert_many([make_record(source="cofact", source_id="k2",
+                                  title="เดิม", claim="เดิม")])
+    repo.upsert_many([make_record(source="cofact", source_id="k2",
+                                  title="แก้ไขแล้ว", claim="แก้ไขแล้ว")])
+    with repo.connect() as conn:
+        row = conn.execute("SELECT claim, claim_origin FROM fact_checks "
+                           "WHERE source_id='k2'").fetchone()
+    assert row["claim"] == "แก้ไขแล้ว"
+    assert row["claim_origin"] == ""

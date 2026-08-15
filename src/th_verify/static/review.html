@@ -1642,6 +1642,25 @@ select.fnl-select {
 .fnl-print-economy .feat-case { background: var(--fnl-surface-1); }
 .fnl-print-economy .feat-slot { color: #0A0A0A; }
 
+
+.c-org { font-family:var(--fnl-font-mono); font-size:var(--fnl-fs-micro);
+  letter-spacing:.08em; padding:.1em .5em; border:1px solid var(--fnl-line);
+  color:var(--fnl-gray); margin-left:.6em; }
+.c-org.is-human { color:var(--fnl-yellow); border-color:var(--fnl-yellow); }
+.c-org.is-llm { color:var(--fnl-white); }
+.c-edit { display:none; margin:.6rem 0 .2rem; }
+.c-edit.show { display:block; }
+#claim-input { width:100%; background:var(--fnl-black); color:var(--fnl-white);
+  border:1.5px solid var(--fnl-yellow); padding:.6rem .7rem; font:inherit;
+  font-size:1rem; line-height:1.5; resize:vertical; }
+.c-edit-row { display:flex; gap:.5rem; margin-top:.45rem; }
+.c-btn { font-family:var(--fnl-font-mono); font-size:var(--fnl-fs-meta);
+  letter-spacing:.06em; padding:.35em .9em; background:var(--fnl-yellow);
+  color:var(--fnl-black); border:0; cursor:pointer; }
+.c-btn-ghost { background:transparent; color:var(--fnl-gray);
+  border:1px solid var(--fnl-line); }
+.c-head { color:var(--fnl-gray); font-size:.9rem; margin:.5rem 0 .2rem;
+  padding-left:.7rem; border-left:2px solid var(--fnl-line); }
 </style>
 <style>
 /* ── ห้องตรวจ (internal labelling room) — page-specific only ─────────── */
@@ -1757,8 +1776,16 @@ main { display:grid; grid-template-columns:1.25fr 1fr; gap:1.6rem; margin-top:1.
     ป้ายที่ติดจะบันทึกเป็น <b>human</b> ทันที กด <kbd>U</kbd> ถ้าติดผิด</p>
   </div>
   <div>
-    <div class="claim-kicker">คำกล่าวอ้างที่ตรวจสอบ</div>
+    <div class="claim-kicker">คำกล่าวอ้างที่ตรวจสอบ <span id="claim-origin" class="c-org"></span></div>
     <div class="claim" id="claim">กำลังโหลด…</div>
+    <div id="claim-edit" class="c-edit">
+      <textarea id="claim-input" rows="3" spellcheck="false"></textarea>
+      <div class="c-edit-row">
+        <button id="claim-save" class="c-btn">บันทึก (Ctrl+Enter)</button>
+        <button id="claim-cancel" class="c-btn c-btn-ghost">ยกเลิก (Esc)</button>
+      </div>
+    </div>
+    <div class="c-head" id="claim-headline"></div>
     <div class="meta" id="meta"></div>
     <div class="keys">
       <button class="key-btn k-false" data-v="false"><kbd>1</kbd> ไม่จริง / ข่าวปลอม</button>
@@ -1821,7 +1848,18 @@ function show(item){
     return;
   }
   $("main").style.display = ""; $("done-view").style.display = "none";
-  $("claim").textContent = item.title;
+  // The stored claim is a copy of the headline for 27,925 records, and a
+  // headline often states the verdict. Show the claim as the thing being
+  // judged, the headline underneath as context, and let a reviewer fix it.
+  const ORIGIN = { source:["จากสำนักข่าว","is-src"], llm:["AI สกัด","is-llm"],
+                   human:["คุณแก้ไข","is-human"], "":["คัดจากหัวข้อ",""] };
+  const [oLabel, oCls] = ORIGIN[item.claim_origin || ""] || ORIGIN[""];
+  $("claim").textContent = item.claim || item.title;
+  $("claim-origin").textContent = oLabel + " · E เพื่อแก้";
+  $("claim-origin").className = "c-org " + oCls;
+  $("claim-headline").textContent = (item.claim && item.claim !== item.title)
+    ? "หัวข้อบทความ: " + item.title : "";
+  closeClaimEditor();
   const d = item.published_at ? new Date(item.published_at).toLocaleDateString("th-TH",{year:"numeric",month:"short",day:"numeric"}) : "";
   const srcName = item.source || "web";
   const originTag = item.verdict_origin ? ` [${item.verdict_origin}]` : "";
@@ -1874,11 +1912,38 @@ async function label(v){
     body:JSON.stringify({id:item.id, verdict:v})})
     .catch(()=>{ alert("บันทึกไม่สำเร็จ — รายการ: " + item.title); });
 }
+function openClaimEditor(){
+  if(!current) return;
+  $("claim-input").value = $("claim").textContent;
+  $("claim-edit").classList.add("show");
+  $("claim-input").focus();
+}
+function closeClaimEditor(){ $("claim-edit").classList.remove("show"); }
+async function saveClaim(){
+  const v = $("claim-input").value.trim();
+  if(v.length < 8 || !current){ closeClaimEditor(); return; }
+  await fetch("/review/claim", {method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body: JSON.stringify({id: current.id, claim: v})});
+  current.claim = v; current.claim_origin = "human";
+  $("claim").textContent = v;
+  $("claim-origin").textContent = "คุณแก้ไข · E เพื่อแก้";
+  $("claim-origin").className = "c-org is-human";
+  $("claim-headline").textContent = "หัวข้อบทความ: " + current.title;
+  closeClaimEditor();
+}
+$("claim-save").addEventListener("click", saveClaim);
+$("claim-cancel").addEventListener("click", closeClaimEditor);
+$("claim-input").addEventListener("keydown", e=>{
+  if(e.key === "Escape"){ e.preventDefault(); closeClaimEditor(); }
+  if((e.ctrlKey||e.metaKey) && e.key === "Enter"){ e.preventDefault(); saveClaim(); }
+});
 document.querySelectorAll(".key-btn").forEach(b=>b.addEventListener("click",()=>label(b.dataset.v)));
 document.addEventListener("keydown",e=>{
   if(e.target.tagName === "TEXTAREA" || e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
   const map = {"1":"false","2":"true","3":"misleading","4":"altered_media","5":"scam_alert",
                "s":"skip","S":"skip","n":"not_claim","N":"not_claim","u":"undo","U":"undo"};
+  if(e.key === "e" || e.key === "E"){ e.preventDefault(); openClaimEditor(); return; }
   if(map[e.key]){ e.preventDefault(); label(map[e.key]); }
 });
 $("source-select").addEventListener("change", async ()=>{

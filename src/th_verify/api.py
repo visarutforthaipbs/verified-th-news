@@ -131,7 +131,7 @@ def review_queue(
 
         where_rows = (where_clause + " AND " if where_clause else " WHERE ")
         sql_rows = (
-            "SELECT id, source, source_id, source_url, title, claim, explanation, verdict, verdict_origin, published_at,"
+            "SELECT id, source, source_id, source_url, title, claim, claim_origin, explanation, verdict, verdict_origin, published_at,"
             " json_extract(raw_json, '$.contentDetails.videoId') AS video_id "
             "FROM fact_checks "
             f"{where_rows} verdict_origin NOT LIKE 'human%' "
@@ -157,6 +157,34 @@ def review_queue(
 
     return {"total": total or 0, "labeled": done or 0,
             "items": [dict(r) for r in rows]}
+
+
+class ClaimRequest(BaseModel):
+    id: int
+    claim: str = Field(min_length=8, max_length=400)
+
+
+@app.post("/review/claim")
+def review_claim(req: ClaimRequest) -> dict:
+    """Correct the claim under review.
+
+    Kept apart from /review/label because the two are different judgements: one
+    says what was asserted, the other whether it holds. A reviewer often needs to
+    fix the first before the second can be answered honestly -- the stored claim
+    is a copy of the headline for 27,925 records, and a headline frequently
+    carries the verdict.
+    """
+    _require_private()
+    from .models import utc_now
+
+    repo = Repository(Settings.from_env().database_path)
+    with repo.connect() as conn:
+        conn.execute(
+            "UPDATE fact_checks SET claim=?, claim_origin='human', labeled_at=? "
+            "WHERE id=?",
+            (req.claim.strip(), utc_now(), req.id),
+        )
+    return {"ok": True}
 
 
 @app.post("/review/label")
