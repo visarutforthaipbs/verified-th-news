@@ -1661,6 +1661,27 @@ select.fnl-select {
   border:1px solid var(--fnl-line); }
 .c-head { color:var(--fnl-gray); font-size:.9rem; margin:.5rem 0 .2rem;
   padding-left:.7rem; border-left:2px solid var(--fnl-line); }
+
+/* ── โหมดข้อขัดแย้ง — the publisher's ruling, shown beside ours ────────── */
+.cf { display:none; margin:.9rem 0 .2rem; border:1.5px solid var(--fnl-yellow); }
+.cf.show { display:block; }
+.cf-hd { display:flex; align-items:baseline; gap:.6rem; flex-wrap:wrap;
+  background:var(--fnl-yellow); color:var(--fnl-black); padding:.4em .7em;
+  font-family:var(--fnl-font-mono); font-size:var(--fnl-fs-micro);
+  letter-spacing:.08em; }
+.cf-sim { margin-left:auto; opacity:.75; }
+.cf-body { padding:.7rem .8rem; }
+.cf-claim { font-size:1.02rem; line-height:1.55; }
+.cf-expl { color:var(--fnl-gray); font-size:.88rem; line-height:1.6;
+  margin-top:.5rem; max-height:8.5em; overflow:auto; }
+.cf-row { display:flex; gap:.6rem; margin-top:.7rem; flex-wrap:wrap; }
+.cf-side { flex:1 1 46%; border:1px solid var(--fnl-line); padding:.5rem .6rem; }
+.cf-who { font-family:var(--fnl-font-mono); font-size:var(--fnl-fs-micro);
+  letter-spacing:.08em; color:var(--fnl-gray); }
+.cf-v { font-size:1.05rem; font-weight:600; margin-top:.25rem; }
+.cf-v.neg { color:var(--fnl-red); }
+.cf-v.pos { color:var(--fnl-white); }
+.key-btn.k-cf { border-color:var(--fnl-yellow); color:var(--fnl-yellow); }
 </style>
 <style>
 /* ── ห้องตรวจ (internal labelling room) — page-specific only ─────────── */
@@ -1744,6 +1765,10 @@ main { display:grid; grid-template-columns:1.25fr 1fr; gap:1.6rem; margin-top:1.
     <g transform="rotate(45 60 60)"><rect x="8" y="47" width="104" height="26" fill="#FFD400"/></g>
   </svg>
   <h1><a href="/">เช็กก่อนเชื่อ</a> · ห้องตรวจ</h1>
+  <select id="mode-select" class="fnl-select">
+    <option value="queue">คิวปกติ (Review Queue)</option>
+    <option value="conflicts">ข้อขัดแย้งกับสำนักข่าว (Label Conflicts)</option>
+  </select>
   <select id="source-select" class="fnl-select">
     <option value="all">ทุกแหล่งข่าว (All Sources)</option>
     <option value="sure_share">ชัวร์ก่อนแชร์ (Sure &amp; Share)</option>
@@ -1787,7 +1812,39 @@ main { display:grid; grid-template-columns:1.25fr 1fr; gap:1.6rem; margin-top:1.
     </div>
     <div class="c-head" id="claim-headline"></div>
     <div class="meta" id="meta"></div>
-    <div class="keys">
+
+    <div class="cf" id="conflict">
+      <div class="cf-hd">
+        <span>สำนักข่าวอีกแห่งตรวจเรื่องเดียวกันแล้ว</span>
+        <span class="cf-sim" id="cf-sim"></span>
+      </div>
+      <div class="cf-body">
+        <div class="cf-claim" id="cf-claim"></div>
+        <div class="cf-expl" id="cf-expl"></div>
+        <div class="cf-row">
+          <div class="cf-side">
+            <div class="cf-who">ป้ายของเรา (<span id="cf-our-origin"></span>)</div>
+            <div class="cf-v" id="cf-ours"></div>
+          </div>
+          <div class="cf-side">
+            <div class="cf-who" id="cf-their-who">สำนักข่าว</div>
+            <div class="cf-v" id="cf-theirs"></div>
+          </div>
+        </div>
+        <div class="meta" style="margin-top:.6rem">
+          <a id="cf-link" href="#" target="_blank" rel="noopener">เปิดบทความของสำนักข่าว ↗</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="keys" id="cf-keys" style="display:none">
+      <button class="key-btn k-cf" data-cf="accept"><kbd>A</kbd> ใช้ผลของสำนักข่าว (เขายืนยันแล้ว)</button>
+      <button class="key-btn k-cf" data-cf="keep"><kbd>K</kbd> ยืนยันป้ายของเรา (ของเขาไม่ตรงเรื่อง / ผิด)</button>
+      <button class="key-btn k-aux" data-v="skip"><kbd>S</kbd> ข้าม (ตัดสินไม่ได้)</button>
+      <button class="key-btn k-aux" data-v="undo"><kbd>U</kbd> ย้อนกลับรายการก่อนหน้า</button>
+    </div>
+
+    <div class="keys" id="q-keys">
       <button class="key-btn k-false" data-v="false"><kbd>1</kbd> ไม่จริง / ข่าวปลอม</button>
       <button class="key-btn k-true" data-v="true"><kbd>2</kbd> จริง / แชร์ได้</button>
       <button class="key-btn k-misleading" data-v="misleading"><kbd>3</kbd> จริงบางส่วน / บิดเบือน / อย่าเพิ่งแชร์</button>
@@ -1802,12 +1859,12 @@ main { display:grid; grid-template-columns:1.25fr 1fr; gap:1.6rem; margin-top:1.
 
 <div class="done" id="done-view">
   <div class="stamp-big">ครบแล้ว !</div>
-  <p>ไม่มีรายการค้างตรวจในคิว — รัน <code>scripts/build_dataset.py</code> แล้วตามด้วย <code>th-verify index</code> เพื่ออัปเดตชุดข้อมูล</p>
+  <p id="done-text">ไม่มีรายการค้างตรวจในคิว — รัน <code>scripts/build_dataset.py</code> แล้วตามด้วย <code>th-verify index</code> เพื่ออัปเดตชุดข้อมูล</p>
 </div>
 
 <div class="flash" id="flash"><span id="flash-text"></span></div>
 <footer class="fnl-footer">
-  <span>ป้าย: 1 ปลอม · 2 จริง · 3 บิดเบือน · 4 สื่อดัดแปลง · 5 เตือนภัย · N ไม่ใช่ข้อกล่าวอ้าง · S ข้าม · U ย้อนกลับ</span>
+  <span id="foot-keys">ป้าย: 1 ปลอม · 2 จริง · 3 บิดเบือน · 4 สื่อดัดแปลง · 5 เตือนภัย · N ไม่ใช่ข้อกล่าวอ้าง · S ข้าม · U ย้อนกลับ</span>
   <span>บันทึกอัตโนมัติทุกครั้งที่กด</span>
 </footer>
 </div>
@@ -1822,12 +1879,26 @@ let queue = [], history = [], total = 0, labeled = 0, current = null, fetching =
 
 const $ = id => document.getElementById(id);
 
+// Conflicts is a mode of this same room rather than a separate page: the keys,
+// the flash and the undo stack are already muscle memory, and a disagreement
+// still ends in the same act — putting a human label on our record.
+let mode = new URLSearchParams(location.search).get("mode") === "conflicts"
+  ? "conflicts" : "queue";
+
+const VERDICT_TH = { false:"ไม่จริง / ข่าวปลอม", true:"จริง / แชร์ได้",
+  misleading:"บิดเบือน / จริงบางส่วน", altered_media:"ภาพ/คลิปดัดแปลง · AI",
+  scam_alert:"เตือนภัยมิจฉาชีพ", unknown:"ยังไม่ระบุผล" };
+const SOURCE_TH = { sure_share:"ชัวร์ก่อนแชร์", cofact:"Cofact",
+  thaipbs:"Thai PBS Verify", afp:"AFP Fact Check", afnc:"ศูนย์ต่อต้านข่าวปลอม" };
+
 async function refill(){
   if(fetching) return; fetching = true;
   const src = $("source-select").value;
   const ord = $("order-select").value;
   try{
-    const res = await fetch(`/review/queue?limit=50&source=${encodeURIComponent(src)}&order=${encodeURIComponent(ord)}`);
+    const res = await fetch(mode === "conflicts"
+      ? "/review/conflicts?limit=50"
+      : `/review/queue?limit=50&source=${encodeURIComponent(src)}&order=${encodeURIComponent(ord)}`);
     const data = await res.json();
     total = data.total; labeled = data.labeled;
     const have = new Set(queue.map(x=>x.id));
@@ -1860,6 +1931,7 @@ function show(item){
   $("claim-headline").textContent = (item.claim && item.claim !== item.title)
     ? "หัวข้อบทความ: " + item.title : "";
   closeClaimEditor();
+  renderConflict(item);
   const d = item.published_at ? new Date(item.published_at).toLocaleDateString("th-TH",{year:"numeric",month:"short",day:"numeric"}) : "";
   const srcName = item.source || "web";
   const originTag = item.verdict_origin ? ` [${item.verdict_origin}]` : "";
@@ -1880,6 +1952,47 @@ function show(item){
     $("meta").innerHTML = `${d} · <span style="font-weight:600">${srcName}</span>${originTag} · <a href="${item.source_url}" target="_blank" rel="noopener">เปิดดูต้นฉบับ ↗</a>`;
   }
 }
+function renderConflict(item){
+  const t = item && item.theirs;
+  $("conflict").classList.toggle("show", !!t);
+  if(!t) return;
+  const NEG = v => v === "false" || v === "altered_media";
+  $("cf-sim").textContent = "ความคล้าย " + Math.round(item.similarity*100) + "%";
+  $("cf-claim").textContent = t.claim || t.title;
+  $("cf-expl").textContent = t.explanation || "";
+  $("cf-our-origin").textContent = item.verdict_origin;
+  $("cf-ours").textContent = VERDICT_TH[item.our_verdict_normalized] || item.verdict;
+  $("cf-ours").className = "cf-v " + (NEG(item.our_verdict_normalized) ? "neg" : "pos");
+  $("cf-their-who").textContent = (SOURCE_TH[t.source] || t.source)
+    + (t.published_at ? " · " + t.published_at.slice(0,10) : "");
+  // Their own wording, not our normalisation of it -- ข่าวปลอม and ภาพปลอม are
+  // different editorial acts and the reviewer is judging their call, not ours.
+  $("cf-theirs").textContent = t.verdict;
+  $("cf-theirs").className = "cf-v " + (NEG(item.their_verdict_normalized) ? "neg" : "pos");
+  $("cf-link").href = t.source_url || "#";
+}
+function applyMode(){
+  const cf = mode === "conflicts";
+  $("cf-keys").style.display = cf ? "" : "none";
+  $("q-keys").style.display = cf ? "none" : "";
+  $("source-select").style.display = cf ? "none" : "";
+  $("order-select").style.display = cf ? "none" : "";
+  $("tip-text").innerHTML = cf
+    ? "อีกสำนักข่าวหนึ่งตรวจข้อกล่าวอ้างเดียวกันแล้ว และผลไม่ตรงกับป้ายที่เครื่องเดาไว้ · " +
+      "กด <b>A</b> ถ้าเชื่อผลของเขา <b>K</b> ถ้ายืนยันของเรา — ทั้งสองทางบันทึกเป็น <b>human</b>"
+    : "คำตอบมักอยู่ <b>ช่วงท้ายคลิป</b> หรือใน <b>บทสรุปเนื้อหา</b> · " +
+      "ป้ายที่ติดจะบันทึกเป็น <b>human</b> ทันที กด <kbd>U</kbd> ถ้าติดผิด";
+  $("done-text").innerHTML = cf
+    ? "ตรวจข้อขัดแย้งครบทุกรายการแล้ว — รัน <code>scripts/find_cross_source_conflicts.py --qa</code> " +
+      "อีกครั้งหลังอัปเดตดัชนี เพื่อหาข้อขัดแย้งชุดใหม่"
+    : "ไม่มีรายการค้างตรวจในคิว — รัน <code>scripts/build_dataset.py</code> แล้วตามด้วย <code>th-verify index</code> เพื่ออัปเดตชุดข้อมูล";
+  $("foot-keys").textContent = cf
+    ? "A ใช้ผลของสำนักข่าว · K ยืนยันป้ายของเรา · E แก้ข้อกล่าวอ้าง · S ข้าม · U ย้อนกลับ"
+    : "ป้าย: 1 ปลอม · 2 จริง · 3 บิดเบือน · 4 สื่อดัดแปลง · 5 เตือนภัย · N ไม่ใช่ข้อกล่าวอ้าง · S ข้าม · U ย้อนกลับ";
+  const u = new URL(location);
+  cf ? u.searchParams.set("mode","conflicts") : u.searchParams.delete("mode");
+  window.history.replaceState(null, "", u);  // `history` here is the undo stack
+}
 function next(){
   show(queue.shift() ?? null);
   if(queue.length < 15) refill();
@@ -1895,8 +2008,11 @@ async function label(v){
     const prev = history.pop();
     if(!prev) return;
     flash("undo");
+    // Hand back the label the record held before we touched it, so undoing a
+    // conflict decision returns it to the queue instead of erasing the guess.
     await fetch("/review/label",{method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({id:prev.item.id, verdict:"undo"})});
+      body:JSON.stringify({id:prev.item.id, verdict:"undo",
+        restore_verdict: prev.item.verdict, restore_origin: prev.item.verdict_origin})});
     if(prev.v !== "skip" && prev.v !== "not_claim") labeled = Math.max(0, labeled-1);
     if(current) queue.unshift(current);
     updateProgress(); show(prev.item);
@@ -1938,13 +2054,38 @@ $("claim-input").addEventListener("keydown", e=>{
   if(e.key === "Escape"){ e.preventDefault(); closeClaimEditor(); }
   if((e.ctrlKey||e.metaKey) && e.key === "Enter"){ e.preventDefault(); saveClaim(); }
 });
-document.querySelectorAll(".key-btn").forEach(b=>b.addEventListener("click",()=>label(b.dataset.v)));
+// Both conflict answers end in an ordinary human label -- that is the point.
+// Accepting the publisher's verdict is not "importing" it; it is a reviewer
+// saying they agree, and it is recorded with the same provenance as any other
+// judgement they make. Keeping ours writes the label we already had, which
+// promotes it from a guess to a checked one and retires the pair.
+function resolveConflict(which){
+  if(!current || !current.theirs) return;
+  const v = which === "accept" ? current.their_verdict_normalized
+                               : current.our_verdict_normalized;
+  if(!FLASH[v]){ alert("ป้ายนี้บันทึกอัตโนมัติไม่ได้ — เลือกเองจากคิวปกติ"); return; }
+  label(v);
+}
+document.querySelectorAll(".key-btn").forEach(b=>b.addEventListener("click",()=>{
+  if(b.dataset.cf) resolveConflict(b.dataset.cf); else label(b.dataset.v);
+}));
 document.addEventListener("keydown",e=>{
   if(e.target.tagName === "TEXTAREA" || e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
+  if(e.key === "e" || e.key === "E"){ e.preventDefault(); openClaimEditor(); return; }
+  if(mode === "conflicts"){
+    const cf = {"a":"accept","A":"accept","k":"keep","K":"keep"}[e.key];
+    if(cf){ e.preventDefault(); resolveConflict(cf); return; }
+    if("12345".includes(e.key)) return;  // no blind labelling while adjudicating
+  }
   const map = {"1":"false","2":"true","3":"misleading","4":"altered_media","5":"scam_alert",
                "s":"skip","S":"skip","n":"not_claim","N":"not_claim","u":"undo","U":"undo"};
-  if(e.key === "e" || e.key === "E"){ e.preventDefault(); openClaimEditor(); return; }
   if(map[e.key]){ e.preventDefault(); label(map[e.key]); }
+});
+$("mode-select").addEventListener("change", async ()=>{
+  mode = $("mode-select").value;
+  applyMode();
+  queue = []; current = null; history = [];
+  await refill(); next();
 });
 $("source-select").addEventListener("change", async ()=>{
   queue = []; current = null; history = [];
@@ -1954,7 +2095,11 @@ $("order-select").addEventListener("change", async ()=>{
   queue = []; current = null; history = [];
   await refill(); next();
 });
-(async ()=>{ await refill(); next(); })();
+(async ()=>{
+  $("mode-select").value = mode;
+  applyMode();
+  await refill(); next();
+})();
 
 </script>
 </body>

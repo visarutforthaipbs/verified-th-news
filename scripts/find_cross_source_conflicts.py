@@ -76,6 +76,11 @@ def main() -> int:
     ap.add_argument("--kind", choices=["contradiction", "degree", "one_declined"])
     ap.add_argument("--limit", type=int, default=60)
     ap.add_argument("--out", type=Path, default=Path("data/reports/cross_source_conflicts.json"))
+    ap.add_argument("--qa", action="store_true",
+                    help="also write the label-QA queue: OUR labels contradicted "
+                         "by a publisher's own verdict on the same claim")
+    ap.add_argument("--qa-out", type=Path, default=Path("data/reports/label_conflicts.json"))
+    ap.add_argument("--qa-threshold", type=float, default=0.94)
     args = ap.parse_args()
 
     import numpy as np
@@ -139,6 +144,34 @@ def main() -> int:
         {"threshold": args.threshold, "counts": dict(kinds), "pairs": found},
         ensure_ascii=False, indent=1), encoding="utf-8")
     print(f"\nwritten: {args.out}")
+
+    if args.qa:
+        # The tool's real value is not editorial disputes -- those turned out to
+        # be framing artefacts -- but our own errors. A publisher who already
+        # ruled on the same claim is free marking for labels nobody could
+        # otherwise check.
+        import sqlite3
+        con = sqlite3.connect("file:data/th_verify.db?mode=ro", uri=True)
+        origin = dict(con.execute("SELECT id, verdict_origin FROM fact_checks"))
+        OURS = {"llm", "heuristic"}
+        qa = []
+        for f in found:
+            if f["relation"] != "contradiction" or f["similarity"] < args.qa_threshold:
+                continue
+            a, b = f["a"], f["b"]
+            oa, ob = origin.get(a["id"], ""), origin.get(b["id"], "")
+            if oa in OURS and ob == "source":
+                mine, theirs, morg = a, b, oa
+            elif ob in OURS and oa == "source":
+                mine, theirs, morg = b, a, ob
+            else:
+                continue
+            qa.append({"similarity": f["similarity"], "our_origin": morg,
+                       "ours": mine, "theirs": theirs})
+        qa.sort(key=lambda d: -d["similarity"])
+        args.qa_out.write_text(json.dumps(qa, ensure_ascii=False, indent=1),
+                               encoding="utf-8")
+        print(f"label-QA queue: {len(qa)} pairs -> {args.qa_out}")
     return 0
 
 

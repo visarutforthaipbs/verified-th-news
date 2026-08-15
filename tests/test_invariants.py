@@ -175,6 +175,7 @@ def readonly_client(monkeypatch, tmp_path):
 def test_readonly_blocks_labeling_surface(readonly_client):
     assert readonly_client.get("/review").status_code == 404
     assert readonly_client.get("/review/queue").status_code == 404
+    assert readonly_client.get("/review/conflicts").status_code == 404
     assert readonly_client.post(
         "/review/label", json={"id": 1, "verdict": "false"}
     ).status_code == 404
@@ -251,6 +252,91 @@ def test_review_queue_sorting(monkeypatch, tmp_path):
         res_desc = client.get("/review/queue?order=desc")
         items_desc = res_desc.json()["items"]
         assert items_desc[0]["title"] == "ข่าวใหม่"
+
+
+def _conflict_db(monkeypatch, tmp_path, our_verdict="true", our_origin="llm"):
+    """A one-pair label-conflict fixture: our machine label vs a publisher's."""
+    db_path = tmp_path / "conflicts.db"
+    monkeypatch.delenv("TH_VERIFY_READONLY", raising=False)
+    monkeypatch.setenv("TH_VERIFY_DATABASE_PATH", str(db_path))
+    import th_verify.api as api
+    importlib.reload(api)
+    r = Repository(db_path)
+    r.initialize()
+    r.upsert_many([
+        make_record(source="sure_share", source_id="s1", title="ดื่มน้ำเย็นอันตราย จริงหรือ?",
+                    verdict=our_verdict),
+        make_record(source="afnc", source_id="a1", title="ข่าวปลอม! ดื่มน้ำเย็นอันตราย",
+                    verdict="ข่าวปลอม"),
+    ])
+    with r.connect() as conn:
+        ours = conn.execute("SELECT id FROM fact_checks WHERE source='sure_share'").fetchone()["id"]
+        theirs = conn.execute("SELECT id FROM fact_checks WHERE source='afnc'").fetchone()["id"]
+        conn.execute("UPDATE fact_checks SET verdict_origin=? WHERE id=?", (our_origin, ours))
+        conn.execute("UPDATE fact_checks SET verdict_origin='source' WHERE id=?", (theirs,))
+    reports = db_path.parent / "reports"
+    reports.mkdir(exist_ok=True)
+    (reports / "label_conflicts.json").write_text(json.dumps([{
+        "similarity": 0.97, "our_origin": our_origin,
+        "ours": {"id": ours}, "theirs": {"id": theirs},
+    }]), encoding="utf-8")
+    return api, r, ours, theirs
+
+
+def test_conflicts_queue_drains_once_a_human_decides(monkeypatch, tmp_path):
+    """The pair list is a file, but membership must follow the live database.
+
+    Otherwise a reviewer who answers a conflict is shown it again on the next
+    refill, and the progress bar never moves.
+    """
+    api, repo, ours, _ = _conflict_db(monkeypatch, tmp_path)
+    from fastapi.testclient import TestClient
+    with TestClient(api.app) as client:
+        first = client.get("/review/conflicts").json()
+        assert [i["id"] for i in first["items"]] == [ours]
+        assert first["total"] == 1 and first["labeled"] == 0
+        assert first["items"][0]["their_verdict_normalized"] == "false"
+        assert first["items"][0]["our_verdict_normalized"] == "true"
+        assert first["items"][0]["theirs"]["source"] == "afnc"
+
+        client.post("/review/label", json={"id": ours, "verdict": "false"})
+        after = client.get("/review/conflicts").json()
+        assert after["items"] == []
+        assert after["labeled"] == 1
+
+
+def test_conflict_undo_restores_the_machine_label(monkeypatch, tmp_path):
+    """Undo in the conflicts room must not blank a label it was asked to check.
+
+    The main queue starts from nothing, so clearing is correct there. Here the
+    record arrived carrying an llm verdict; erasing it on undo would destroy the
+    guess being adjudicated and quietly drop the pair out of the queue.
+    """
+    api, repo, ours, _ = _conflict_db(monkeypatch, tmp_path)
+    from fastapi.testclient import TestClient
+    with TestClient(api.app) as client:
+        client.post("/review/label", json={"id": ours, "verdict": "false"})
+        client.post("/review/label", json={"id": ours, "verdict": "undo",
+                                           "restore_verdict": "true",
+                                           "restore_origin": "llm"})
+        with repo.connect() as conn:
+            row = conn.execute("SELECT verdict, verdict_origin, labeled_at "
+                               "FROM fact_checks WHERE id=?", (ours,)).fetchone()
+        assert (row["verdict"], row["verdict_origin"]) == ("true", "llm")
+        assert row["labeled_at"] is None
+        assert [i["id"] for i in client.get("/review/conflicts").json()["items"]] == [ours]
+
+
+def test_conflicts_ignore_publisher_labels(monkeypatch, tmp_path):
+    """Only OUR guesses are up for review.
+
+    Two publishers disagreeing is an editorial dispute, not a data error, and
+    nothing in this room should invite a reviewer to overwrite a source verdict.
+    """
+    api, _, _, _ = _conflict_db(monkeypatch, tmp_path, our_origin="source")
+    from fastapi.testclient import TestClient
+    with TestClient(api.app) as client:
+        assert client.get("/review/conflicts").json()["items"] == []
 
 
 def test_fts5_search_indexing(repo):

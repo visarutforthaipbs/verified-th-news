@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import os
 import time
 from collections import defaultdict, deque
@@ -74,7 +75,14 @@ HUMAN_LABELS = {"false", "true", "misleading", "altered_media", "scam_alert"}
 
 class LabelRequest(BaseModel):
     id: int
-    verdict: str  # one of HUMAN_LABELS, or "skip" / "undo"
+    verdict: str  # one of HUMAN_LABELS, or "skip" / "not_claim" / "undo"
+    # Undo normally clears the record back to unlabelled, which is right in the
+    # main queue -- what came before was nothing. In the conflicts queue the
+    # record already carried a machine label, and blanking it would discard the
+    # very guess the reviewer was asked to check. The client sends that prior
+    # state back so undo restores it instead.
+    restore_verdict: str | None = None
+    restore_origin: str | None = None
 
 
 @app.get("/review", include_in_schema=False)
@@ -159,6 +167,78 @@ def review_queue(
             "items": [dict(r) for r in rows]}
 
 
+def _conflicts_file() -> Path:
+    """Beside the database, not beside the process.
+
+    The service runs from a different working directory on lighthouse-core than
+    it does in a checkout, so a relative path would resolve to whatever happened
+    to be current. The report belongs to the database it describes.
+    """
+    return Path(Settings.from_env().database_path).parent / "reports" / "label_conflicts.json"
+
+
+@app.get("/review/conflicts")
+def review_conflicts(limit: int = Query(25, ge=1, le=100)) -> dict:
+    """Records where our own label contradicts a publisher's ruling.
+
+    This is the cheapest human review in the archive. Everywhere else a reviewer
+    reads an article and decides; here another fact-checker has already decided,
+    on a claim we are 94%+ confident is the same one, and disagreed with us. The
+    only question left is which of the two is right -- and the publisher's side
+    arrives with its own explanation attached.
+
+    The pair list is precomputed (it needs the embedding index), but membership
+    is re-checked against the live database on every request: once a human has
+    touched our side, the disagreement has been adjudicated and the pair drops
+    out. That keeps the queue self-draining without a second piece of state to
+    keep in sync.
+    """
+    path = _conflicts_file()
+    if not path.exists():
+        return {"total": 0, "labeled": 0, "items": [],
+                "note": "run scripts/find_cross_source_conflicts.py --qa"}
+    pairs = json.loads(path.read_text(encoding="utf-8"))
+
+    repo = Repository(Settings.from_env().database_path)
+    ids = {p[side]["id"] for p in pairs for side in ("ours", "theirs")}
+    with repo.connect() as conn:
+        live = {
+            r["id"]: dict(r)
+            for r in conn.execute(
+                "SELECT id, source, source_url, title, claim, claim_origin, verdict,"
+                " verdict_origin, published_at, substr(explanation, 1, 900) AS explanation"
+                f" FROM fact_checks WHERE id IN ({','.join('?' * len(ids))})",
+                list(ids)).fetchall()
+        } if ids else {}
+
+    items, done, seen = [], 0, set()
+    for p in pairs:                       # sorted by similarity, descending
+        mine = live.get(p["ours"]["id"])
+        theirs = live.get(p["theirs"]["id"])
+        if mine is None or theirs is None:
+            continue                      # record deleted since the scan
+        # One record of ours can be contradicted by several publisher articles --
+        # AFNC often runs the same debunk twice. The reviewer answers about our
+        # record once, so keep only the closest match; the rest are the same
+        # question asked again, and counting them would inflate the progress bar.
+        if mine["id"] in seen:
+            continue
+        seen.add(mine["id"])
+        if (mine["verdict_origin"] or "").startswith("human"):
+            done += 1                     # already adjudicated
+            continue
+        if mine["verdict_origin"] not in ("llm", "heuristic"):
+            continue                      # our side was re-sourced; no longer ours
+        items.append({**mine, "similarity": p["similarity"],
+                      "their_verdict_normalized": normalize_verdict(
+                          theirs["source"], theirs["verdict"]),
+                      "our_verdict_normalized": normalize_verdict(
+                          mine["source"], mine["verdict"]),
+                      "theirs": theirs})
+    return {"total": done + len(items), "labeled": done,
+            "items": items[:limit]}
+
+
 class ClaimRequest(BaseModel):
     id: int
     claim: str = Field(min_length=8, max_length=400)
@@ -195,11 +275,18 @@ def review_label(req: LabelRequest) -> dict:
     repo = Repository(Settings.from_env().database_path)
     with repo.connect() as conn:
         if req.verdict == "undo":
-            conn.execute(
-                "UPDATE fact_checks SET verdict='unknown', verdict_origin='',"
-                " labeled_at=NULL WHERE id=? AND verdict_origin LIKE 'human%'",
-                (req.id,),
-            )
+            if req.restore_origin in ("llm", "heuristic") and req.restore_verdict:
+                conn.execute(
+                    "UPDATE fact_checks SET verdict=?, verdict_origin=?,"
+                    " labeled_at=NULL WHERE id=? AND verdict_origin LIKE 'human%'",
+                    (req.restore_verdict, req.restore_origin, req.id),
+                )
+            else:
+                conn.execute(
+                    "UPDATE fact_checks SET verdict='unknown', verdict_origin='',"
+                    " labeled_at=NULL WHERE id=? AND verdict_origin LIKE 'human%'",
+                    (req.id,),
+                )
         elif req.verdict == "not_claim":
             # Distinct from "skip". skip means "this is a claim but I cannot
             # judge it"; not_claim means "this was never a claim". Collapsing
