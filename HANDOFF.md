@@ -785,6 +785,45 @@ Two harness traps that produced confident wrong answers, both mine:
   clause. At 512 it scored 67.6% with zero errors. A token budget is part of the
   experiment, not an implementation detail.
 
+## ASR downloads and audio caching (2026-08-17)
+
+**Downloads are the fragile part of the pipeline, not the GPU.** On 2026-08-17
+roughly half of 105 attempted clips failed with `unavailable`, and a direct
+yt-dlp test on three URLs returned 2 blocked / 1 ok. yt-dlp also warns:
+
+    WARNING: [youtube] No supported JavaScript runtime could be found.
+             Only deno is enabled by default
+
+Node 22 is installed on lighthouse-gpu01, so pass `--js-runtimes node`. That
+helps but does not cure it -- YouTube throttles the IP after heavy use, and a
+16-hour run over the 1,858 standard episodes would currently lose a large share
+of its records. Check the failure rate on a small batch before committing to a
+long run, and spread runs out rather than hammering.
+
+**Cache the audio.** `fetch_tail_audio` downloads to a temp dir and deletes it,
+so every experiment re-downloads. That is what made the Pathumma-Whisper
+comparison impossible: the generic large-v3 transcripts came from 2026-08-01,
+the new ones had to be re-fetched today, and half the audio would not come
+down. Keeping the mp3s makes model comparisons repeatable, removes the
+unreliable step from the expensive path, and costs a few GB.
+
+## Pathumma-Whisper: unresolved, do not assume it is better
+
+`nectec/Pathumma-whisper-th-large-v3` is fine-tuned for Thai transcription and
+could plausibly lift every downstream number, since the LLM only ever sees the
+transcript. It has NOT been shown to do so. Two integration problems, both
+ours:
+
+* Converted with `ct2-transformers-converter` it emits **English translations**,
+  not Thai -- the conversion loses the language/task forcing that the model card
+  sets via `forced_decoder_ids`. Its own README uses the transformers pipeline.
+* Via transformers it needs `return_timestamps=True` for audio over 30s.
+
+A warning about measuring Thai: `len(text.split())` counts words in English and
+whole phrases in Thai, because Thai has no word spaces. Comparing a Thai
+transcript to an English one that way produced an apparent "4x more content"
+that was pure artefact. Use character counts, or compare like with like.
+
 ## Sensible next steps
 
 1. Continue human labeling (biggest data-quality win per hour). Two queues now:
