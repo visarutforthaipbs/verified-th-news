@@ -738,6 +738,53 @@ The 5,634 unlabelled sure_share records are therefore ~48 hours of GPU, not
 the 48 hours is worth spending — or whether the shorts should be retired from
 the queue as non-claims instead of labelled.
 
+## Verdict-extraction model bake-off (2026-08-17)
+
+The pipeline's one accuracy number -- 89.9%, qwen2.5:14b + prompt v2 -- belonged
+to a model no longer installed, and every replacement was being argued for on
+reputation. `scripts/asr/bench_models.py` runs a candidate against the 105
+records carrying BOTH a human verdict and a stored transcript, and reports
+per-class accuracy. Run it on lighthouse-gpu01, where Ollama lives.
+
+    .venv/bin/python bench_models.py qwen3.8:27b
+    NP=512 .venv/bin/python bench_models.py <model>     # token budget
+
+| model            | true  | false | misleading | overall | errors | size  |
+|------------------|-------|-------|------------|---------|--------|-------|
+| qwen2.5:14b      | 70.3% | 77.4% | 32.4%      | 59.0%   | 1      | 9 GB  |
+| qwen3.8:27b      | 86.5% | 83.9% | 32.4%      | 66.7%   | 0      | 17 GB |
+| **typhoon-s-8b** | 78.4% | 74.2% | 51.4%      | **67.6%** | 0    | 5 GB  |
+| pathumma-8b      | 75.7% | 64.5% | 54.1%      | 64.8%   | 6      | 5 GB  |
+
+**Use `hf.co/mradermacher/typhoon-s-thaillm-8b-instruct-research-preview-GGUF:Q4_K_M`.**
+Best overall, no class collapses, and small enough to sit beside whisper.
+
+Findings worth keeping:
+
+* **Thai-native training buys ~20 points on `misleading`.** Both Thai 8B models
+  reach 51-54%; both Qwen models sit on an identical 32.4%, collapsing
+  จริงบางส่วน into `false`. Two unrelated models landing on the same number is
+  not a capability ceiling, it is a convention they never learned. Scale does
+  not fix it -- the 27B is no better than the 14B.
+* **The Qwen error is conservative.** Of 37 misleading episodes qwen2.5 called
+  18 `false` and only 2 `true`. Wrong, but in the safe direction.
+* **Going back to qwen2.5:14b is not the answer** -- it is the worst of the four.
+  The old 89.9% is not comparable: this set is 35% misleading and the v2 prompt
+  notes already admitted บิดเบือน was its residual weakness, so that figure was
+  almost certainly measured on an easier class balance.
+* **67.6% is not good enough to label unsupervised** -- one record in three would
+  be wrong. It is fine for /review?mode=verify, where accept and correct are both
+  one keystroke and the human never opens the video.
+
+Two harness traps that produced confident wrong answers, both mine:
+
+* `format: "json"` with a **reasoning** model returns an empty string. qwen3.8
+  scored 0/105 until `think: false` was set. Pathumma is also a think model.
+* `num_predict: 200` truncated Typhoon-S mid-quote, so its JSON would not parse
+  and it scored 40% with 39 errors. It quotes whole passages where Qwen quotes a
+  clause. At 512 it scored 67.6% with zero errors. A token budget is part of the
+  experiment, not an implementation detail.
+
 ## Sensible next steps
 
 1. Continue human labeling (biggest data-quality win per hour). Two queues now:
