@@ -254,6 +254,46 @@ def test_review_queue_sorting(monkeypatch, tmp_path):
         assert items_desc[0]["title"] == "ข่าวใหม่"
 
 
+def test_export_uses_curated_claims_not_the_headline(tmp_path, monkeypatch):
+    """A derived claim must survive into the corpus, whatever its source.
+
+    The export chose claim_text with `if source == "afp"`, written when AFP was
+    the only source carrying a real claim field. When 1,246 Thai PBS and Cofact
+    claims were extracted, that rule silently dropped every one of them and the
+    index went on embedding cleaned headlines. The condition belongs on
+    provenance, not on a source name.
+    """
+    db_path = tmp_path / "export.db"
+    r = Repository(db_path)
+    r.initialize()
+    r.upsert_many([
+        make_record(source="thaipbs", source_id="t1", verdict="ข่าวปลอม",
+                    title="โพสต์อ้างข่าวปลอม ตำรวจยศสูงไหว้นักการเมือง ชี้เป็นภาพ AI",
+                    explanation="เนื้อหาการตรวจสอบอย่างละเอียด " * 20),
+        make_record(source="cofact", source_id="c1", verdict="ข่าวปลอม",
+                    title="พาดหัวที่ยังไม่ได้สกัดข้อกล่าวอ้าง",
+                    explanation="เนื้อหาการตรวจสอบอย่างละเอียด " * 20),
+    ])
+    with r.connect() as conn:
+        conn.execute("UPDATE fact_checks SET claim=?, claim_origin='llm' "
+                     "WHERE source_id='t1'", ("ตำรวจยศสูงไหว้นักการเมือง",))
+
+    out = tmp_path / "exports"
+    monkeypatch.setattr(sys, "argv",
+                        ["build_dataset.py", "--db", str(db_path), "--out", str(out)])
+    import build_dataset
+    build_dataset.main()
+
+    corpus = {json.loads(l)["source"]: json.loads(l)
+              for l in (out / "rag_corpus.jsonl").read_text(encoding="utf-8").splitlines()}
+    assert corpus["thaipbs"]["claim_text"] == "ตำรวจยศสูงไหว้นักการเมือง", \
+        "extracted claim did not reach the corpus"
+    # The headline is still kept alongside it, and the record without an
+    # extraction still falls back to the cleaned title.
+    assert "ข่าวปลอม" in corpus["thaipbs"]["title_raw"]
+    assert corpus["cofact"]["claim_text"] == "พาดหัวที่ยังไม่ได้สกัดข้อกล่าวอ้าง"
+
+
 # ── 7. extracted claims must not carry the answer ──────────────────────────
 
 @pytest.mark.parametrize("name,claim,title,body,expect", [

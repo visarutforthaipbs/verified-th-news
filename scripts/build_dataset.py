@@ -302,7 +302,7 @@ def main() -> None:
     con = sqlite3.connect(args.db)
     con.row_factory = sqlite3.Row
     rows = con.execute(
-        "SELECT id, source, source_url, title, claim, explanation, verdict,"
+        "SELECT id, source, source_url, title, claim, claim_origin, explanation, verdict,"
         "       category, published_at, verdict_origin FROM fact_checks"
         "       ORDER BY COALESCE(published_at, '9999') ASC, id ASC"
     ).fetchall()
@@ -337,10 +337,21 @@ def main() -> None:
         if label_origin.startswith("recovered"):
             recovered[(source, label)] += 1
 
-        claim_text = clean_claim(r["title"], source)
-        # AFP is the one source whose claim field is real claim text
-        if source == "afp" and r["claim"].strip():
+        # Prefer a claim somebody or something actually derived over a headline
+        # we cleaned with regexes. claim_origin says which rows have one:
+        # 'source' is the publisher's own claimReviewed, 'human' a reviewer's
+        # correction, 'llm' an extraction that passed the guards. The rest are
+        # still copies of the title and go through clean_claim as before.
+        #
+        # This used to read `if source == "afp"`, from when AFP was the only
+        # source with a real claim field. That stayed true until 1,246 Thai PBS
+        # and Cofact claims were extracted -- and because the rule named a
+        # source instead of asking about provenance, every one of them would
+        # have been dropped here and never reached the corpus or the index.
+        if (r["claim_origin"] or "") in ("source", "human", "llm") and r["claim"].strip():
             claim_text = r["claim"].strip()
+        else:
+            claim_text = clean_claim(r["title"], source)
 
         records.append({
             "id": r["id"],
