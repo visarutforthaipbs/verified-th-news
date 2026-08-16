@@ -202,6 +202,8 @@ def review_conflicts(limit: int = Query(25, ge=1, le=100)) -> dict:
     repo = Repository(Settings.from_env().database_path)
     ids = {p[side]["id"] for p in pairs for side in ("ours", "theirs")}
     with repo.connect() as conn:
+        dismissed = {tuple(sorted(r)) for r in
+                     conn.execute("SELECT a_id, b_id FROM conflict_dismissals")}
         live = {
             r["id"]: dict(r)
             for r in conn.execute(
@@ -217,6 +219,8 @@ def review_conflicts(limit: int = Query(25, ge=1, le=100)) -> dict:
         theirs = live.get(p["theirs"]["id"])
         if mine is None or theirs is None:
             continue                      # record deleted since the scan
+        if tuple(sorted((mine["id"], theirs["id"]))) in dismissed:
+            continue                      # judged "not the same claim"
         # One record of ours can be contradicted by several publisher articles --
         # AFNC often runs the same debunk twice. The reviewer answers about our
         # record once, so keep only the closest match; the rest are the same
@@ -237,6 +241,34 @@ def review_conflicts(limit: int = Query(25, ge=1, le=100)) -> dict:
                       "theirs": theirs})
     return {"total": done + len(items), "labeled": done,
             "items": items[:limit]}
+
+
+class DismissRequest(BaseModel):
+    ours_id: int
+    theirs_id: int
+    undo: bool = False
+
+
+@app.post("/review/conflict/dismiss")
+def review_conflict_dismiss(req: DismissRequest) -> dict:
+    """Record that two matched claims are not, in fact, the same claim.
+
+    Deliberately touches no verdict and no provenance. The reviewer is
+    correcting the *matcher*, not labelling a record, and conflating the two
+    would put unread machine labels into the gold tier.
+    """
+    _require_private()
+    from .models import utc_now
+
+    a, b = sorted((req.ours_id, req.theirs_id))
+    repo = Repository(Settings.from_env().database_path)
+    with repo.connect() as conn:
+        if req.undo:
+            conn.execute("DELETE FROM conflict_dismissals WHERE a_id=? AND b_id=?", (a, b))
+        else:
+            conn.execute("INSERT OR IGNORE INTO conflict_dismissals (a_id, b_id, dismissed_at)"
+                         " VALUES (?,?,?)", (a, b, utc_now()))
+    return {"ok": True}
 
 
 class ClaimRequest(BaseModel):

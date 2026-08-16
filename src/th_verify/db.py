@@ -68,6 +68,26 @@ CREATE TABLE IF NOT EXISTS claim_cluster_members (
   PRIMARY KEY (cluster_id, fact_check_id)
 );
 CREATE INDEX IF NOT EXISTS idx_claim_cluster_members_fact_check ON claim_cluster_members(fact_check_id);
+-- Pairs a reviewer has judged NOT to be the same claim.
+--
+-- The conflicts queue matches on embedding similarity, and at 0.94 the model
+-- still pairs claims that merely share a topic: "4 drinks clean the kidneys"
+-- against "5 drinks strengthen the kidneys", farmed tilapia against raw
+-- tilapia. Those are not disagreements and there is nothing to adjudicate.
+--
+-- Recording that as a verdict would be a lie twice over -- it would stamp
+-- `human` provenance on a machine label nobody read, and claim a human settled
+-- a dispute that never existed. So the dismissal lives on the PAIR, leaving
+-- both records' verdicts and provenance exactly as they were.
+--
+-- It is a table rather than a file because data/reports/label_conflicts.json is
+-- regenerated on every index rebuild, and this judgement must outlive it.
+CREATE TABLE IF NOT EXISTS conflict_dismissals (
+  a_id INTEGER NOT NULL REFERENCES fact_checks(id) ON DELETE CASCADE,
+  b_id INTEGER NOT NULL REFERENCES fact_checks(id) ON DELETE CASCADE,
+  dismissed_at TEXT NOT NULL,
+  PRIMARY KEY (a_id, b_id)
+);
 """
 
 

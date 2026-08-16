@@ -402,6 +402,45 @@ def test_conflict_undo_restores_the_machine_label(monkeypatch, tmp_path):
         assert [i["id"] for i in client.get("/review/conflicts").json()["items"]] == [ours]
 
 
+def test_dismissing_a_pair_leaves_both_verdicts_alone(monkeypatch, tmp_path):
+    """"Not the same claim" corrects the matcher, never the label.
+
+    At 0.94 the embeddings still pair claims that only share a topic -- "4
+    drinks clean the kidneys" against "5 drinks strengthen the kidneys". A
+    reviewer saying those are different must not be recorded as having
+    adjudicated a disagreement, or 40 unread machine labels enter the gold tier
+    stamped `human`.
+    """
+    api, repo, ours, theirs = _conflict_db(monkeypatch, tmp_path)
+    from fastapi.testclient import TestClient
+    with TestClient(api.app) as client:
+        assert len(client.get("/review/conflicts").json()["items"]) == 1
+        before = {r["id"]: (r["verdict"], r["verdict_origin"], r["labeled_at"])
+                  for r in _rows(repo, (ours, theirs))}
+
+        client.post("/review/conflict/dismiss",
+                    json={"ours_id": ours, "theirs_id": theirs})
+        after_q = client.get("/review/conflicts").json()
+        assert after_q["items"] == [], "dismissed pair still in the queue"
+        assert after_q["labeled"] == 0, "a dismissal is not an adjudication"
+        assert {r["id"]: (r["verdict"], r["verdict_origin"], r["labeled_at"])
+                for r in _rows(repo, (ours, theirs))} == before, \
+            "dismissal changed a verdict or its provenance"
+
+        # and it survives the pair file being regenerated, which is why it is
+        # stored in the database rather than beside the report
+        client.post("/review/conflict/dismiss",
+                    json={"ours_id": ours, "theirs_id": theirs, "undo": True})
+        assert len(client.get("/review/conflicts").json()["items"]) == 1
+
+
+def _rows(repo, ids):
+    with repo.connect() as conn:
+        return conn.execute(
+            "SELECT id, verdict, verdict_origin, labeled_at FROM fact_checks "
+            f"WHERE id IN ({','.join('?' * len(ids))})", list(ids)).fetchall()
+
+
 def test_conflicts_ignore_publisher_labels(monkeypatch, tmp_path):
     """Only OUR guesses are up for review.
 

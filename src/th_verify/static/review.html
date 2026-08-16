@@ -1839,7 +1839,8 @@ main { display:grid; grid-template-columns:1.25fr 1fr; gap:1.6rem; margin-top:1.
 
     <div class="keys" id="cf-keys" style="display:none">
       <button class="key-btn k-cf" data-cf="accept"><kbd>A</kbd> ใช้ผลของสำนักข่าว (เขายืนยันแล้ว)</button>
-      <button class="key-btn k-cf" data-cf="keep"><kbd>K</kbd> ยืนยันป้ายของเรา (ของเขาไม่ตรงเรื่อง / ผิด)</button>
+      <button class="key-btn k-cf" data-cf="keep"><kbd>K</kbd> ยืนยันป้ายของเรา (ของเขาผิด)</button>
+      <button class="key-btn k-aux" data-cf="notsame"><kbd>D</kbd> คนละข้อกล่าวอ้าง (จับคู่ผิด ไม่ใช่ข้อขัดแย้ง)</button>
       <button class="key-btn k-aux" data-v="skip"><kbd>S</kbd> ข้าม (ตัดสินไม่ได้)</button>
       <button class="key-btn k-aux" data-v="undo"><kbd>U</kbd> ย้อนกลับรายการก่อนหน้า</button>
     </div>
@@ -1979,7 +1980,8 @@ function applyMode(){
   $("order-select").style.display = cf ? "none" : "";
   $("tip-text").innerHTML = cf
     ? "อีกสำนักข่าวหนึ่งตรวจข้อกล่าวอ้างเดียวกันแล้ว และผลไม่ตรงกับป้ายที่เครื่องเดาไว้ · " +
-      "กด <b>A</b> ถ้าเชื่อผลของเขา <b>K</b> ถ้ายืนยันของเรา — ทั้งสองทางบันทึกเป็น <b>human</b>"
+      "กด <b>A</b> ถ้าเชื่อผลของเขา <b>K</b> ถ้ายืนยันของเรา — ทั้งสองบันทึกเป็น <b>human</b> · " +
+      "ถ้าเป็นคนละเรื่องกัน กด <b>D</b> (แก้การจับคู่ ไม่แตะป้าย)"
     : "คำตอบมักอยู่ <b>ช่วงท้ายคลิป</b> หรือใน <b>บทสรุปเนื้อหา</b> · " +
       "ป้ายที่ติดจะบันทึกเป็น <b>human</b> ทันที กด <kbd>U</kbd> ถ้าติดผิด";
   $("done-text").innerHTML = cf
@@ -1987,7 +1989,7 @@ function applyMode(){
       "อีกครั้งหลังอัปเดตดัชนี เพื่อหาข้อขัดแย้งชุดใหม่"
     : "ไม่มีรายการค้างตรวจในคิว — รัน <code>scripts/build_dataset.py</code> แล้วตามด้วย <code>th-verify index</code> เพื่ออัปเดตชุดข้อมูล";
   $("foot-keys").textContent = cf
-    ? "A ใช้ผลของสำนักข่าว · K ยืนยันป้ายของเรา · E แก้ข้อกล่าวอ้าง · S ข้าม · U ย้อนกลับ"
+    ? "A ใช้ผลของสำนักข่าว · K ยืนยันป้ายของเรา · D คนละข้อกล่าวอ้าง · E แก้ · S ข้าม · U ย้อนกลับ"
     : "ป้าย: 1 ปลอม · 2 จริง · 3 บิดเบือน · 4 สื่อดัดแปลง · 5 เตือนภัย · N ไม่ใช่ข้อกล่าวอ้าง · S ข้าม · U ย้อนกลับ";
   const u = new URL(location);
   cf ? u.searchParams.set("mode","conflicts") : u.searchParams.delete("mode");
@@ -2008,6 +2010,15 @@ async function label(v){
     const prev = history.pop();
     if(!prev) return;
     flash("undo");
+    if(prev.v === "notsame"){
+      await fetch("/review/conflict/dismiss",{method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({ours_id:prev.item.id, theirs_id:prev.item.theirs.id,
+                             undo:true})});
+      if(current) queue.unshift(current);
+      show(prev.item);
+      return;
+    }
     // Hand back the label the record held before we touched it, so undoing a
     // conflict decision returns it to the queue instead of erasing the guess.
     await fetch("/review/label",{method:"POST",headers:{"Content-Type":"application/json"},
@@ -2061,6 +2072,21 @@ $("claim-input").addEventListener("keydown", e=>{
 // promotes it from a guess to a checked one and retires the pair.
 function resolveConflict(which){
   if(!current || !current.theirs) return;
+  // "Not the same claim" is a correction to the MATCHER, not a label. It must
+  // not touch the verdict or its provenance -- at 0.94 the model still pairs
+  // claims that merely share a topic, and recording that as an adjudicated
+  // agreement would put an unread machine label into the gold tier.
+  if(which === "notsame"){
+    const item = current;
+    flash("not_claim");
+    history.push({item, v:"notsame"});
+    next();
+    fetch("/review/conflict/dismiss",{method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({ours_id:item.id, theirs_id:item.theirs.id})})
+      .catch(()=>{ alert("บันทึกไม่สำเร็จ — รายการ: " + item.title); });
+    return;
+  }
   const v = which === "accept" ? current.their_verdict_normalized
                                : current.our_verdict_normalized;
   if(!FLASH[v]){ alert("ป้ายนี้บันทึกอัตโนมัติไม่ได้ — เลือกเองจากคิวปกติ"); return; }
@@ -2073,7 +2099,8 @@ document.addEventListener("keydown",e=>{
   if(e.target.tagName === "TEXTAREA" || e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
   if(e.key === "e" || e.key === "E"){ e.preventDefault(); openClaimEditor(); return; }
   if(mode === "conflicts"){
-    const cf = {"a":"accept","A":"accept","k":"keep","K":"keep"}[e.key];
+    const cf = {"a":"accept","A":"accept","k":"keep","K":"keep",
+                "d":"notsame","D":"notsame"}[e.key];
     if(cf){ e.preventDefault(); resolveConflict(cf); return; }
     if("12345".includes(e.key)) return;  // no blind labelling while adjudicating
   }
