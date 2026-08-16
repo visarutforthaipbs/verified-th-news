@@ -704,9 +704,46 @@ the brand has four colours and all of them are status-reserved, so a categorical
 palette would have to be invented); (b) the `migrant` story file written around
 the 2567→2568 turn, once decisions 1 and 2 are settled.
 
+## ASR verdict pipeline — why it stalled at 1,719 (diagnosed 2026-08-16)
+
+`scripts/asr/asr_worker.py` pulls the audio with yt-dlp, trims to the **last 45
+seconds** (`--tail-seconds`), transcribes with faster-whisper large-v3 on the
+3090, then has the LLM extract the verdict and rejects any extraction whose
+quote is not verbatim in the transcript. Results, with transcripts, live on
+lighthouse-gpu01 at `~/th-verify-asr/full_results.jsonl`.
+
+Of 1,735 processed: 1,332 labelled, 156 unclear, 145 rejected for a quote that
+was not in the transcript, 101 videos unavailable.
+
+**The failures are a window problem, not a prompt problem.** Reading the failing
+transcripts, the tails are pure sign-off — "ร่วมตรวจสอบไปด้วยกันกับ Sure and
+Share", "ขอบคุณครับอาจารย์ สวัสดีครับ". Those records are LIVE episodes,
+podcasts and Motor Check segments, where the verdict was stated minutes before
+the close. A standard "จริงหรือ ?" episode states it in the last ~20s, which is
+why those work. Fixing them means a format-aware window, not a better prompt.
+
+**The shorts question is still open and is empirical.** A short runs ~60s, so a
+45s tail already covers most of it; if shorts still fail it is likely because
+they are teasers that pose the question and point at the full episode rather
+than stating a verdict at all. The earlier run never measured this — its
+validation set was 88% standard episodes and 0% shorts, which is how it
+predicted 83% coverage and delivered 25%. Sample **randomly** before committing:
+`extract_claims.py` and the ASR task builder both order by id, and sampling the
+head of an ordering is what produced both that miss and the AFNC "53%" that was
+really 21%.
+
+**Cost, measured not guessed:** 1,735 records took ~15 hours, so ~31s each.
+The 5,634 unlabelled sure_share records are therefore ~48 hours of GPU, not
+"a few hours". A 40-record random sample costs ~15 minutes and decides whether
+the 48 hours is worth spending — or whether the shorts should be retired from
+the queue as non-claims instead of labelled.
+
 ## Sensible next steps
 
-1. Continue human labeling (biggest data-quality win per hour).
+1. Continue human labeling (biggest data-quality win per hour). Two queues now:
+   `/review` for unlabelled records, and `/review?mode=conflicts` for the ~49
+   where our label contradicts a publisher's. The conflicts queue is the
+   cheaper of the two per decision — someone else already did the research.
 2. When publishing เช็กก่อนเชื่อ: licensing talks first (Cofact → ThaiPBS →
    AFNC), PDPA/no-logging note, bge-m3 index rebuild, then soft-launch to
    the fact-check community before the general public.
