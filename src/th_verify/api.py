@@ -167,6 +167,16 @@ def review_queue(
             "items": [dict(r) for r in rows]}
 
 
+@app.get("/review/collector-health")
+def collector_health() -> dict:
+    """Last night's collector audit, for the banner in the review room."""
+    _require_private()
+    path = Path(Settings.from_env().database_path).parent / "reports" / "collector_health.json"
+    if not path.exists():
+        return {"checked_at": None, "failing": 0, "warning": 0, "findings": []}
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
 def _conflicts_file() -> Path:
     """Beside the database, not beside the process.
 

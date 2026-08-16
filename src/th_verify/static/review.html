@@ -1682,6 +1682,17 @@ select.fnl-select {
 .cf-v.neg { color:var(--fnl-red); }
 .cf-v.pos { color:var(--fnl-white); }
 .key-btn.k-cf { border-color:var(--fnl-yellow); color:var(--fnl-yellow); }
+
+/* ── collector health — only ever visible when something is wrong ─────── */
+.health { display:none; margin:0 0 .9rem; border:1.5px solid var(--fnl-red);
+  background:var(--fnl-black); padding:.55rem .75rem; }
+.health.show { display:block; }
+.health.stale { border-color:var(--fnl-gray); }
+.health-hd { font-family:var(--fnl-font-mono); font-size:var(--fnl-fs-micro);
+  letter-spacing:.08em; color:var(--fnl-red); }
+.health.stale .health-hd { color:var(--fnl-gray); }
+.health-list { margin:.35rem 0 0; padding-left:1.1rem; font-size:.9rem;
+  line-height:1.6; color:var(--fnl-white); }
 </style>
 <style>
 /* ── ห้องตรวจ (internal labelling room) — page-specific only ─────────── */
@@ -1785,6 +1796,11 @@ main { display:grid; grid-template-columns:1.25fr 1fr; gap:1.6rem; margin-top:1.
 </header>
 
 <div class="bar fnl-meter"><i id="bar" style="width:0%"></i></div>
+
+<div class="health" id="health">
+  <div class="health-hd" id="health-hd"></div>
+  <ul class="health-list" id="health-list"></ul>
+</div>
 
 <main id="main">
   <div>
@@ -2122,7 +2138,41 @@ $("order-select").addEventListener("change", async ()=>{
   queue = []; current = null; history = [];
   await refill(); next();
 });
+// Silent when everything is fine. A banner that is always there is furniture,
+// and furniture is invisible exactly when it matters.
+async function checkCollectors(){
+  try{
+    const h = await (await fetch("/review/collector-health")).json();
+    const box = $("health");
+    if(!h.checked_at){
+      box.className = "health show stale";
+      $("health-hd").textContent = "ยังไม่เคยตรวจสุขภาพตัวเก็บข้อมูล";
+      $("health-list").innerHTML = "<li>รัน scripts/audit_collectors.py --json data/reports/collector_health.json</li>";
+      return;
+    }
+    const ageH = (Date.now() - new Date(h.checked_at)) / 3.6e6;
+    if(h.findings && h.findings.length){
+      box.className = "health show";
+      $("health-hd").textContent =
+        `ตัวเก็บข้อมูลมีปัญหา — ${h.failing} ล้มเหลว ${h.warning} เตือน ` +
+        `(ตรวจเมื่อ ${new Date(h.checked_at).toLocaleString("th-TH")})`;
+      $("health-list").innerHTML = h.findings
+        .map(f => `<li><b>${f.source}</b> — ${f.message}</li>`).join("");
+    } else if(ageH > 36){
+      // No findings, but the check itself has not run — which is its own
+      // failure, and the one a "no news is good news" banner would hide.
+      box.className = "health show stale";
+      $("health-hd").textContent =
+        `ผลตรวจตัวเก็บข้อมูลเก่า ${Math.round(ageH)} ชม. — งานกลางคืนอาจไม่ได้รัน`;
+      $("health-list").innerHTML = "";
+    } else {
+      box.className = "health";
+    }
+  }catch(e){ /* the room must still work if this endpoint is unavailable */ }
+}
+
 (async ()=>{
+  checkCollectors();
   $("mode-select").value = mode;
   applyMode();
   await refill(); next();

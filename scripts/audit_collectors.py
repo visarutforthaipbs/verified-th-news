@@ -226,6 +226,8 @@ def main() -> int:
     ap.add_argument("--source", help="audit one source instead of all five")
     ap.add_argument("--sample", type=int, default=6, help="records to fetch live per source")
     ap.add_argument("--stored-only", action="store_true", help="skip the network")
+    ap.add_argument("--json", type=Path,
+                    help="also write the result here for the review room to read")
     args = ap.parse_args()
 
     sources = [args.source] if args.source else list(EXPECT)
@@ -245,6 +247,24 @@ def main() -> int:
     fails = sum(1 for lv, _, _ in rep.lines if lv == FAIL)
     warns = sum(1 for lv, _, _ in rep.lines if lv == WARN)
     print(f"\n{len(sources)} sources — {fails} failing, {warns} warning")
+
+    if args.json:
+        # Written for the review room, which is the only surface anybody looks
+        # at daily. A health check whose output lands in a log file nobody opens
+        # has the same value as no health check.
+        import json as _json
+        args.json.parent.mkdir(parents=True, exist_ok=True)
+        args.json.write_text(_json.dumps({
+            "checked_at": datetime.now(timezone.utc).isoformat(),
+            "sources": sources,
+            "failing": fails,
+            "warning": warns,
+            "findings": [{"level": lv, "source": src, "message": msg}
+                         for lv, src, msg in rep.lines if lv != OK],
+            "ok": [{"source": src, "message": msg}
+                   for lv, src, msg in rep.lines if lv == OK],
+        }, ensure_ascii=False, indent=1), encoding="utf-8")
+        print(f"written: {args.json}")
     return 1 if rep.failed else 0
 
 

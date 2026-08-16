@@ -18,6 +18,12 @@ if [ -f .env ]; then set -a; source .env; set +a; fi
   "$PY" scripts/build_dataset.py
   echo "--- rebuilding search index ---"
   "$PY" -m th_verify.cli index
+  echo "--- auditing collectors ---"
+  # Never fatal: a failed audit must not stop tomorrow's sync from running, and
+  # `set -e` would do exactly that. The verdict is written for the review room
+  # to surface -- a health check that only reaches a log file nobody opens is
+  # worth as much as no health check.
+  "$PY" scripts/audit_collectors.py --json data/reports/collector_health.json || true
   echo "=== done $(date -u +%FT%TZ) ==="
 } >>"$LOG" 2>&1
 
