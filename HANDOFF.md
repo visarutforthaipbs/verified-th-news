@@ -163,6 +163,16 @@ and a usable checking tool.
 .venv/bin/python scripts/narrative_shift.py migrant
 .venv/bin/python scripts/narrative_shift.py migrant --k 8
 
+# claim extraction (needs the GPU node; dry run first, always)
+export OLLAMA_URL=http://lighthouse-gpu01:11434
+.venv/bin/python scripts/extract_claims.py --source thaipbs --limit 40
+.venv/bin/python scripts/extract_claims.py --source thaipbs --limit 700 --apply
+.venv/bin/python scripts/recheck_extracted_claims.py            # after guard changes
+.venv/bin/python scripts/recheck_extracted_claims.py --apply
+
+# conflicts queue for /review?mode=conflicts (needs a current index)
+.venv/bin/python scripts/find_cross_source_conflicts.py --threshold 0.94 --qa --limit 0
+
 # tests
 .venv/bin/python -m pytest -q
 ```
@@ -185,16 +195,87 @@ Protections in place (do not remove):
 - `build_dataset.py` exports `label_origin` per record so training can
   filter/weight by tier.
 
+Two more `verdict_origin` values exist, both written only by /review:
+`human_skipped` ("a claim, but I can't judge it") and `human_not_claim`
+("this was never a claim"). They are deliberately distinct — collapsing them
+loses the only signal that can retire an item permanently.
+
+## Claim provenance (added 2026-08-16)
+
+`claim` was a copy of `title` for 27,925 of 28,686 records, and a headline is
+not a claim — Thai PBS routinely writes the answer into it
+("โพสต์อ้างข่าวปลอม ตำรวจยศสูงไหว้นักการเมือง ชี้เป็นภาพ AI ตรวจสอบพบเป็นภาพจริง ปี 61"
+where the claim is "ตำรวจยศสูงไหว้นักการเมือง"). Stored that way it leaks the
+verdict into training data and shows a reviewer a summary where a claim belongs.
+
+`fact_checks.claim_origin`, in trust order:
+
+1. `source` — the publisher's own `ClaimReview.claimReviewed` (AFP, and Thai PBS
+   where it differs from the headline). Gold.
+2. `human` — corrected in /review with `E`. Gold.
+3. `llm` — extracted by `scripts/extract_claims.py` and passed its guards.
+4. `''` — still a copy of the title; `clean_claim()` handles it at export time.
+
+Protections:
+- `db.py upsert_many` keeps `claim` when `claim_origin IN ('human','llm')`.
+- `build_dataset.py` keys `claim_text` on **provenance, not source name**. It
+  used to read `if source == "afp"`, which silently dropped every extracted
+  claim; the index went on embedding headlines. Tested now — do not narrow it
+  back to a source check.
+- `scripts/recheck_extracted_claims.py` replays the current guards over
+  everything marked `llm` and reverts failures to `claim=title, claim_origin=''`.
+  Run it after changing any guard; a reverted row is simply a candidate again.
+
+Extraction guard notes (each one cost a bad batch to find):
+- Overlap is measured on **character trigrams**, not whitespace tokens. Thai has
+  no word spaces, so token overlap made a faithful short claim look unrelated —
+  it rejected 85 of 555 Thai PBS extractions before the fix.
+- `VERDICT_WORDS` must include Thai PBS's `พบเป็น` construction. It must **not**
+  include `เท่านั้น` ("only"), which is ordinary vocabulary.
+- A claim equal to the *raw* title is rejected, not just the cleaned one.
+
+Model: `scb10x/typhoon2.5-qwen3-30b-a3b` on lighthouse-gpu01. It beat
+qwen2.5:14b 12/12 vs 10/12 on the same Thai PBS sample. Acceptance varies a lot
+by source — Thai PBS 82%, Cofact 78%, Sure & Share 83%, **AFNC only 20%**
+(its `ข่าวปลอม อย่าแชร์!` titles are already claim-shaped and `clean_claim`
+handles them, so AFNC is not worth a run).
+
+## Conflicts review mode (added 2026-08-16)
+
+`/review?mode=conflicts` adjudicates records where **our** machine label
+contradicts a **publisher's** ruling on a claim the embeddings put at ≥0.94
+similarity. `A` adopts theirs, `K` confirms ours; both write an ordinary
+`human` label, because accepting someone else's finding is still the reviewer's
+judgement. `1`–`5` are inert in this mode.
+
+The pair list is precomputed by
+`scripts/find_cross_source_conflicts.py --qa` (it needs the embedding index)
+into `data/reports/label_conflicts.json`, but membership is re-checked against
+the live DB per request, so answering a conflict retires it with no second
+piece of state. Duplicate pairs collapse to the closest match.
+
+Undo in this mode restores the record's **prior machine label** (the client
+sends it back) rather than blanking it — blanking is right in the main queue
+where nothing came before, but here it would destroy the guess under review.
+
 ## Human labeling (in progress)
 
 Owner is labeling sure_share "จริงหรือ?" episodes at `/review`: embedded
 YouTube player, keys 1=ปลอม 2=จริง 3=บิดเบือน 4=ดัดแปลง/AI 5=เตือนภัย S=skip
-U=undo. Every keypress saves to DB immediately. Queue = 4,963 episodes;
-**164 human-labeled plus 8 `human_skipped` as of 2026-07-31** (production
-figures — this dev copy still shows the older count of 80).
-Verdict is stated in the last ~20s of each video.
+U=undo, plus N=`human_not_claim` and E=edit the claim. Every keypress saves to
+DB immediately. Verdict is stated in the last ~20s of each video.
 The queue includes heuristic-labeled episodes for verification; a human
 label overwrites the heuristic one.
+
+**524 human-labelled as of 2026-08-16** (was 164 on 2026-07-31; the jump is
+mostly the ASR pipeline's 1,332 machine labels being verified, not hand
+typing). The queue counter measures the *reviewer's* backlog — records still
+needing a human — not the size of the archive; it read "3 / 14781" before that
+was fixed, when one record was actually waiting.
+
+Non-claims are filtered out of the queue (`is_factcheck`), which removed
+~1,800 keystrokes of Cofact analysis articles, programme announcements and
+weekly roundups that nobody can adjudicate.
 
 ## Machine topology (since 2026-07-11; names updated 2026-07-31)
 
@@ -441,6 +522,20 @@ index` so exports and search pick the corrections up.
   build_dataset.py handles all known raw strings (incl. AFP typos "Flase",
   "Party False"). Unmapped values fall to `unknown` — check
   verdict_mapping.csv after big syncs for new raw values.
+- **The export script lives at `scripts/build_dataset.py`.** An untracked
+  fossil copy sat at both repo roots (July 11, missing the Thai PBS taxonomy,
+  the `ตรวจสอบแล้ว` strip, the conclusion-clause rules and `is_factcheck`), so
+  `python build_dataset.py` from the root silently ran month-old logic and
+  overwrote good exports. Both copies were deleted 2026-08-16; `daily_sync.sh`
+  always called the correct path. If one reappears, delete it rather than
+  edit it.
+- **Fidelity is not correctness.** The gold tier is verified to copy publisher
+  verdicts faithfully (100% against AFNC `status_label` and AFP
+  `textualRating`) — that says nothing about whether the publisher was right.
+  AFNC stamped an AI-generated photo ข่าวปลอม on 2026-08-03; Thai PBS checked
+  the same photo the next day and found it genuine. Both sit in the archive and
+  the AFNC one is in `classification_test.jsonl`. This is what the conflicts
+  mode exists to surface.
 
 ## Product state (vs the TH Verify OS / ClaimRadar business plan)
 
