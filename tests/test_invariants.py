@@ -254,6 +254,56 @@ def test_review_queue_sorting(monkeypatch, tmp_path):
         assert items_desc[0]["title"] == "ข่าวใหม่"
 
 
+# ── 8. the collector audit must be able to fail ────────────────────────────
+
+def _levels(source, records):
+    from audit_collectors import inspect_records
+    return {msg_level for msg_level, _ in inspect_records(source, records)}
+
+
+def test_audit_passes_healthy_records():
+    good = [make_record(source="thaipbs", source_id=f"t{i}",
+                        title=f"ข้อกล่าวอ้างที่ {i}", verdict="ข่าวปลอม",
+                        published_at=f"2026-08-0{i}T00:00:00Z",
+                        image_url="https://x/i.jpg", explanation="เนื้อหา " * 40)
+            for i in range(1, 6)]
+    assert _levels("thaipbs", good) == set(), "healthy batch produced findings"
+
+
+def test_audit_catches_a_selector_that_stopped_matching():
+    """The silent failure mode: a field arrives empty on every record forever."""
+    broken = [make_record(source="thaipbs", source_id=f"t{i}",
+                          title=f"ข้อกล่าวอ้างที่ {i}", verdict="ข่าวปลอม",
+                          published_at=f"2026-08-0{i}T00:00:00Z",
+                          image_url=None, explanation="")
+              for i in range(1, 6)]
+    found = _levels("thaipbs", broken)
+    assert "FAIL" in found, "empty text and image on every record was not caught"
+
+
+def test_audit_catches_listing_page_bleed():
+    """The Thai PBS bug: neighbouring records inheriting one date and verdict.
+
+    It ran for weeks reporting success and corrupted 103 gold labels. If this
+    check cannot see that shape, the audit is decorative.
+    """
+    bled = [make_record(source="thaipbs", source_id=f"t{i}",
+                        title=f"ข้อกล่าวอ้างที่ {i}", verdict="ข่าวปลอม",
+                        published_at="2026-08-01T00:00:00Z",   # all identical
+                        image_url="https://x/i.jpg", explanation="เนื้อหา " * 40)
+            for i in range(1, 6)]
+    assert "WARN" in _levels("thaipbs", bled), "listing-page bleed went unnoticed"
+
+
+def test_audit_does_not_cry_wolf_about_afp():
+    """AFP legitimately has no article text and no image — metadata API only."""
+    afp = [make_record(source="afp", source_id=f"a{i}", title=f"claim {i}",
+                       verdict="False", published_at=f"2026-08-0{i}T00:00:00Z",
+                       image_url=None, explanation="")
+           for i in range(1, 6)]
+    assert "FAIL" not in _levels("afp", afp), "audit flagged AFP's normal shape"
+
+
 def test_export_uses_curated_claims_not_the_headline(tmp_path, monkeypatch):
     """A derived claim must survive into the corpus, whatever its source.
 
