@@ -55,7 +55,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from th_verify.normalized import clean_claim_text  # noqa: E402
+from th_verify.normalized import clean_claim_text, is_factcheck  # noqa: E402
 from _canonical import assert_canonical  # noqa: E402
 
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://127.0.0.1:11435")
@@ -77,6 +77,10 @@ VERDICT_WORDS = re.compile(
     # and it rejected real claims such as
     # "มุสลิมสามารถซื้อที่ดินได้ไม่จำกัด ส่วนชาวพุทธ…เท่านั้น".
     r"พบเป็น|พบว่าเป็น")
+
+# A headline still opening this way after cleaning is addressed to the reader,
+# not a statement of what was claimed.
+WARNING_LEAD = re.compile(r"^(ระวัง|เตือน|อย่าหลงเชื่อ|โปรดระวัง|พบ|เผย)")
 
 PROMPT = """บทความต่อไปนี้เป็นงานตรวจสอบข้อเท็จจริง
 งานของคุณคือ "คัดลอก" ข้อกล่าวอ้างที่ถูกนำมาตรวจสอบ ไม่ใช่สรุปผลการตรวจสอบ
@@ -172,6 +176,8 @@ def main() -> int:
     ap.add_argument("--limit", type=int, default=50)
     ap.add_argument("--apply", action="store_true")
     ap.add_argument("--min-explanation", type=int, default=300)
+    ap.add_argument("--needs-work", action="store_true",
+                    help="only rows the rule cleaner demonstrably fails on")
     args = ap.parse_args()
     if args.apply:
         assert_canonical(args.db, action="write claims into")
@@ -184,9 +190,30 @@ def main() -> int:
         where.append("source = ?")
         params.append(args.source)
     rows = con.execute(
-        f"SELECT id, source, title, claim, explanation FROM fact_checks "
-        f"WHERE {' AND '.join(where)} ORDER BY id DESC LIMIT ?",
-        [*params, args.limit]).fetchall()
+        f"SELECT id, source, title, claim, explanation, verdict, verdict_origin "
+        f"FROM fact_checks WHERE {' AND '.join(where)} ORDER BY id DESC "
+        f"LIMIT {'-1' if args.needs_work else '?'}",
+        params if args.needs_work else [*params, args.limit]).fetchall()
+
+    if args.needs_work:
+        # Running a model over every AFNC row would spend five hours to change a
+        # fifth of them: the rule cleaner already strips "ข่าวปลอม อย่าแชร์!" from
+        # 10,192 of 16,993, and 2,205 are not fact-checks at all -- weekly
+        # roundups and announcements that nobody should be extracting a claim
+        # from. What is left is the residue the rules cannot handle: a headline
+        # that still opens as a warning ("ระวัง!! มิจฯ อ้างตรวจสอบบัญชี..."), or
+        # one long enough that it is plainly a summary rather than a claim.
+        kept = []
+        for r in rows:
+            if not is_factcheck(r["source"], r["title"], r["verdict"],
+                                (r["explanation"] or "")[:120], r["verdict_origin"]):
+                continue
+            cleaned = clean_claim_text(r["title"], r["source"])
+            if WARNING_LEAD.match(cleaned) or len(cleaned) > 110:
+                kept.append(r)
+        print(f"{len(rows)} rows -> {len(kept)} the rules fail on")
+        rows = kept[: args.limit]
+
     print(f"{len(rows)} candidates ({OLLAMA_MODEL})\n")
 
     accepted, rejected = [], {}
