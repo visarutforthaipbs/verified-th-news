@@ -140,7 +140,10 @@ def review_queue(
         where_rows = (where_clause + " AND " if where_clause else " WHERE ")
         sql_rows = (
             "SELECT id, source, source_id, source_url, title, claim, claim_origin, explanation, verdict, verdict_origin, published_at,"
-            " json_extract(raw_json, '$.contentDetails.videoId') AS video_id "
+            " json_extract(raw_json, '$.contentDetails.videoId') AS video_id,"
+            " (SELECT quote FROM asr_evidence e WHERE e.fact_check_id = fact_checks.id) AS asr_quote,"
+            " (SELECT transcript FROM asr_evidence e WHERE e.fact_check_id = fact_checks.id) AS asr_transcript,"
+            " (SELECT raw_verdict FROM asr_evidence e WHERE e.fact_check_id = fact_checks.id) AS asr_raw_verdict "
             "FROM fact_checks "
             f"{where_rows} verdict_origin NOT LIKE 'human%' "
             f"ORDER BY COALESCE(published_at, collected_at) {sort_dir} LIMIT ?"
@@ -164,6 +167,44 @@ def review_queue(
 
 
     return {"total": total or 0, "labeled": done or 0,
+            "items": [dict(r) for r in rows]}
+
+
+@app.get("/review/verify")
+def review_verify(limit: int = Query(25, ge=1, le=100)) -> dict:
+    """Machine-labelled records with the evidence the machine used.
+
+    A different job from the main queue. There the reviewer decides from
+    scratch; here the model has already answered and quoted the sentence it
+    answered from, so the reviewer is checking homework. That is the difference
+    between 2-3 minutes of watching a video and ten seconds of reading a line,
+    and it is the only way 6,665 clips is a week's work instead of fifty days.
+
+    Only records that carry evidence are served. A machine label with no quote
+    behind it is exactly what a reviewer cannot check, and offering it here
+    would invite rubber-stamping.
+    """
+    _require_private()
+    repo = Repository(Settings.from_env().database_path)
+    with repo.connect() as conn:
+        done = conn.execute(
+            "SELECT COUNT(*) FROM fact_checks f JOIN asr_evidence e"
+            " ON e.fact_check_id = f.id WHERE f.verdict_origin LIKE 'human%'").fetchone()[0]
+        rows = conn.execute(
+            "SELECT f.id, f.source, f.source_id, f.source_url, f.title, f.claim,"
+            " f.claim_origin, f.explanation, f.verdict, f.verdict_origin, f.published_at,"
+            " json_extract(f.raw_json, '$.contentDetails.videoId') AS video_id,"
+            " e.quote AS asr_quote, e.transcript AS asr_transcript,"
+            " e.raw_verdict AS asr_raw_verdict, e.status AS asr_status"
+            " FROM fact_checks f JOIN asr_evidence e ON e.fact_check_id = f.id"
+            " WHERE f.verdict_origin = 'llm' AND length(e.quote) > 0"
+            "   AND f.verdict NOT IN ('unknown','')"
+            " ORDER BY f.published_at DESC LIMIT ?", (limit,)).fetchall()
+        pending = conn.execute(
+            "SELECT COUNT(*) FROM fact_checks f JOIN asr_evidence e"
+            " ON e.fact_check_id = f.id WHERE f.verdict_origin = 'llm'"
+            " AND length(e.quote) > 0 AND f.verdict NOT IN ('unknown','')").fetchone()[0]
+    return {"total": done + pending, "labeled": done,
             "items": [dict(r) for r in rows]}
 
 

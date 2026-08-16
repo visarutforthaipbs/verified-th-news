@@ -82,6 +82,31 @@ CREATE INDEX IF NOT EXISTS idx_claim_cluster_members_fact_check ON claim_cluster
 --
 -- It is a table rather than a file because data/reports/label_conflicts.json is
 -- regenerated on every index rebuild, and this judgement must outlive it.
+-- What the machine heard, kept so a human can check the machine's homework.
+--
+-- The ASR run labelled 1,332 videos and threw its evidence away: the verdict
+-- landed in fact_checks and the transcript and quote stayed in a jsonl file on
+-- the GPU node. That left a reviewer with only two options, trust the label
+-- blind or watch the video again -- and watching is 2-3 minutes a clip against
+-- 6,665 clips, which is fifty days of somebody's life.
+--
+-- With the quote on screen the same judgement takes ten seconds: read the claim,
+-- read the sentence the model based its answer on, agree or correct it. The
+-- transcript is kept too, because when the quote is unconvincing the next
+-- question is always "what else did they say".
+--
+-- Separate from fact_checks deliberately: transcripts are bulky, they exist only
+-- for one source, and evidence is not a property of the claim -- re-running ASR
+-- with a longer window should be able to replace it without touching the record.
+CREATE TABLE IF NOT EXISTS asr_evidence (
+  fact_check_id INTEGER PRIMARY KEY REFERENCES fact_checks(id) ON DELETE CASCADE,
+  transcript TEXT NOT NULL DEFAULT '',
+  quote TEXT NOT NULL DEFAULT '',
+  raw_verdict TEXT NOT NULL DEFAULT '',
+  status TEXT NOT NULL DEFAULT '',
+  model TEXT NOT NULL DEFAULT '',
+  created_at TEXT NOT NULL
+);
 CREATE TABLE IF NOT EXISTS conflict_dismissals (
   a_id INTEGER NOT NULL REFERENCES fact_checks(id) ON DELETE CASCADE,
   b_id INTEGER NOT NULL REFERENCES fact_checks(id) ON DELETE CASCADE,

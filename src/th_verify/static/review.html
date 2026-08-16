@@ -1683,6 +1683,26 @@ select.fnl-select {
 .cf-v.pos { color:var(--fnl-white); }
 .key-btn.k-cf { border-color:var(--fnl-yellow); color:var(--fnl-yellow); }
 
+/* ── ASR evidence — what the machine heard, so you need not watch ────── */
+.ev { display:none; margin:.9rem 0 .2rem; border:1.5px solid var(--fnl-line); }
+.ev.show { display:block; }
+.ev-hd { display:flex; align-items:baseline; gap:.6rem; flex-wrap:wrap;
+  background:var(--fnl-surface-1); padding:.4em .7em;
+  font-family:var(--fnl-font-mono); font-size:var(--fnl-fs-micro);
+  letter-spacing:.08em; color:var(--fnl-gray); }
+.ev-proposed { color:var(--fnl-yellow); font-weight:600; }
+.ev-body { padding:.7rem .8rem; }
+.ev-quote { font-size:1.02rem; line-height:1.6; border-left:3px solid var(--fnl-yellow);
+  padding-left:.7rem; }
+.ev-tx { display:none; margin-top:.6rem; color:var(--fnl-gray); font-size:.88rem;
+  line-height:1.65; max-height:11em; overflow:auto; white-space:pre-wrap; }
+.ev-tx.show { display:block; }
+.ev-more { margin-top:.5rem; font-family:var(--fnl-font-mono);
+  font-size:var(--fnl-fs-micro); letter-spacing:.06em; color:var(--fnl-gray);
+  background:none; border:1px solid var(--fnl-line); padding:.25em .7em;
+  cursor:pointer; }
+.key-btn.k-ev { border-color:var(--fnl-yellow); color:var(--fnl-yellow); }
+
 /* ── collector health — only ever visible when something is wrong ─────── */
 .health { display:none; margin:0 0 .9rem; border:1.5px solid var(--fnl-red);
   background:var(--fnl-black); padding:.55rem .75rem; }
@@ -1778,6 +1798,7 @@ main { display:grid; grid-template-columns:1.25fr 1fr; gap:1.6rem; margin-top:1.
   <h1><a href="/">เช็กก่อนเชื่อ</a> · ห้องตรวจ</h1>
   <select id="mode-select" class="fnl-select">
     <option value="queue">คิวปกติ (Review Queue)</option>
+    <option value="verify">ตรวจงานเครื่อง (Verify ASR)</option>
     <option value="conflicts">ข้อขัดแย้งกับสำนักข่าว (Label Conflicts)</option>
   </select>
   <select id="source-select" class="fnl-select">
@@ -1829,6 +1850,18 @@ main { display:grid; grid-template-columns:1.25fr 1fr; gap:1.6rem; margin-top:1.
     <div class="c-head" id="claim-headline"></div>
     <div class="meta" id="meta"></div>
 
+    <div class="ev" id="evidence">
+      <div class="ev-hd">
+        <span>เครื่องถอดเสียงได้ยินว่า</span>
+        <span class="ev-proposed" id="ev-proposed"></span>
+      </div>
+      <div class="ev-body">
+        <div class="ev-quote" id="ev-quote"></div>
+        <button class="ev-more" id="ev-more">ดูบทถอดเสียงทั้งหมด (T)</button>
+        <div class="ev-tx" id="ev-tx"></div>
+      </div>
+    </div>
+
     <div class="cf" id="conflict">
       <div class="cf-hd">
         <span>สำนักข่าวอีกแห่งตรวจเรื่องเดียวกันแล้ว</span>
@@ -1851,6 +1884,12 @@ main { display:grid; grid-template-columns:1.25fr 1fr; gap:1.6rem; margin-top:1.
           <a id="cf-link" href="#" target="_blank" rel="noopener">เปิดบทความของสำนักข่าว ↗</a>
         </div>
       </div>
+    </div>
+
+    <!-- Only the accept key: skip and undo live in the full panel below, which
+         stays visible in this mode so correcting is as easy as agreeing. -->
+    <div class="keys" id="ev-keys" style="display:none">
+      <button class="key-btn k-ev" data-ev="accept"><kbd>A</kbd> ยืนยันตามที่เครื่องเสนอ</button>
     </div>
 
     <div class="keys" id="cf-keys" style="display:none">
@@ -1899,8 +1938,8 @@ const $ = id => document.getElementById(id);
 // Conflicts is a mode of this same room rather than a separate page: the keys,
 // the flash and the undo stack are already muscle memory, and a disagreement
 // still ends in the same act — putting a human label on our record.
-let mode = new URLSearchParams(location.search).get("mode") === "conflicts"
-  ? "conflicts" : "queue";
+const _m = new URLSearchParams(location.search).get("mode");
+let mode = (_m === "conflicts" || _m === "verify") ? _m : "queue";
 
 const VERDICT_TH = { false:"ไม่จริง / ข่าวปลอม", true:"จริง / แชร์ได้",
   misleading:"บิดเบือน / จริงบางส่วน", altered_media:"ภาพ/คลิปดัดแปลง · AI",
@@ -1913,9 +1952,10 @@ async function refill(){
   const src = $("source-select").value;
   const ord = $("order-select").value;
   try{
-    const res = await fetch(mode === "conflicts"
-      ? "/review/conflicts?limit=50"
-      : `/review/queue?limit=50&source=${encodeURIComponent(src)}&order=${encodeURIComponent(ord)}`);
+    const url = mode === "conflicts" ? "/review/conflicts?limit=50"
+              : mode === "verify"    ? "/review/verify?limit=50"
+              : `/review/queue?limit=50&source=${encodeURIComponent(src)}&order=${encodeURIComponent(ord)}`;
+    const res = await fetch(url);
     const data = await res.json();
     total = data.total; labeled = data.labeled;
     const have = new Set(queue.map(x=>x.id));
@@ -1949,6 +1989,7 @@ function show(item){
     ? "หัวข้อบทความ: " + item.title : "";
   closeClaimEditor();
   renderConflict(item);
+  renderEvidence(item);
   const d = item.published_at ? new Date(item.published_at).toLocaleDateString("th-TH",{year:"numeric",month:"short",day:"numeric"}) : "";
   const srcName = item.source || "web";
   const originTag = item.verdict_origin ? ` [${item.verdict_origin}]` : "";
@@ -1968,6 +2009,21 @@ function show(item){
     $("art-link").href = item.source_url || "#";
     $("meta").innerHTML = `${d} · <span style="font-weight:600">${srcName}</span>${originTag} · <a href="${item.source_url}" target="_blank" rel="noopener">เปิดดูต้นฉบับ ↗</a>`;
   }
+}
+// The quote is the whole point. A reviewer who can read the sentence the model
+// answered from does not need to watch three minutes of video to check it.
+function renderEvidence(item){
+  const q = item && (item.asr_quote || "").trim();
+  $("evidence").classList.toggle("show", !!q);
+  $("ev-tx").classList.remove("show");
+  if(!q) return;
+  const V = { false:"ไม่จริง / ข่าวปลอม", true:"จริง / แชร์ได้",
+              misleading:"บิดเบือน / จริงบางส่วน", altered_media:"ภาพ/คลิปดัดแปลง",
+              scam_alert:"เตือนภัยมิจฉาชีพ" };
+  $("ev-proposed").textContent = "→ เสนอว่า: " +
+    (V[item.verdict] || item.asr_raw_verdict || item.verdict || "—");
+  $("ev-quote").textContent = "“" + q + "”";
+  $("ev-tx").textContent = item.asr_transcript || "(ไม่มีบทถอดเสียง)";
 }
 function renderConflict(item){
   const t = item && item.theirs;
@@ -1990,11 +2046,20 @@ function renderConflict(item){
 }
 function applyMode(){
   const cf = mode === "conflicts";
+  const ev = mode === "verify";
+  $("ev-keys").style.display = ev ? "" : "none";
   $("cf-keys").style.display = cf ? "" : "none";
+  // Verify mode SHOWS the five label keys alongside the accept key. Agreeing is
+  // one keystroke; disagreeing has to be one keystroke too, and visible. Hiding
+  // them behind "they still work if you know them" is how a verification queue
+  // turns into a rubber stamp.
   $("q-keys").style.display = cf ? "none" : "";
-  $("source-select").style.display = cf ? "none" : "";
-  $("order-select").style.display = cf ? "none" : "";
-  $("tip-text").innerHTML = cf
+  $("source-select").style.display = (cf || ev) ? "none" : "";
+  $("order-select").style.display = (cf || ev) ? "none" : "";
+  $("tip-text").innerHTML = ev
+    ? "เครื่องถอดเสียงและเสนอผลไว้แล้ว พร้อมประโยคที่ใช้ตัดสิน · กด <b>A</b> ถ้าเห็นด้วย " +
+      "หรือกด <b>1–5</b> ถ้าเครื่องผิด · <b>T</b> ดูบทถอดเสียงเต็ม — ไม่ต้องเปิดคลิป"
+    : cf
     ? "อีกสำนักข่าวหนึ่งตรวจข้อกล่าวอ้างเดียวกันแล้ว และผลไม่ตรงกับป้ายที่เครื่องเดาไว้ · " +
       "กด <b>A</b> ถ้าเชื่อผลของเขา <b>K</b> ถ้ายืนยันของเรา — ทั้งสองบันทึกเป็น <b>human</b> · " +
       "ถ้าเป็นคนละเรื่องกัน กด <b>D</b> (แก้การจับคู่ ไม่แตะป้าย)"
@@ -2006,6 +2071,8 @@ function applyMode(){
     : "ไม่มีรายการค้างตรวจในคิว — รัน <code>scripts/build_dataset.py</code> แล้วตามด้วย <code>th-verify index</code> เพื่ออัปเดตชุดข้อมูล";
   $("foot-keys").textContent = cf
     ? "A ใช้ผลของสำนักข่าว · K ยืนยันป้ายของเรา · D คนละข้อกล่าวอ้าง · E แก้ · S ข้าม · U ย้อนกลับ"
+    : ev
+    ? "A ยืนยันตามเครื่อง · 1–5 แก้เอง · T บทถอดเสียง · S ข้าม · U ย้อนกลับ"
     : "ป้าย: 1 ปลอม · 2 จริง · 3 บิดเบือน · 4 สื่อดัดแปลง · 5 เตือนภัย · N ไม่ใช่ข้อกล่าวอ้าง · S ข้าม · U ย้อนกลับ";
   const u = new URL(location);
   cf ? u.searchParams.set("mode","conflicts") : u.searchParams.delete("mode");
@@ -2109,11 +2176,27 @@ function resolveConflict(which){
   label(v);
 }
 document.querySelectorAll(".key-btn").forEach(b=>b.addEventListener("click",()=>{
-  if(b.dataset.cf) resolveConflict(b.dataset.cf); else label(b.dataset.v);
+  if(b.dataset.cf) resolveConflict(b.dataset.cf);
+  else if(b.dataset.ev === "accept"){
+    if(current && FLASH[current.verdict]) label(current.verdict);
+  } else label(b.dataset.v);
 }));
+$("ev-more").addEventListener("click", ()=> $("ev-tx").classList.toggle("show"));
 document.addEventListener("keydown",e=>{
   if(e.target.tagName === "TEXTAREA" || e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
   if(e.key === "e" || e.key === "E"){ e.preventDefault(); openClaimEditor(); return; }
+  if(mode === "verify"){
+    if(e.key === "t" || e.key === "T"){
+      e.preventDefault(); $("ev-tx").classList.toggle("show"); return;
+    }
+    if(e.key === "a" || e.key === "A"){
+      e.preventDefault();
+      // Accepting is the machine's own proposal promoted to a human label --
+      // the reviewer read the quote and agreed. Same provenance as typing it.
+      if(current && FLASH[current.verdict]) label(current.verdict);
+      return;
+    }
+  }
   if(mode === "conflicts"){
     const cf = {"a":"accept","A":"accept","k":"keep","K":"keep",
                 "d":"notsame","D":"notsame"}[e.key];
