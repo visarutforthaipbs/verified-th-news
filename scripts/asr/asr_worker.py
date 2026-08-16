@@ -38,6 +38,7 @@ import argparse
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -46,7 +47,18 @@ import urllib.request
 from pathlib import Path
 
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://127.0.0.1:11434")
-OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen2.5:14b")
+# Chosen by measurement, not reputation: benchmarked against the 105 records
+# holding both a human verdict and a transcript (scripts/asr/bench_models.py).
+#   qwen2.5:14b   59.0%   misleading 32.4%
+#   qwen3.8:27b   66.7%   misleading 32.4%
+#   typhoon-s-8b  67.6%   misleading 51.4%   <- this
+#   pathumma-8b   64.8%   misleading 54.1%
+# Both Thai 8B models beat both Qwen models by ~20 points on misleading, which
+# is where the programme's three-way convention lives. Scale does not help: the
+# 27B matched the 14B to the decimal. At 5GB this also fits beside whisper.
+OLLAMA_MODEL = os.getenv(
+    "OLLAMA_MODEL",
+    "hf.co/mradermacher/typhoon-s-thaillm-8b-instruct-research-preview-GGUF:Q4_K_M")
 VALID = {"false", "true", "misleading", "altered_media"}
 
 
@@ -107,7 +119,13 @@ def norm(s: str) -> str:
 
 def ollama(prompt: str) -> dict:
     body = {"model": OLLAMA_MODEL, "prompt": prompt, "stream": False,
-            "format": "json", "options": {"temperature": 0, "num_predict": 300}}
+            # think=False is not optional. Typhoon-S is Qwen3-based and Ollama
+            # enables reasoning by default; combined with format="json" the
+            # response comes back EMPTY, which surfaces as a JSON decode error on
+            # every single record. It cost a 25-record pilot to find, having
+            # already been fixed once in bench_models.py and not carried across.
+            "format": "json", "think": False,
+            "options": {"temperature": 0, "num_predict": 512}}
     req = urllib.request.Request(f"{OLLAMA_URL}/api/generate",
                                  data=json.dumps(body).encode(),
                                  headers={"Content-Type": "application/json"})
@@ -115,19 +133,38 @@ def ollama(prompt: str) -> dict:
         return json.loads(json.loads(r.read())["response"])
 
 
-def fetch_tail_audio(url: str, seconds: int, workdir: Path) -> Path | None:
+AUDIO_CACHE = Path(os.getenv("AUDIO_CACHE", "")) if os.getenv("AUDIO_CACHE") else None
+
+
+def fetch_tail_audio(url: str, seconds: int, workdir: Path,
+                     cache_key: str | None = None) -> Path | None:
     """Download audio and keep only the closing `seconds`.
 
     yt-dlp writes the whole track; ffmpeg then trims from the end. Trimming
-    server-side is not possible, but the download is small relative to the
-    transcription cost so this is not the bottleneck.
+    server-side is not possible.
+
+    Set AUDIO_CACHE to keep the trimmed clip. The download is the unreliable and
+    slow half of this pipeline -- roughly half of 105 attempts failed on
+    2026-08-17 -- and without a cache every experiment re-downloads everything.
+    That is what made comparing two ASR models impossible: the baseline
+    transcripts were six weeks old, the challenger's had to be re-fetched, and
+    half the audio would not come down. A few GB of mp3 buys repeatable
+    experiments and takes YouTube off the critical path.
     """
+    if AUDIO_CACHE and cache_key:
+        cached = AUDIO_CACHE / f"{cache_key}.mp3"
+        if cached.exists():
+            return cached
     raw = workdir / "a.mp3"
     trimmed = workdir / "tail.mp3"
     for p in (raw, trimmed):
         p.unlink(missing_ok=True)
     r = subprocess.run(
-        [YTDLP, "-f", "bestaudio", "-x", "--audio-format", "mp3",
+        # --js-runtimes node: YouTube needs JS to decipher some stream formats and
+        # yt-dlp only enables deno by default, so without this it warns and then
+        # fails a share of downloads outright. Node 22 is installed on the GPU box.
+        [YTDLP, "--js-runtimes", "node",
+         "-f", "bestaudio", "-x", "--audio-format", "mp3",
          "--audio-quality", "5", "--no-playlist", "--quiet", "--no-warnings",
          "-o", str(workdir / "a.%(ext)s"), url],
         capture_output=True, text=True, timeout=300)
@@ -145,6 +182,9 @@ def fetch_tail_audio(url: str, seconds: int, workdir: Path) -> Path | None:
     subprocess.run(
         ["ffmpeg", "-v", "error", "-y", "-ss", str(max(0, total - seconds)),
          "-i", str(raw), str(trimmed)], capture_output=True, timeout=120)
+    if AUDIO_CACHE and cache_key and trimmed.exists():
+        AUDIO_CACHE.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(trimmed, AUDIO_CACHE / f"{cache_key}.mp3")
     return trimmed if trimmed.exists() else raw
 
 
@@ -179,7 +219,8 @@ def main() -> int:
         for i, t in enumerate(tasks, 1):
             rec = {"id": t["id"], "url": t["url"], "title": t["title"]}
             try:
-                audio = fetch_tail_audio(t["url"], args.tail_seconds, workdir)
+                audio = fetch_tail_audio(t["url"], args.tail_seconds, workdir,
+                                         cache_key=str(t.get("id") or ""))
                 if audio is None:
                     rec["status"] = "unavailable"
                     stats["unavailable"] += 1
