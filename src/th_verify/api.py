@@ -96,12 +96,16 @@ def review_page() -> FileResponse:
 @app.get("/review/queue")
 def review_queue(
     source: str | None = Query(None, description="Source filter (e.g. sure_share, cofact, thaipbs, afnc, afp, all)"),
-    order: str = Query("asc", description="Sort order: 'asc' (oldest first) or 'desc' (newest first)"),
+    order: str = Query("desc", description="Sort order: 'desc' (newest first, the default) or 'asc' (oldest first)"),
     limit: int = Query(25, ge=1, le=100)
 ) -> dict:
     """Unlabeled/heuristic claim-check records awaiting human review."""
     repo = Repository(Settings.from_env().database_path)
-    sort_dir = "DESC" if order.lower() == "desc" else "ASC"
+    # Newest first by default. The daily sync adds only 2-4 records that need a
+    # human -- the other sources arrive with the publisher's verdict -- and
+    # oldest-first buried them behind 6,500 records of 2015 backlog, so nobody
+    # saw today's arrivals at all.
+    sort_dir = "ASC" if order.lower() == "asc" else "DESC"
     with repo.connect() as conn:
         where_clause = ""
         params_count: list[str] = []
@@ -161,12 +165,27 @@ def review_queue(
         # those records hold the publisher's actual wording, a literal
         # verdict='unknown' test would drop them from the queue entirely, which is
         # the opposite of what storing the truthful value should achieve.
-        params_rows.append(limit * 40)
-        rows = [r for r in conn.execute(sql_rows, params_rows).fetchall()
-                if is_factcheck(r["source"], r["title"], r["verdict"],
-                                r["explanation"], r["verdict_origin"])
-                and (normalize_verdict(r["source"], r["verdict"]) == "unknown"
-                     or r["verdict_origin"] == "heuristic")][:limit]
+        # Walk forward until `limit` survivors are found, rather than filtering a
+        # single fixed window. The old code fetched limit*40 rows once, so a
+        # small limit examined only the oldest few hundred records -- and if
+        # those all happened to be non-claims, it returned NOTHING while
+        # thousands waited. `/review/queue?limit=3` reported an empty queue with
+        # 6,518 records in it. The browser always asks for 50 so it never showed
+        # there, which is exactly what makes it worth fixing.
+        rows: list = []
+        offset, SCAN, MAX_SCAN = 0, max(limit * 40, 400), 30000
+        while len(rows) < limit and offset < MAX_SCAN:
+            batch = conn.execute(sql_rows + " OFFSET ?",
+                                 [*params_rows, SCAN, offset]).fetchall()
+            if not batch:
+                break
+            rows.extend(r for r in batch
+                        if is_factcheck(r["source"], r["title"], r["verdict"],
+                                        r["explanation"], r["verdict_origin"])
+                        and (normalize_verdict(r["source"], r["verdict"]) == "unknown"
+                             or r["verdict_origin"] == "heuristic"))
+            offset += SCAN
+        rows = rows[:limit]
 
 
     return {"total": total or 0, "labeled": done or 0,

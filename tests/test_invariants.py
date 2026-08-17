@@ -231,6 +231,40 @@ def test_multi_source_review_queue(monkeypatch, tmp_path):
         assert data_cofact["items"][0]["source"] == "cofact"
 
 
+def test_queue_finds_records_behind_a_wall_of_non_claims(monkeypatch, tmp_path):
+    """A small limit must not report an empty queue while records wait.
+
+    The endpoint filters non-claims in Python, so it over-fetches first. When
+    that was one fixed window of limit*40, `?limit=3` examined only the first
+    120 rows -- and if those were all non-claims it returned nothing, with
+    thousands still queued. Production never saw it because the browser always
+    asks for 50.
+    """
+    db_path = tmp_path / "wall.db"
+    monkeypatch.delenv("TH_VERIFY_READONLY", raising=False)
+    monkeypatch.setenv("TH_VERIFY_DATABASE_PATH", str(db_path))
+    import th_verify.api as api
+    importlib.reload(api)
+    r = Repository(db_path)
+    r.initialize()
+    # 150 records that is_factcheck rejects, then one real claim behind them.
+    r.upsert_many([
+        make_record(source="cofact", source_id=f"junk{i}",
+                    title="ข่าวลวงประจำสัปดาห์ สรุปรวม",
+                    explanation="ข่าวลวงประจำสัปดาห์ " * 30,
+                    published_at=f"2020-01-01T00:00:{i:02d}Z")
+        for i in range(150)
+    ] + [make_record(source="sure_share", source_id="real1",
+                     title="กินยาพาราแล้วอันตราย จริงหรือ?",
+                     published_at="2019-01-01T00:00:00Z")])
+
+    from fastapi.testclient import TestClient
+    with TestClient(api.app) as client:
+        got = client.get("/review/queue?order=asc&limit=3").json()
+        assert got["items"], "queue reported empty while a real claim was waiting"
+        assert got["items"][0]["source_id"] == "real1"
+
+
 def test_review_queue_sorting(monkeypatch, tmp_path):
     db_path = tmp_path / "sort_test.db"
     monkeypatch.delenv("TH_VERIFY_READONLY", raising=False)
