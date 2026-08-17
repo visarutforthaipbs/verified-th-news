@@ -106,13 +106,26 @@ async def live_check(source: str, sample: int, settings: Settings, rep: Report) 
             "sure_share": lambda: SureShareCollector(client, settings.youtube_api_key),
             "afnc": lambda: AfncCollector(client),
         }
-        exp = EXPECT[source]
-        try:
-            got = []
-            async for rec in collectors[source]().collect(mode="delta", limit=sample):
-                got.append(rec)
-        except Exception as exc:
-            rep.add(FAIL, source, f"live fetch raised {type(exc).__name__}: {str(exc)[:90]}")
+        # Retry before crying wolf. On its first unattended night this reported
+        # FAIL because AFNC timed out once -- four minutes after AFNC's real sync
+        # had succeeded with 56 records, and with every stored check passing. A
+        # red banner for a transient network blip is worse than no banner: it
+        # teaches the reader to ignore the one that matters.
+        got, last = [], None
+        for attempt in range(3):
+            try:
+                got = []
+                async for rec in collectors[source]().collect(mode="delta", limit=sample):
+                    got.append(rec)
+                last = None
+                break
+            except Exception as exc:
+                last = exc
+                if attempt < 2:
+                    await asyncio.sleep(5 * (attempt + 1))
+        if last is not None:
+            rep.add(FAIL, source,
+                    f"live fetch failed 3 times, last {type(last).__name__}: {str(last)[:70]}")
             return
 
     rep.add(OK, source, f"live fetch returned {len(got)} records")
