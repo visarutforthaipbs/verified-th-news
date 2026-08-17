@@ -211,6 +211,20 @@ def stored_check(db: str, source: str, rep: Report) -> None:
             rep.add(OK, source, f"last new record {last_new} ({age}d ago), "
                                 f"newest article {(row['newest'] or '')[:10]}")
 
+    # Report what ARRIVED, never records_seen. sync_runs.records_seen is a PAGE
+    # SIZE -- cofact reports 20 every night, sure_share 50, afp 100, across 31
+    # runs with min == max, whatever the publishers did that day. Quoting it as
+    # output implies AFP filed 100 fact-checks and Sure & Share shot 50 videos.
+    # first_seen_at is the honest column: the upsert deliberately leaves it alone.
+    day_ago = (datetime.now(timezone.utc) - timedelta(days=1)).isoformat()
+    fresh = con.execute("SELECT COUNT(*) FROM fact_checks WHERE source=? "
+                        "AND first_seen_at >= ?", (source, day_ago)).fetchone()[0]
+    week = con.execute("SELECT COUNT(*) FROM fact_checks WHERE source=? "
+                       "AND first_seen_at >= ?",
+                       (source, (datetime.now(timezone.utc) - timedelta(days=7)).isoformat())
+                       ).fetchone()[0]
+    rep.add(OK, source, f"new records: {fresh} in the last 24h, {week} in 7 days")
+
     since = (datetime.now(timezone.utc) - timedelta(days=14)).isoformat()
     recent = con.execute(
         "SELECT verdict, published_at, image_url, explanation, title, claim "
