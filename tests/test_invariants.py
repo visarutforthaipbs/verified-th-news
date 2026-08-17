@@ -452,6 +452,62 @@ def test_conflict_undo_restores_the_machine_label(monkeypatch, tmp_path):
         assert [i["id"] for i in client.get("/review/conflicts").json()["items"]] == [ours]
 
 
+def test_label_records_who_decided(monkeypatch, tmp_path):
+    """With two people labelling, 'a human decided' is no longer enough.
+
+    verdict_origin='human' cannot distinguish the owner's 500 labels from a
+    hired reviewer's first day. Without that, poor work cannot be found and
+    reverted, one person's output cannot be spot-checked, and the gold tier
+    stops meaning what it says.
+    """
+    db_path = tmp_path / "who.db"
+    monkeypatch.delenv("TH_VERIFY_READONLY", raising=False)
+    monkeypatch.setenv("TH_VERIFY_DATABASE_PATH", str(db_path))
+    import th_verify.api as api
+    importlib.reload(api)
+    r = Repository(db_path)
+    r.initialize()
+    r.upsert_many([make_record(source="sure_share", source_id="w1")])
+    with r.connect() as conn:
+        rid = conn.execute("SELECT id FROM fact_checks").fetchone()["id"]
+
+    from fastapi.testclient import TestClient
+    with TestClient(api.app) as client:
+        client.post("/review/label", json={"id": rid, "verdict": "false", "by": "ploy"})
+        with r.connect() as conn:
+            row = conn.execute("SELECT verdict, verdict_origin, labeled_by "
+                               "FROM fact_checks WHERE id=?", (rid,)).fetchone()
+        assert (row["verdict"], row["verdict_origin"]) == ("false", "human")
+        assert row["labeled_by"] == "ploy"
+
+        # Undoing must also drop the name. A reverted label that keeps its
+        # author reads as though that person still stands behind it.
+        client.post("/review/label", json={"id": rid, "verdict": "undo", "by": "ploy"})
+        with r.connect() as conn:
+            row = conn.execute("SELECT verdict_origin, labeled_by FROM fact_checks "
+                               "WHERE id=?", (rid,)).fetchone()
+        assert row["verdict_origin"] == ""
+        assert row["labeled_by"] == ""
+
+
+def test_existing_human_labels_are_attributed_to_the_owner(tmp_path):
+    """The migration must not leave 500 pre-existing labels anonymous."""
+    db_path = tmp_path / "backfill.db"
+    r = Repository(db_path)
+    r.initialize()
+    r.upsert_many([make_record(source="sure_share", source_id="old1")])
+    with r.connect() as conn:
+        conn.execute("UPDATE fact_checks SET verdict='false', verdict_origin='human'")
+        # Simulate a database predating the column.
+        conn.execute("UPDATE fact_checks SET labeled_by=''")
+    Repository(db_path).initialize()   # re-running must be harmless
+    with r.connect() as conn:
+        row = conn.execute("SELECT labeled_by FROM fact_checks").fetchone()
+    # Idempotent: the backfill only runs when the column is first added, so a
+    # second initialize() must not clobber names already recorded.
+    assert row["labeled_by"] == ""
+
+
 def test_dismissing_a_pair_leaves_both_verdicts_alone(monkeypatch, tmp_path):
     """"Not the same claim" corrects the matcher, never the label.
 

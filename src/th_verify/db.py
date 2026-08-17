@@ -270,6 +270,27 @@ class Repository:
             # than a copy of the headline, so mark those as publisher-supplied.
             conn.execute("UPDATE fact_checks SET claim_origin='source' "
                          "WHERE source='afp' AND claim <> '' AND claim <> title")
+        if "labeled_by" not in cols:
+            # WHICH human, not just that a human decided.
+            #
+            # verdict_origin='human' was sufficient while one person labelled
+            # everything. The moment a second reviewer starts, the owner's
+            # existing labels and the new ones become indistinguishable: you
+            # cannot spot-check one person's work, cannot revert it if the
+            # quality turns out poor, and "gold tier" stops meaning "the owner
+            # checked this".
+            #
+            # This is attribution, not authentication. The reviewer names
+            # themselves in the review room and the server records what it is
+            # told -- it stops honest work from being anonymous, and does not
+            # pretend to stop anyone dishonest. Access control is Tailscale's
+            # job, and /review has no auth of its own.
+            conn.execute("ALTER TABLE fact_checks ADD COLUMN "
+                         "labeled_by TEXT NOT NULL DEFAULT ''")
+            # Everything human-labelled before this column existed was the
+            # owner's own work, done alone.
+            conn.execute("UPDATE fact_checks SET labeled_by='visarut' "
+                         "WHERE verdict_origin LIKE 'human%' OR claim_origin='human'")
 
     def upsert_many(self, records: Iterable[FactCheckRecord]) -> int:
         sql = """INSERT INTO fact_checks (

@@ -1703,6 +1703,21 @@ select.fnl-select {
   cursor:pointer; }
 .key-btn.k-ev { border-color:var(--fnl-yellow); color:var(--fnl-yellow); }
 
+/* ── who is reviewing ─────────────────────────────────────────────────── */
+#who { font-family:var(--fnl-font-mono); font-size:var(--fnl-fs-micro);
+  letter-spacing:.06em; color:var(--fnl-gray); background:none;
+  border:1px solid var(--fnl-line); padding:.3em .7em; cursor:pointer; }
+#who:hover { color:var(--fnl-yellow); border-color:var(--fnl-yellow); }
+.gate { position:fixed; inset:0; background:rgba(0,0,0,.94); z-index:50;
+  display:none; align-items:center; justify-content:center; }
+.gate.show { display:flex; }
+.gate-box { border:1.5px solid var(--fnl-yellow); background:var(--fnl-black);
+  padding:1.6rem 1.8rem; max-width:30rem; }
+.gate-box h2 { font-size:1.15rem; margin:0 0 .5rem; }
+.gate-box p { color:var(--fnl-gray); font-size:.92rem; line-height:1.6; margin:0 0 .9rem; }
+#who-input { width:100%; background:var(--fnl-black); color:var(--fnl-white);
+  border:1.5px solid var(--fnl-yellow); padding:.6rem .7rem; font:inherit; font-size:1rem; }
+
 /* ── collector health — only ever visible when something is wrong ─────── */
 .health { display:none; margin:0 0 .9rem; border:1.5px solid var(--fnl-red);
   background:var(--fnl-black); padding:.55rem .75rem; }
@@ -1813,6 +1828,7 @@ main { display:grid; grid-template-columns:1.25fr 1fr; gap:1.6rem; margin-top:1.
     <option value="asc">เก่าสุดก่อน (Oldest First)</option>
     <option value="desc">ใหม่สุดก่อน (Newest First)</option>
   </select>
+  <button id="who" title="เปลี่ยนชื่อผู้ตรวจ">ผู้ตรวจ: –</button>
   <div class="progress">ติดป้ายแล้ว <b id="done-n">–</b> / <span id="total-n">–</span> รายการ</div>
 </header>
 
@@ -1918,6 +1934,18 @@ main { display:grid; grid-template-columns:1.25fr 1fr; gap:1.6rem; margin-top:1.
   <p id="done-text">ไม่มีรายการค้างตรวจในคิว — รัน <code>scripts/build_dataset.py</code> แล้วตามด้วย <code>th-verify index</code> เพื่ออัปเดตชุดข้อมูล</p>
 </div>
 
+<div class="gate" id="gate">
+  <div class="gate-box">
+    <h2>คุณคือใคร ?</h2>
+    <p>ป้ายทุกอันที่คุณติดจะบันทึกชื่อนี้ไว้ เพื่อให้ตรวจสอบย้อนหลังได้ว่าใครตัดสินอะไร
+       — ไม่ใช่ระบบล็อกอิน แต่เป็นการบันทึกที่มาของงาน</p>
+    <input id="who-input" placeholder="เช่น visarut หรือ ploy" autocomplete="off" spellcheck="false">
+    <div class="c-edit-row" style="margin-top:.8rem">
+      <button id="who-save" class="c-btn">เริ่มตรวจ</button>
+    </div>
+  </div>
+</div>
+
 <div class="flash" id="flash"><span id="flash-text"></span></div>
 <footer class="fnl-footer">
   <span id="foot-keys">ป้าย: 1 ปลอม · 2 จริง · 3 บิดเบือน · 4 สื่อดัดแปลง · 5 เตือนภัย · N ไม่ใช่ข้อกล่าวอ้าง · S ข้าม · U ย้อนกลับ</span>
@@ -1938,6 +1966,19 @@ const $ = id => document.getElementById(id);
 // Conflicts is a mode of this same room rather than a separate page: the keys,
 // the flash and the undo stack are already muscle memory, and a disagreement
 // still ends in the same act — putting a human label on our record.
+// Who is reviewing. Attribution, not authentication: it identifies honest work
+// so that with two people labelling you can still tell whose judgement is
+// whose, spot-check one person's output, or revert it. Access control is
+// Tailscale's -- this endpoint has no auth of its own and must not be exposed
+// publicly.
+let reviewer = localStorage.getItem("th_reviewer") || "";
+function setReviewer(name){
+  reviewer = (name || "").trim().slice(0, 40);
+  localStorage.setItem("th_reviewer", reviewer);
+  $("who").textContent = "ผู้ตรวจ: " + (reviewer || "–");
+  $("gate").classList.toggle("show", !reviewer);
+}
+
 const _m = new URLSearchParams(location.search).get("mode");
 let mode = (_m === "conflicts" || _m === "verify") ? _m : "queue";
 
@@ -2097,7 +2138,7 @@ async function label(v){
       await fetch("/review/conflict/dismiss",{method:"POST",
         headers:{"Content-Type":"application/json"},
         body:JSON.stringify({ours_id:prev.item.id, theirs_id:prev.item.theirs.id,
-                             undo:true})});
+                             undo:true, by:reviewer})});
       if(current) queue.unshift(current);
       show(prev.item);
       return;
@@ -2105,7 +2146,7 @@ async function label(v){
     // Hand back the label the record held before we touched it, so undoing a
     // conflict decision returns it to the queue instead of erasing the guess.
     await fetch("/review/label",{method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({id:prev.item.id, verdict:"undo",
+      body:JSON.stringify({id:prev.item.id, verdict:"undo", by:reviewer,
         restore_verdict: prev.item.verdict, restore_origin: prev.item.verdict_origin})});
     if(prev.v !== "skip" && prev.v !== "not_claim") labeled = Math.max(0, labeled-1);
     if(current) queue.unshift(current);
@@ -2119,7 +2160,7 @@ async function label(v){
   if(v !== "skip" && v !== "not_claim"){ labeled++; updateProgress(); }
   next();  // advance immediately; save in the background
   fetch("/review/label",{method:"POST",headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({id:item.id, verdict:v})})
+    body:JSON.stringify({id:item.id, verdict:v, by:reviewer})})
     .catch(()=>{ alert("บันทึกไม่สำเร็จ — รายการ: " + item.title); });
 }
 function openClaimEditor(){
@@ -2134,7 +2175,7 @@ async function saveClaim(){
   if(v.length < 8 || !current){ closeClaimEditor(); return; }
   await fetch("/review/claim", {method:"POST",
     headers:{"Content-Type":"application/json"},
-    body: JSON.stringify({id: current.id, claim: v})});
+    body: JSON.stringify({id: current.id, claim: v, by: reviewer})});
   current.claim = v; current.claim_origin = "human";
   $("claim").textContent = v;
   $("claim-origin").textContent = "คุณแก้ไข · E เพื่อแก้";
@@ -2166,7 +2207,7 @@ function resolveConflict(which){
     next();
     fetch("/review/conflict/dismiss",{method:"POST",
       headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({ours_id:item.id, theirs_id:item.theirs.id})})
+      body:JSON.stringify({ours_id:item.id, theirs_id:item.theirs.id, by:reviewer})})
       .catch(()=>{ alert("บันทึกไม่สำเร็จ — รายการ: " + item.title); });
     return;
   }
@@ -2182,8 +2223,21 @@ document.querySelectorAll(".key-btn").forEach(b=>b.addEventListener("click",()=>
   } else label(b.dataset.v);
 }));
 $("ev-more").addEventListener("click", ()=> $("ev-tx").classList.toggle("show"));
+$("who").addEventListener("click", ()=>{
+  $("who-input").value = reviewer;
+  $("gate").classList.add("show");
+  $("who-input").focus();
+});
+$("who-save").addEventListener("click", ()=>{
+  const v = $("who-input").value.trim();
+  if(v) setReviewer(v);
+});
+$("who-input").addEventListener("keydown", e=>{
+  if(e.key === "Enter"){ e.preventDefault(); $("who-save").click(); }
+});
 document.addEventListener("keydown",e=>{
   if(e.target.tagName === "TEXTAREA" || e.target.tagName === "INPUT" || e.target.tagName === "SELECT") return;
+  if(!reviewer) return;   // the gate is up; nothing is labelled anonymously
   if(e.key === "e" || e.key === "E"){ e.preventDefault(); openClaimEditor(); return; }
   if(mode === "verify"){
     if(e.key === "t" || e.key === "T"){
@@ -2255,6 +2309,7 @@ async function checkCollectors(){
 }
 
 (async ()=>{
+  setReviewer(reviewer);
   checkCollectors();
   $("mode-select").value = mode;
   applyMode();

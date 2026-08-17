@@ -83,6 +83,9 @@ class LabelRequest(BaseModel):
     # state back so undo restores it instead.
     restore_verdict: str | None = None
     restore_origin: str | None = None
+    # Who is labelling. Attribution, not authentication -- the server records
+    # what the review room tells it. Access control is Tailscale's job.
+    by: str = Field("", max_length=40)
 
 
 @app.get("/review", include_in_schema=False)
@@ -298,6 +301,7 @@ class DismissRequest(BaseModel):
     ours_id: int
     theirs_id: int
     undo: bool = False
+    by: str = Field("", max_length=40)
 
 
 @app.post("/review/conflict/dismiss")
@@ -325,6 +329,7 @@ def review_conflict_dismiss(req: DismissRequest) -> dict:
 class ClaimRequest(BaseModel):
     id: int
     claim: str = Field(min_length=8, max_length=400)
+    by: str = Field("", max_length=40)
 
 
 @app.post("/review/claim")
@@ -343,9 +348,9 @@ def review_claim(req: ClaimRequest) -> dict:
     repo = Repository(Settings.from_env().database_path)
     with repo.connect() as conn:
         conn.execute(
-            "UPDATE fact_checks SET claim=?, claim_origin='human', labeled_at=? "
-            "WHERE id=?",
-            (req.claim.strip(), utc_now(), req.id),
+            "UPDATE fact_checks SET claim=?, claim_origin='human', labeled_at=?,"
+            " labeled_by=? WHERE id=?",
+            (req.claim.strip(), utc_now(), req.by.strip(), req.id),
         )
     return {"ok": True}
 
@@ -361,13 +366,13 @@ def review_label(req: LabelRequest) -> dict:
             if req.restore_origin in ("llm", "heuristic") and req.restore_verdict:
                 conn.execute(
                     "UPDATE fact_checks SET verdict=?, verdict_origin=?,"
-                    " labeled_at=NULL WHERE id=? AND verdict_origin LIKE 'human%'",
+                    " labeled_at=NULL, labeled_by='' WHERE id=? AND verdict_origin LIKE 'human%'",
                     (req.restore_verdict, req.restore_origin, req.id),
                 )
             else:
                 conn.execute(
                     "UPDATE fact_checks SET verdict='unknown', verdict_origin='',"
-                    " labeled_at=NULL WHERE id=? AND verdict_origin LIKE 'human%'",
+                    " labeled_at=NULL, labeled_by='' WHERE id=? AND verdict_origin LIKE 'human%'",
                     (req.id,),
                 )
         elif req.verdict == "not_claim":
@@ -376,20 +381,20 @@ def review_label(req: LabelRequest) -> dict:
             # them loses the only signal that can retire an item permanently.
             conn.execute(
                 "UPDATE fact_checks SET verdict_origin='human_not_claim',"
-                " labeled_at=? WHERE id=?",
-                (utc_now(), req.id),
+                " labeled_at=?, labeled_by=? WHERE id=?",
+                (utc_now(), req.by.strip(), req.id),
             )
         elif req.verdict == "skip":
             conn.execute(
                 "UPDATE fact_checks SET verdict_origin='human_skipped',"
-                " labeled_at=? WHERE id=?",
-                (utc_now(), req.id),
+                " labeled_at=?, labeled_by=? WHERE id=?",
+                (utc_now(), req.by.strip(), req.id),
             )
         elif req.verdict in HUMAN_LABELS:
             conn.execute(
                 "UPDATE fact_checks SET verdict=?, verdict_origin='human',"
-                " labeled_at=? WHERE id=?",
-                (req.verdict, utc_now(), req.id),
+                " labeled_at=?, labeled_by=? WHERE id=?",
+                (req.verdict, utc_now(), req.by.strip(), req.id),
             )
         else:
             raise HTTPException(status_code=422, detail=f"bad verdict: {req.verdict}")
