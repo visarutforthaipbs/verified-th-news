@@ -40,6 +40,7 @@ import os
 import re
 import shutil
 import subprocess
+import urllib.request
 import sys
 import tempfile
 import time
@@ -135,6 +136,75 @@ def ollama(prompt: str) -> dict:
 
 AUDIO_CACHE = Path(os.getenv("AUDIO_CACHE", "")) if os.getenv("AUDIO_CACHE") else None
 
+# Skip captions with USE_CAPTIONS=0 to force the audio path (useful when
+# comparing the two, or if YouTube's Thai ASR regresses).
+USE_CAPTIONS = os.getenv("USE_CAPTIONS", "1") != "0"
+_THAI = "\u0e00-\u0e7f"
+
+
+def _despace(text: str) -> str:
+    """YouTube's Thai ASR puts a space between syllables; Thai does not.
+
+    Left in, every downstream string comparison sees different text for the same
+    words -- including the verbatim-quote guard, which would then reject nearly
+    everything the model quoted.
+    """
+    text = re.sub(r"\[[^\]]{0,20}\]", " ", text)          # [เพลง], [ดนตรี]
+    text = re.sub(f"(?<=[{_THAI}]) (?=[{_THAI}])", "", text)
+    return re.sub(r"\s+", " ", text).strip()
+
+
+class CaptionsRateLimited(RuntimeError):
+    """YouTube returned 429 for the caption text.
+
+    Distinguished from "this video has no Thai captions" because the responses
+    are opposite instructions: no captions means fall back to audio, 429 means
+    stop and come back later, or fetch from a machine whose IP is not burnt.
+    An earlier version returned None for both and a rate-limited batch looked
+    exactly like a batch of videos without subtitles.
+    """
+
+
+def fetch_tail_captions(url: str, seconds: int) -> str | None:
+    """The closing `seconds` of the Thai auto-captions, or None if there are none.
+
+    Tried before downloading anything. The download is this pipeline's expensive
+    and fragile half -- half of 1,858 attempts failed to throttling on
+    2026-08-17 -- while captions are a light request that succeeded on every
+    video whose audio had 403'd. Measured on 32 records with both a human
+    verdict and a whisper transcript, caption text scored 81.2% against
+    whisper's 75.0%, so this costs no accuracy.
+
+    Only the TAIL, deliberately. Passing the whole programme scored 68.8% on the
+    same records: the verdict statement gets diluted among everything else said.
+    """
+    try:
+        import yt_dlp
+    except ImportError:
+        return None
+    try:
+        with yt_dlp.YoutubeDL({"quiet": True, "skip_download": True,
+                               "no_warnings": True}) as ydl:
+            info = ydl.extract_info(url, download=False)
+        auto = info.get("automatic_captions") or {}
+        track = auto.get("th") or auto.get("th-orig")
+        if not track:
+            return None
+        j3 = next((x for x in track if x.get("ext") == "json3"), track[0])
+        data = json.loads(urllib.request.urlopen(j3["url"], timeout=40).read())
+        dur = info.get("duration") or 0
+        events = [e for e in data.get("events", []) if e.get("segs")]
+        tail = [e for e in events
+                if (e.get("tStartMs", 0) / 1000) >= max(0, dur - seconds)]
+        text = _despace(" ".join(s.get("utf8", "") for e in tail for s in e["segs"]))
+        return text or None
+    except urllib.error.HTTPError as exc:
+        if exc.code == 429:
+            raise CaptionsRateLimited(url) from None
+        return None
+    except Exception:
+        return None
+
 
 def fetch_tail_audio(url: str, seconds: int, workdir: Path,
                      cache_key: str | None = None) -> Path | None:
@@ -208,25 +278,56 @@ def main() -> int:
         tasks = tasks[: args.limit]
     print(f"{len(tasks)} to process ({len(done)} already done)", flush=True)
 
-    from faster_whisper import WhisperModel
-    t0 = time.time()
-    model = WhisperModel(args.model, device="cuda", compute_type="float16")
-    print(f"whisper {args.model} loaded in {time.time()-t0:.1f}s", flush=True)
+    # Whisper is loaded on first use, not up front. When captions cover the whole
+    # batch -- which they do for 2022+ material -- the GPU is never touched at
+    # all, so this can run on a machine without one.
+    model = None
 
+    def whisper():
+        nonlocal model
+        if model is None:
+            from faster_whisper import WhisperModel
+            t0 = time.time()
+            model = WhisperModel(args.model, device="cuda", compute_type="float16")
+            print(f"whisper {args.model} loaded in {time.time()-t0:.1f}s", flush=True)
+        return model
+
+    global USE_CAPTIONS
     stats = {"labelled": 0, "unclear": 0, "rejected": 0, "unavailable": 0, "error": 0}
     with tempfile.TemporaryDirectory() as td, args.out.open("a", encoding="utf-8") as fh:
         workdir = Path(td)
         for i, t in enumerate(tasks, 1):
             rec = {"id": t["id"], "url": t["url"], "title": t["title"]}
             try:
-                audio = fetch_tail_audio(t["url"], args.tail_seconds, workdir,
-                                         cache_key=str(t.get("id") or ""))
-                if audio is None:
-                    rec["status"] = "unavailable"
-                    stats["unavailable"] += 1
-                else:
-                    segs, _ = model.transcribe(str(audio), language="th", beam_size=5)
+                transcript = None
+                if USE_CAPTIONS:
+                    try:
+                        transcript = fetch_tail_captions(t["url"], args.tail_seconds)
+                    except CaptionsRateLimited:
+                        # Loud, and only once: every later record would 429 too,
+                        # and a run that silently downgraded to audio would look
+                        # like the captions simply were not there.
+                        if USE_CAPTIONS:
+                            print("  captions rate-limited (429) from this host --"
+                                  " falling back to audio for the rest of the run",
+                                  flush=True)
+                        USE_CAPTIONS = False
+                    if transcript:
+                        rec["transcript_source"] = "captions"
+                if transcript is None:
+                    audio = fetch_tail_audio(t["url"], args.tail_seconds, workdir,
+                                             cache_key=str(t.get("id") or ""))
+                    if audio is None:
+                        rec["status"] = "unavailable"
+                        stats["unavailable"] += 1
+                        fh.write(json.dumps(rec, ensure_ascii=False) + "\n"); fh.flush()
+                        if i % 5 == 0:
+                            print(f"  {i}/{len(tasks)}  {stats}", flush=True)
+                        continue
+                    segs, _ = whisper().transcribe(str(audio), language="th", beam_size=5)
                     transcript = " ".join(s.text.strip() for s in segs).strip()
+                    rec["transcript_source"] = "whisper"
+                if True:
                     rec["transcript"] = transcript
                     if len(transcript) < 40:
                         rec["status"] = "unclear"
