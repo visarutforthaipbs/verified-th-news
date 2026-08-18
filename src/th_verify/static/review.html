@@ -1713,6 +1713,27 @@ select.fnl-select {
 .ev-agree.yes { background:var(--fnl-white); color:var(--fnl-black); }
 .ev-agree.no  { background:var(--fnl-red); color:var(--fnl-white); }
 
+/* ── touch devices (iPad) ─────────────────────────────────────────────────
+   The room was built for a keyboard: label with 1-5, A, K, D, S, U. On an
+   iPad every one of those is a tap instead, so anything tappable has to meet
+   Apple's 44pt minimum. The label buttons already did at 46px; the mode and
+   source dropdowns did not, at 26px, which is a miss on a control you use to
+   switch queues.
+
+   Keyed on `pointer: coarse` rather than screen width -- an iPad with a
+   Magic Keyboard is still a touch device, and a narrow window on a Mac is
+   not. The keyboard hints stay visible either way: an iPad Pro with a
+   keyboard can use them, and on a bare tablet they read as harmless labels.
+*/
+@media (pointer: coarse) {
+  .fnl-select { min-height: 44px; padding: .4em .6em; font-size: 1rem; }
+  .key-btn { min-height: 52px; }
+  .ev-more, .c-btn { min-height: 44px; padding: .5em 1em; }
+  #who { min-height: 44px; }
+  /* Safari zooms the page when a focused input is under 16px. */
+  #claim-input, #who-input { font-size: 16px; }
+}
+
 /* ── who is reviewing ─────────────────────────────────────────────────── */
 #who { font-family:var(--fnl-font-mono); font-size:var(--fnl-fs-micro);
   letter-spacing:.06em; color:var(--fnl-gray); background:none;
