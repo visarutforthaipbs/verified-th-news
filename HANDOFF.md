@@ -824,6 +824,52 @@ whole phrases in Thai, because Thai has no word spaces. Comparing a Thai
 transcript to an English one that way produced an apparent "4x more content"
 that was pure artefact. Use character counts, or compare like with like.
 
+## Two verdict signals per episode (found 2026-08-17, owner's insight)
+
+A ชัวร์ก่อนแชร์ episode has a fixed shape, and the owner pointed it out: the host
+states the claim, the expert answers, the host closes with the verdict. That
+gives TWO independent places to read the answer, and they are good at different
+things. Measured on 25 records with captions and a human label:
+
+| segment                        | false | misleading | overall |
+|--------------------------------|-------|------------|---------|
+| tail 45s (host's closing line) | 91.7% | 61.5%      | 76.0%   |
+| after ชัวร์เหรอ (expert answer) | 66.7% | **84.6%**  | 76.0%   |
+
+Identical overall, opposite strengths. The mechanism is plain once seen: the
+host says อย่าแชร์ for `false` and `misleading` alike, because the advice to the
+audience is the same either way. Only the expert says บางส่วนจริง. That is why
+every model in the bake-off plateaued on `misleading` -- the tail simply does
+not contain the distinction.
+
+**Agreement between the two is a confidence signal**, which is worth more than
+either segment alone:
+
+    agree     14/25 (56%)  ->  93% correct (13/14)
+    disagree  11/25 (44%)  ->  coin flip (tail 6, mid 5)
+
+So the design is not "pick the better segment" but: run both, auto-label where
+they agree, and route disagreements to /review?mode=verify. Roughly half the
+records at 93%, the other half explicitly marked uncertain, instead of 76% flat
+with a human checking everything.
+
+Caveat: n=25, no `true` records in the set. Validate at scale before trusting
+it -- but the effect is large and the mechanism is structural, not statistical.
+
+**The opening states the claim, too.** `บนโซเชียลแชร์ว่า… หือ ชัวร์เหรอ` is a fixed
+formula that names the claim more fully than the title does: the title says
+"3 วิธีกินไข่ต้ม ทำลายไต จริงหรือ?" while the opening lists all three methods.
+That is a cheap fix for the 3,836 Sure & Share records with no usable claim
+text, and it needs no LLM for the well-formed ones. The pipeline currently
+transcribes only the last 45 seconds and throws the opening away.
+
+**Speaker diarization is NOT needed for any of this.** It was the obvious next
+thought -- label who is talking -- but of the misleading records the model got
+wrong, none had quoted an expert hedge: three quoted the host's own closing
+line and two quoted neither. The errors are misreading the host, not confusing
+the speakers. Diarization would also need audio (the throttled, expensive path)
+plus pyannote and a HF token, to fix errors that are not happening.
+
 ## Sensible next steps
 
 1. Continue human labeling (biggest data-quality win per hour). Two queues now:
