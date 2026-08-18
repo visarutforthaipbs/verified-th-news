@@ -239,6 +239,25 @@ def _cofact_category(explanation: str, title: str) -> str:
     return e[:idx].strip() if 0 < idx < 90 else ""
 
 
+# Sure & Share's recurring explainer formats. KEYWORD teaches a term,
+# FACTSHEET summarises a topic, CHECK-LIST rounds up several stories -- none of
+# them puts a single claim up for adjudication.
+#
+# But the format alone is not the test, and the owner's own labels prove it. Of
+# 59 such records he judged by hand, 46 were "not a claim" and 13 carried a real
+# verdict, because the programme also uses these formats for genuine checks:
+# "ป่วยโควิด-19 ห้ามกินยาไอบูโพรเฟน จริงหรือ ? | ชัวร์ก่อนแชร์ FACTSHEET" is a claim
+# whatever the branding says.
+#
+# "จริงหรือ" is what separates them. Against those 59 human judgements the rule
+# below is right on 37 of 38 it excludes; a blanket format rule would have
+# retired 13 real claims. When in doubt it keeps the record in the queue, which
+# costs a reviewer one keystroke -- the opposite error costs a claim nobody ever
+# looks at again.
+SURE_SHARE_EXPLAINER_FORMATS = re.compile(
+    r"KEYWORD|CHECK\s*-?\s*LIST|FACT\s*SHEET", re.IGNORECASE)
+
+
 def is_factcheck(source: str, title: str, verdict: str,
                  explanation: str = "", verdict_origin: str = "") -> bool:
     """True when the record is an adjudicated claim rather than other content.
@@ -257,6 +276,9 @@ def is_factcheck(source: str, title: str, verdict: str,
         return False
     if (verdict or "").strip() in NON_FACTCHECK_SECTIONS:
         return False
+    if source == "sure_share" and SURE_SHARE_EXPLAINER_FORMATS.search(title or ""):
+        if "จริงหรือ" not in (title or ""):
+            return False
     if source == "cofact" and explanation:
         cat = _cofact_category(explanation, title)
         if cat.startswith(COFACT_NON_CLAIM_CATEGORIES):

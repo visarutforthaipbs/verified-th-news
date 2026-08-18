@@ -231,6 +231,33 @@ def test_multi_source_review_queue(monkeypatch, tmp_path):
         assert data_cofact["items"][0]["source"] == "cofact"
 
 
+@pytest.mark.parametrize("title,keep", [
+    # Explainer formats with no claim under review.
+    ("ชัวร์ก่อนแชร์ FACTSHEET : ยุงคุมยุง", False),
+    ("ชัวร์ก่อนแชร์ KEYWORD : PAP TGFIAEU ? -- ใช้แอปมากมาย", False),
+    ("ชัวร์ก่อนแชร์ CHECK-LIST : 5 เรื่องฮิต วิธีแก้ปวดเข่า", False),
+    # Same branding, but a claim is actually being adjudicated. The owner gave
+    # 13 records like these a real verdict by hand; a blanket format rule would
+    # have retired every one of them.
+    ("ป่วยโควิด-19 ห้ามกินยาไอบูโพรเฟนจริงหรือ ? | ชัวร์ก่อนแชร์ FACTSHEET", True),
+    ("ชัวร์ก่อนแชร์ FACTSHEET | เคล็ดลับบำรุงสายตาใช้ได้ จริงหรือ ?", True),
+    ("ข้อดีของผู้ชายหน้ามัน จริงหรือ ? | ชัวร์ก่อนแชร์ FACTSHEET", True),
+    # Ordinary episodes are untouched by the rule.
+    ("กินยาพาราแล้วอันตราย จริงหรือ?", True),
+    ("เดินถอยหลังดีต่อสุขภาพ", True),
+])
+def test_sure_share_explainer_formats_leave_real_claims_alone(title, keep):
+    from th_verify.normalized import is_factcheck
+    assert is_factcheck("sure_share", title, "unknown") is keep
+
+
+def test_explainer_rule_does_not_touch_other_sources():
+    """The formats are Sure & Share branding; another source using the word
+    KEYWORD in a headline is not making the same statement."""
+    from th_verify.normalized import is_factcheck
+    assert is_factcheck("afnc", "KEYWORD ใหม่ที่มิจฉาชีพใช้หลอกเหยื่อ", "ข่าวปลอม") is True
+
+
 def test_queue_finds_records_behind_a_wall_of_non_claims(monkeypatch, tmp_path):
     """A small limit must not report an empty queue while records wait.
 
