@@ -1702,6 +1702,16 @@ select.fnl-select {
   background:none; border:1px solid var(--fnl-line); padding:.25em .7em;
   cursor:pointer; }
 .key-btn.k-ev { border-color:var(--fnl-yellow); color:var(--fnl-yellow); }
+.ev-two { display:flex; gap:.6rem; flex-wrap:wrap; margin-top:.2rem; }
+.ev-side { flex:1 1 46%; border:1px solid var(--fnl-line); padding:.5rem .65rem; }
+.ev-who2 { font-family:var(--fnl-font-mono); font-size:var(--fnl-fs-micro);
+  letter-spacing:.08em; color:var(--fnl-gray); }
+.ev-v { font-size:1rem; font-weight:600; margin:.2rem 0 .3rem; }
+.ev-q { font-size:.88rem; line-height:1.55; color:var(--fnl-white); }
+.ev-agree { font-family:var(--fnl-font-mono); font-size:var(--fnl-fs-micro);
+  letter-spacing:.08em; padding:.25em .7em; margin-left:.5em; }
+.ev-agree.yes { background:var(--fnl-white); color:var(--fnl-black); }
+.ev-agree.no  { background:var(--fnl-red); color:var(--fnl-white); }
 
 /* ── who is reviewing ─────────────────────────────────────────────────── */
 #who { font-family:var(--fnl-font-mono); font-size:var(--fnl-fs-micro);
@@ -1872,6 +1882,18 @@ main { display:grid; grid-template-columns:1.25fr 1fr; gap:1.6rem; margin-top:1.
         <span class="ev-proposed" id="ev-proposed"></span>
       </div>
       <div class="ev-body">
+        <div class="ev-two" id="ev-two" style="display:none">
+          <div class="ev-side">
+            <div class="ev-who2">ผู้เชี่ยวชาญตอบ (ช่วงต้น)</div>
+            <div class="ev-v" id="ev-v-expert">–</div>
+            <div class="ev-q" id="ev-q-expert"></div>
+          </div>
+          <div class="ev-side">
+            <div class="ev-who2">พิธีกรสรุป (ช่วงท้าย)</div>
+            <div class="ev-v" id="ev-v-host">–</div>
+            <div class="ev-q" id="ev-q-host"></div>
+          </div>
+        </div>
         <div class="ev-quote" id="ev-quote"></div>
         <button class="ev-more" id="ev-more">ดูบทถอดเสียงทั้งหมด (T)</button>
         <div class="ev-tx" id="ev-tx"></div>
@@ -2061,9 +2083,32 @@ function renderEvidence(item){
   const V = { false:"ไม่จริง / ข่าวปลอม", true:"จริง / แชร์ได้",
               misleading:"บิดเบือน / จริงบางส่วน", altered_media:"ภาพ/คลิปดัดแปลง",
               scam_alert:"เตือนภัยมิจฉาชีพ" };
-  $("ev-proposed").textContent = "→ เสนอว่า: " +
-    (V[item.verdict] || item.asr_raw_verdict || item.verdict || "—");
-  $("ev-quote").textContent = "“" + q + "”";
+  const expertQ = (item.asr_quote_expert || "").trim();
+  const expertV = (item.asr_verdict_expert || "").trim();
+
+  // Two readings of the same episode. The host says อย่าแชร์ for false and
+  // misleading alike -- the audience advice is identical -- so the closing line
+  // cannot separate them; only the expert's answer can. When the two agree the
+  // machine is right 93% of the time, and when they conflict it is a coin flip,
+  // which is exactly when a human should look.
+  if(expertQ){
+    $("ev-two").style.display = "flex";
+    $("ev-quote").style.display = "none";
+    $("ev-v-expert").textContent = V[expertV] || expertV || "—";
+    $("ev-q-expert").textContent = "“" + expertQ + "”";
+    $("ev-v-host").textContent = V[item.verdict] || item.asr_raw_verdict || "—";
+    $("ev-q-host").textContent = "“" + q + "”";
+    const same = expertV && expertV === item.verdict;
+    $("ev-proposed").innerHTML = same
+      ? '<span class="ev-agree yes">ตรงกันทั้งสองช่วง — เชื่อถือได้สูง</span>'
+      : '<span class="ev-agree no">ไม่ตรงกัน — ต้องอ่านเองแล้วตัดสิน</span>';
+  } else {
+    $("ev-two").style.display = "none";
+    $("ev-quote").style.display = "";
+    $("ev-quote").textContent = "“" + q + "”";
+    $("ev-proposed").textContent = "→ เสนอว่า: " +
+      (V[item.verdict] || item.asr_raw_verdict || item.verdict || "—");
+  }
   $("ev-tx").textContent = item.asr_transcript || "(ไม่มีบทถอดเสียง)";
 }
 function renderConflict(item){

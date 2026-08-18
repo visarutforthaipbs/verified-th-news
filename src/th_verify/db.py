@@ -105,6 +105,23 @@ CREATE TABLE IF NOT EXISTS asr_evidence (
   raw_verdict TEXT NOT NULL DEFAULT '',
   status TEXT NOT NULL DEFAULT '',
   model TEXT NOT NULL DEFAULT '',
+  -- The SECOND reading of the same episode, from the expert's early answer
+  -- rather than the host's closing line.
+  --
+  -- A ชัวร์ก่อนแชร์ episode states its verdict twice, by two people, and they are
+  -- reliable about different things. Measured on 25 records: the host's close
+  -- gets `false` right 91.7% of the time and `misleading` only 61.5%; the
+  -- expert's answer is 66.7% and 84.6%. The host says อย่าแชร์ for false and
+  -- misleading alike -- the advice to the audience is identical -- so the
+  -- distinction simply is not present in the closing line. That is why every
+  -- model benchmarked plateaued on `misleading`.
+  --
+  -- Agreement between the two is worth more than either: they agree on 56% of
+  -- records and are right 93% of the time there, and disagree on 44% where it
+  -- is a coin flip. A reviewer seeing both can accept the agreements in one
+  -- keystroke and spend their attention on the conflicts.
+  quote_expert TEXT NOT NULL DEFAULT '',
+  verdict_expert TEXT NOT NULL DEFAULT '',
   created_at TEXT NOT NULL
 );
 CREATE TABLE IF NOT EXISTS conflict_dismissals (
@@ -270,6 +287,12 @@ class Repository:
             # than a copy of the headline, so mark those as publisher-supplied.
             conn.execute("UPDATE fact_checks SET claim_origin='source' "
                          "WHERE source='afp' AND claim <> '' AND claim <> title")
+        ev = {r["name"] for r in conn.execute("PRAGMA table_info(asr_evidence)")}
+        if ev and "quote_expert" not in ev:
+            conn.execute("ALTER TABLE asr_evidence ADD COLUMN "
+                         "quote_expert TEXT NOT NULL DEFAULT ''")
+            conn.execute("ALTER TABLE asr_evidence ADD COLUMN "
+                         "verdict_expert TEXT NOT NULL DEFAULT ''")
         if "labeled_by" not in cols:
             # WHICH human, not just that a human decided.
             #
