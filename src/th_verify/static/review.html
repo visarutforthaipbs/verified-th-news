@@ -2004,6 +2004,18 @@ const FLASH = {
 };
 let queue = [], history = [], total = 0, labeled = 0, current = null, fetching = false;
 
+// Every record acted on in this session.
+//
+// label() advances immediately and saves in the background -- that is what
+// makes the room fast -- and next() triggers refill() when the queue runs low.
+// refill only skipped records still IN the local queue, so a record labelled a
+// moment ago was not skipped, and if the server had not finished writing yet it
+// came back in the refill and appeared a second time. Timing-dependent, which
+// is why it happened only sometimes.
+//
+// Undo removes the id again, so a reverted record can legitimately return.
+const acted = new Set();
+
 const $ = id => document.getElementById(id);
 
 // Conflicts is a mode of this same room rather than a separate page: the keys,
@@ -2044,7 +2056,7 @@ async function refill(){
     total = data.total; labeled = data.labeled;
     const have = new Set(queue.map(x=>x.id));
     if(current) have.add(current.id);
-    for(const it of data.items) if(!have.has(it.id)) queue.push(it);
+    for(const it of data.items) if(!have.has(it.id) && !acted.has(it.id)) queue.push(it);
     updateProgress();
   } finally { fetching = false; }
 }
@@ -2205,6 +2217,7 @@ async function label(v){
         headers:{"Content-Type":"application/json"},
         body:JSON.stringify({ours_id:prev.item.id, theirs_id:prev.item.theirs.id,
                              undo:true, by:reviewer})});
+      acted.delete(prev.item.id);
       if(current) queue.unshift(current);
       show(prev.item);
       return;
@@ -2214,6 +2227,7 @@ async function label(v){
     await fetch("/review/label",{method:"POST",headers:{"Content-Type":"application/json"},
       body:JSON.stringify({id:prev.item.id, verdict:"undo", by:reviewer,
         restore_verdict: prev.item.verdict, restore_origin: prev.item.verdict_origin})});
+    acted.delete(prev.item.id);   // undone: it may legitimately return
     if(prev.v !== "skip" && prev.v !== "not_claim") labeled = Math.max(0, labeled-1);
     if(current) queue.unshift(current);
     updateProgress(); show(prev.item);
@@ -2221,6 +2235,7 @@ async function label(v){
   }
   if(!current) return;
   const item = current;
+  acted.add(item.id);
   flash(v);
   history.push({item, v});
   if(v !== "skip" && v !== "not_claim"){ labeled++; updateProgress(); }
@@ -2268,6 +2283,7 @@ function resolveConflict(which){
   // agreement would put an unread machine label into the gold tier.
   if(which === "notsame"){
     const item = current;
+    acted.add(item.id);
     flash("not_claim");
     history.push({item, v:"notsame"});
     next();
