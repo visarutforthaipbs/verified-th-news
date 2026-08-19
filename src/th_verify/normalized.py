@@ -132,8 +132,24 @@ _SUFFIX_RES = [
     re.compile(r"\s*[-–—,]?\s*สร้าง(?:ขึ้น)?(?:ด้วย|จาก)\s*(?:AI|เอไอ|ปัญญาประดิษฐ์)[^,]{0,40}$", re.IGNORECASE),
 ]
 
+# Trailing hashtags, which is how Sure & Share titles its shorts:
+# "ประโยชน์ของสับปะรด ลดความเสี่ยงมะเร็ง จริงหรือ ?  #ชัวร์ก่อนแชร์ #shorts #สับปะรด"
+#
+# 3,709 of 3,836 shorts carry them, and they were reaching the claim column, the
+# exports, the embedding index and the review room untouched. They also blocked
+# the suffix rules: "จริงหรือ ?" is only stripped at the END of a string, so a
+# hashtag after it kept the question mark attached to every shorts claim.
+#
+# Stripped before the suffix pass for that reason. Only a trailing RUN is
+# removed -- a hashtag in the middle of a sentence is part of what was written.
+_TRAILING_HASHTAGS = re.compile(r"(?:\s*#[^\s#]+)+\s*$")
+
+
 def clean_claim_text(title: str, source: str) -> str:
     text = unicodedata.normalize("NFC", title or "").strip()
+    stripped = _TRAILING_HASHTAGS.sub("", text).strip()
+    if stripped:              # a title that is ONLY hashtags keeps its text
+        text = stripped
     changed = True
     while changed:
         changed = False

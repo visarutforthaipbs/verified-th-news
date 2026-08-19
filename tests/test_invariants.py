@@ -122,6 +122,16 @@ def test_classifier_marks_output_heuristic(repo):
     ("ชัวร์ก่อนแชร์ : กินหอยแล้วดื่มนมอันตราย จริงหรือ?", "sure_share",
      "กินหอยแล้วดื่มนมอันตราย"),
     ("ภาพปลอม: ภาพระเบิดกลางเมือง", "thaipbs", "ภาพระเบิดกลางเมือง"),
+    # Sure & Share titles its shorts with trailing hashtags -- 3,709 of 3,836 --
+    # and they were reaching the claim column, the exports and the search index.
+    # They also blocked the จริงหรือ rule, which only matches at the end of the
+    # string, so every shorts claim kept its question mark too.
+    ("ประโยชน์ของสับปะรด ลดความเสี่ยงมะเร็ง จริงหรือ ?  #ชัวร์ก่อนแชร์ #shorts #สับปะรด",
+     "sure_share", "ประโยชน์ของสับปะรด ลดความเสี่ยงมะเร็ง"),
+    ("วิธีดูแลไม่ให้เท้าคล้ำ  #Shorts #สูตรเท้าขาว #ชัวร์ก่อนแชร์",
+     "sure_share", "วิธีดูแลไม่ให้เท้าคล้ำ"),
+    # A hashtag mid-sentence is part of what was written, not decoration.
+    ("ระวัง #ยาปลอม ระบาดในออนไลน์", "sure_share", "ระวัง #ยาปลอม ระบาดในออนไลน์"),
 ])
 def test_clean_claim_strips_verdict_affixes(title, source, expect):
     from build_dataset import clean_claim

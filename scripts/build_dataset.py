@@ -27,7 +27,8 @@ import unicodedata
 import sys as _sys
 from pathlib import Path as _Path
 _sys.path.insert(0, str(_Path(__file__).resolve().parent.parent / "src"))
-from th_verify.normalized import is_factcheck  # noqa: E402
+from th_verify.normalized import (clean_claim_text, is_factcheck,
+                                  has_inline_leak as _has_inline_leak)  # noqa: E402
 from collections import Counter, defaultdict
 from pathlib import Path
 
@@ -234,30 +235,14 @@ _SUFFIX_RES = [
 ]
 
 
-def clean_claim(title: str, source: str) -> str:
-    text = unicodedata.normalize("NFC", title).strip()
-    changed = True
-    while changed:  # prefixes can stack, e.g. "ข่าวปลอม อย่าแชร์! ..."
-        changed = False
-        for rx in _PREFIX_RES:
-            new = rx.sub("", text)
-            if new != text:
-                text, changed = new, True
-    for rx in _SUFFIX_RES:
-        text = rx.sub("", text)
-    return text.strip(" -–—|:!?")
+# One implementation, imported. These rules previously existed in full here AND
+# in normalized.py; they were still identical, but two copies of the same filter
+# is how the build_dataset.py fossil at the repo root came about -- one gets
+# edited, the other silently keeps producing month-old output.
+clean_claim = clean_claim_text
 
-
-# claims whose remaining text still states the verdict inline; excluded from
-# classification exports (kept in the RAG corpus)
-_INLINE_LEAK_RE = re.compile(
-    r"เป็นข่าวปลอม|ตรวจสอบแล้ว|ไม่เป็นความจริง|แท้จริง(?:เป็น|คือ|สร้าง)|"
-    r"ข่าวปลอม|เป็นเรื่องจริง|ยืนยันว่าจริง"
-)
-
-
-def has_inline_leak(claim: str) -> bool:
-    return bool(_INLINE_LEAK_RE.search(claim))
+# Imported for the same reason as clean_claim: one implementation, not two.
+has_inline_leak = _has_inline_leak
 
 
 def dedup_key(claim: str) -> str:
