@@ -68,8 +68,12 @@ def _display_claim(row: dict) -> dict:
     Only the '' tier is cleaned. A claim that came from the publisher, a model,
     or a human is final text and must be shown exactly as stored.
     """
-    if not row.get("claim_origin") and row.get("claim"):
-        cleaned = clean_claim_text(row["claim"], row.get("source", ""))
+    if not row.get("claim_origin"):
+        # Fall back to the title when claim is empty: the review room does
+        # `item.claim || item.title`, so an empty claim put the RAW headline on
+        # screen -- hashtags and all -- which is the exact thing being cleaned.
+        source_text = row.get("claim") or row.get("title") or ""
+        cleaned = clean_claim_text(source_text, row.get("source", ""))
         if cleaned:
             row["claim"] = cleaned
     return row

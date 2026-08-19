@@ -284,17 +284,25 @@ def test_review_shows_the_same_claim_the_dataset_will_contain(monkeypatch, tmp_p
     importlib.reload(api)
     r = Repository(db_path)
     r.initialize()
-    r.upsert_many([make_record(
-        source="sure_share", source_id="s-short",
-        title="ประโยชน์ของสับปะรด ลดความเสี่ยงมะเร็ง จริงหรือ ?  #ชัวร์ก่อนแชร์ #shorts")])
+    title = "ประโยชน์ของสับปะรด ลดความเสี่ยงมะเร็ง จริงหรือ ?  #ชัวร์ก่อนแชร์ #shorts"
+    r.upsert_many([make_record(source="sure_share", source_id="s-short",
+                               title=title, claim=title)])
+    # And a record whose claim column is empty, which is how the raw headline
+    # reached the screen: the UI falls back to item.title when claim is blank.
+    r.upsert_many([make_record(source="sure_share", source_id="s-blank",
+                               title=title, claim="")])
 
     from fastapi.testclient import TestClient
     with TestClient(api.app) as client:
         item = client.get("/review/queue?source=sure_share&limit=5").json()["items"][0]
-    assert "#" not in item["claim"], "hashtags still shown to the reviewer"
-    assert item["claim"] == "ประโยชน์ของสับปะรด ลดความเสี่ยงมะเร็ง"
-    # The headline itself is untouched -- it is what the publisher called it.
-    assert "#ชัวร์ก่อนแชร์" in item["title"]
+    with TestClient(api.app) as client:
+        items = client.get("/review/queue?source=sure_share&limit=5").json()["items"]
+    assert len(items) == 2
+    for it in items:
+        assert "#" not in it["claim"], f"hashtags still shown: {it['source_id']}"
+        assert it["claim"] == "ประโยชน์ของสับปะรด ลดความเสี่ยงมะเร็ง"
+        # The headline itself is untouched -- it is what the publisher called it.
+        assert "#ชัวร์ก่อนแชร์" in it["title"]
 
 
 def test_curated_claims_are_shown_exactly_as_stored(monkeypatch, tmp_path):
