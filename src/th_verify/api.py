@@ -12,7 +12,7 @@ from pydantic import BaseModel, Field
 
 from .config import Settings
 from .db import Repository
-from .normalized import is_factcheck, normalize_verdict
+from .normalized import clean_claim_text, is_factcheck, normalize_verdict
 
 # TH_VERIFY_READONLY=1 runs a public-safe instance: labeling/review endpoints
 # are disabled and /check is rate-limited. The private full instance runs
@@ -54,6 +54,25 @@ async def public_guard(request: Request, call_next):
                     {"detail": "ค้นหาถี่เกินไป โปรดรอสักครู่"}, status_code=429)
             q.append(now)
     return await call_next(request)
+
+
+def _display_claim(row: dict) -> dict:
+    """Show the reviewer the claim the DATASET will contain, not the raw title.
+
+    When claim_origin is '' the claim column is a verbatim copy of the headline,
+    and cleaning happens downstream in build_dataset -- so the exports and the
+    search index get "ประโยชน์ของสับปะรด ลดความเสี่ยงมะเร็ง" while the review room
+    was showing "…จริงหรือ ?  #ชัวร์ก่อนแชร์ #shorts #สับปะรด". Two different texts
+    for the same record, and the reviewer was reading the worse one.
+
+    Only the '' tier is cleaned. A claim that came from the publisher, a model,
+    or a human is final text and must be shown exactly as stored.
+    """
+    if not row.get("claim_origin") and row.get("claim"):
+        cleaned = clean_claim_text(row["claim"], row.get("source", ""))
+        if cleaned:
+            row["claim"] = cleaned
+    return row
 
 
 def _require_private() -> None:
@@ -191,7 +210,7 @@ def review_queue(
 
 
     return {"total": total or 0, "labeled": done or 0,
-            "items": [dict(r) for r in rows]}
+            "items": [_display_claim(dict(r)) for r in rows]}
 
 
 @app.get("/review/verify")
@@ -230,7 +249,7 @@ def review_verify(limit: int = Query(25, ge=1, le=100)) -> dict:
             " ON e.fact_check_id = f.id WHERE f.verdict_origin = 'llm'"
             " AND length(e.quote) > 0 AND f.verdict NOT IN ('unknown','')").fetchone()[0]
     return {"total": done + pending, "labeled": done,
-            "items": [dict(r) for r in rows]}
+            "items": [_display_claim(dict(r)) for r in rows]}
 
 
 @app.get("/review/collector-health")
@@ -309,12 +328,12 @@ def review_conflicts(limit: int = Query(25, ge=1, le=100)) -> dict:
             continue
         if mine["verdict_origin"] not in ("llm", "heuristic"):
             continue                      # our side was re-sourced; no longer ours
-        items.append({**mine, "similarity": p["similarity"],
+        items.append({**_display_claim(mine), "similarity": p["similarity"],
                       "their_verdict_normalized": normalize_verdict(
                           theirs["source"], theirs["verdict"]),
                       "our_verdict_normalized": normalize_verdict(
                           mine["source"], mine["verdict"]),
-                      "theirs": theirs})
+                      "theirs": _display_claim(theirs)})
     return {"total": done + len(items), "labeled": done,
             "items": items[:limit]}
 

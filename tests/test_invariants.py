@@ -268,6 +268,58 @@ def test_explainer_rule_does_not_touch_other_sources():
     assert is_factcheck("afnc", "KEYWORD ใหม่ที่มิจฉาชีพใช้หลอกเหยื่อ", "ข่าวปลอม") is True
 
 
+def test_review_shows_the_same_claim_the_dataset_will_contain(monkeypatch, tmp_path):
+    """The review room and the exports must not show different text.
+
+    Cleaning happens in build_dataset, but /review reads fact_checks.claim
+    straight from the database. So after hashtag stripping landed, the exports
+    and the index got "ประโยชน์ของสับปะรด ลดความเสี่ยงมะเร็ง" while the reviewer was
+    still shown "…จริงหรือ ?  #ชัวร์ก่อนแชร์ #shorts". The owner spotted it: the
+    fix had gone in and the review room had not changed.
+    """
+    db_path = tmp_path / "display.db"
+    monkeypatch.delenv("TH_VERIFY_READONLY", raising=False)
+    monkeypatch.setenv("TH_VERIFY_DATABASE_PATH", str(db_path))
+    import th_verify.api as api
+    importlib.reload(api)
+    r = Repository(db_path)
+    r.initialize()
+    r.upsert_many([make_record(
+        source="sure_share", source_id="s-short",
+        title="ประโยชน์ของสับปะรด ลดความเสี่ยงมะเร็ง จริงหรือ ?  #ชัวร์ก่อนแชร์ #shorts")])
+
+    from fastapi.testclient import TestClient
+    with TestClient(api.app) as client:
+        item = client.get("/review/queue?source=sure_share&limit=5").json()["items"][0]
+    assert "#" not in item["claim"], "hashtags still shown to the reviewer"
+    assert item["claim"] == "ประโยชน์ของสับปะรด ลดความเสี่ยงมะเร็ง"
+    # The headline itself is untouched -- it is what the publisher called it.
+    assert "#ชัวร์ก่อนแชร์" in item["title"]
+
+
+def test_curated_claims_are_shown_exactly_as_stored(monkeypatch, tmp_path):
+    """Only the copied-from-title tier is cleaned.
+
+    A claim from the publisher, a model or a human is final text. Running it
+    through the headline cleaner could quietly truncate a claim someone wrote.
+    """
+    db_path = tmp_path / "curated.db"
+    monkeypatch.delenv("TH_VERIFY_READONLY", raising=False)
+    monkeypatch.setenv("TH_VERIFY_DATABASE_PATH", str(db_path))
+    import th_verify.api as api
+    importlib.reload(api)
+    r = Repository(db_path)
+    r.initialize()
+    r.upsert_many([make_record(source="sure_share", source_id="s-cur")])
+    with r.connect() as conn:
+        conn.execute("UPDATE fact_checks SET claim=?, claim_origin='human'",
+                     ("ผู้เชี่ยวชาญระบุว่าเรื่องนี้ จริงหรือ ?",))
+    from fastapi.testclient import TestClient
+    with TestClient(api.app) as client:
+        item = client.get("/review/queue?source=sure_share&limit=5").json()["items"][0]
+    assert item["claim"] == "ผู้เชี่ยวชาญระบุว่าเรื่องนี้ จริงหรือ ?"
+
+
 def test_queue_finds_records_behind_a_wall_of_non_claims(monkeypatch, tmp_path):
     """A small limit must not report an empty queue while records wait.
 
