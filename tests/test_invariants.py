@@ -621,6 +621,34 @@ def test_label_records_who_decided(monkeypatch, tmp_path):
         assert row["labeled_by"] == ""
 
 
+def test_reviewer_names_are_one_person(monkeypatch, tmp_path):
+    """Casing is not identity.
+
+    Within a day of attribution landing, 'Visarut' and 'visarut' were being
+    counted as two reviewers -- 19 labels against 1,842. With one person that is
+    untidy; with two it destroys the only thing labeled_by is for.
+    """
+    db_path = tmp_path / "names.db"
+    monkeypatch.delenv("TH_VERIFY_READONLY", raising=False)
+    monkeypatch.setenv("TH_VERIFY_DATABASE_PATH", str(db_path))
+    import th_verify.api as api
+    importlib.reload(api)
+    r = Repository(db_path)
+    r.initialize()
+    r.upsert_many([make_record(source_id="n1"), make_record(source_id="n2")])
+    with r.connect() as conn:
+        ids = [row["id"] for row in conn.execute("SELECT id FROM fact_checks ORDER BY id")]
+
+    from fastapi.testclient import TestClient
+    with TestClient(api.app) as client:
+        client.post("/review/label", json={"id": ids[0], "verdict": "false", "by": "Visarut"})
+        client.post("/review/label", json={"id": ids[1], "verdict": "true", "by": "  visarut "})
+    with r.connect() as conn:
+        names = {row["labeled_by"] for row in
+                 conn.execute("SELECT labeled_by FROM fact_checks")}
+    assert names == {"visarut"}, f"same person recorded as {names}"
+
+
 def test_existing_human_labels_are_attributed_to_the_owner(tmp_path):
     """The migration must not leave 500 pre-existing labels anonymous."""
     db_path = tmp_path / "backfill.db"

@@ -56,6 +56,21 @@ async def public_guard(request: Request, call_next):
     return await call_next(request)
 
 
+def _reviewer(name: str) -> str:
+    """Normalise a reviewer name so one person is one person.
+
+    'Visarut' and 'visarut' arrived as separate reviewers within a day of
+    attribution going in -- 19 labels under one spelling, 1,842 under the other.
+    With a single reviewer that is untidy; with two it destroys the only thing
+    labeled_by exists for, which is being able to tell whose judgement is whose
+    and check or revert one person's work.
+
+    Casing and surrounding whitespace are not identity. Internal spacing is left
+    alone: "ploy k" and "ployk" are plausibly different people.
+    """
+    return " ".join((name or "").split()).lower()[:40]
+
+
 def _display_claim(row: dict) -> dict:
     """Show the reviewer the claim the DATASET will contain, not the raw title.
 
@@ -395,7 +410,7 @@ def review_claim(req: ClaimRequest) -> dict:
         conn.execute(
             "UPDATE fact_checks SET claim=?, claim_origin='human', labeled_at=?,"
             " labeled_by=? WHERE id=?",
-            (req.claim.strip(), utc_now(), req.by.strip(), req.id),
+            (req.claim.strip(), utc_now(), _reviewer(req.by), req.id),
         )
     return {"ok": True}
 
@@ -427,19 +442,19 @@ def review_label(req: LabelRequest) -> dict:
             conn.execute(
                 "UPDATE fact_checks SET verdict_origin='human_not_claim',"
                 " labeled_at=?, labeled_by=? WHERE id=?",
-                (utc_now(), req.by.strip(), req.id),
+                (utc_now(), _reviewer(req.by), req.id),
             )
         elif req.verdict == "skip":
             conn.execute(
                 "UPDATE fact_checks SET verdict_origin='human_skipped',"
                 " labeled_at=?, labeled_by=? WHERE id=?",
-                (utc_now(), req.by.strip(), req.id),
+                (utc_now(), _reviewer(req.by), req.id),
             )
         elif req.verdict in HUMAN_LABELS:
             conn.execute(
                 "UPDATE fact_checks SET verdict=?, verdict_origin='human',"
                 " labeled_at=?, labeled_by=? WHERE id=?",
-                (req.verdict, utc_now(), req.by.strip(), req.id),
+                (req.verdict, utc_now(), _reviewer(req.by), req.id),
             )
         else:
             raise HTTPException(status_code=422, detail=f"bad verdict: {req.verdict}")
