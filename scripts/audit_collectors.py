@@ -166,6 +166,12 @@ def inspect_records(source: str, got: list) -> list[tuple[str, str]]:
     if exp["image"] and share(lambda r: not r.image_url) == 1:
         out.append((FAIL, "no record carried an image url"))
     if exp["verdict"]:
+        # Thai PBS's ตรวจสอบแล้ว / ไม่สแตมป์ข่าว stamps normalize to "unknown" on
+        # purpose (see normalized.py) -- they are real editorial output, ~7% of
+        # thaipbs historically, not a parser failure. They cluster on the
+        # listing page, so a small sample can be dominated by a single run of
+        # them; --sample defaults to 20 for exactly this reason (2026-08-24: a
+        # 6-record sample hit 4/6 and fired a WARN over ordinary content).
         blank = share(lambda r: normalize_verdict(source, r.verdict) == "unknown")
         if blank == 1:
             out.append((FAIL, "no record carried a usable verdict"))
@@ -251,7 +257,14 @@ def main() -> int:
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--db", default="data/th_verify.db")
     ap.add_argument("--source", help="audit one source instead of all five")
-    ap.add_argument("--sample", type=int, default=6, help="records to fetch live per source")
+    # 6 was too small: Thai PBS legitimately publishes ตรวจสอบแล้ว/ไม่สแตมป์ข่าว
+    # (checked-but-no-polarity) stamps at roughly a 7% historical rate, but they
+    # cluster -- several in a row from the same listing page -- so a sample of 6
+    # caught 4 of them on 2026-08-24 and fired a WARN at 67% for something that
+    # is normal editorial output, not a broken parser. 20 makes that a
+    # near-impossible false positive at the real base rate while still catching
+    # an actually-broken selector (which shows up at or near 100%, not a burst).
+    ap.add_argument("--sample", type=int, default=20, help="records to fetch live per source")
     ap.add_argument("--stored-only", action="store_true", help="skip the network")
     ap.add_argument("--json", type=Path,
                     help="also write the result here for the review room to read")
