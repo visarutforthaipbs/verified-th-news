@@ -87,6 +87,29 @@ YTDLP = os.getenv("YTDLP") or _tool("yt-dlp")
 # else to 74.7%, so v2 stands. Its residual weakness is calling some บิดเบือน
 # "ปลอม" -- both are "do not share", so the direction is never reversed.
 # See scripts/asr/asr_rescore.py to retry prompts against saved transcripts.
+# The quote is capped at one short sentence, and that cap is load-bearing.
+#
+# Unconstrained, the model returned the WHOLE transcript as its "quote" -- median
+# 470 characters. Two things went wrong with that. A reviewer cannot check a
+# quote that is simply the transcript again, which defeats the point of showing
+# one. And the verbatim-quote guard rejected 37% of records because a single
+# stray character anywhere in 440 voids the match: one traced case reproduced
+# 441 of 442 characters, then "corrected" Sureandshare to Sureandแชร์ at
+# position 437.
+#
+# Measured on 150 RANDOM human-labelled records (2026-08-25), capped vs not:
+#   true        75.0% -> 81.2%
+#   false       79.5% -> 84.1%
+#   misleading  59.5% -> 52.4%     <- the cost, and it is real
+#   overall     72.0% -> 74.0%     median quote 470 -> 102 chars
+#
+# Adopted despite the misleading regression, on the reasoning that every record
+# goes to a human in /review?mode=verify: a 102-character quote gets read and
+# checked, a 470-character one does not. The cap likely improves what the HUMAN
+# catches by more than it costs in what the model gets right unaided. The real
+# fix for `misleading` is elsewhere anyway -- the closing tail does not contain
+# the distinction, because the host says อย่าแชร์ for false and misleading
+# alike; only the expert's early answer separates them (see HANDOFF, two-signal).
 PROMPT = """ต่อไปนี้คือถอดเสียงช่วงท้ายของรายการ "ชัวร์ก่อนแชร์"
 ผู้ดำเนินรายการจะสรุปผลการตรวจสอบและบอกผู้ชมว่าควรแชร์หรือไม่
 
@@ -96,7 +119,7 @@ PROMPT = """ต่อไปนี้คือถอดเสียงช่ว�
 {transcript}
 
 ตอบเป็น JSON เท่านั้น:
-{{"verdict": "false" | "true" | "misleading" | "altered_media" | "unclear", "quote": "ประโยคที่คัดลอกตรงตัวจากถอดเสียงซึ่งระบุผลสรุป"}}
+{{"verdict": "false" | "true" | "misleading" | "altered_media" | "unclear", "quote": "ประโยคเดียวสั้น ๆ ไม่เกิน 120 ตัวอักษร คัดลอกตรงตัวจากถอดเสียง ซึ่งระบุผลสรุป"}}
 
 สัญญาณสำคัญที่สุด คือคำแนะนำเรื่องการแชร์ตอนท้าย:
 - ถ้าผู้ดำเนินรายการบอกว่า "แชร์ได้", "แชร์ต่อได้", "เรื่องนี้ชัวร์", "ยืนยัน", "จริง" → ตอบ "true"
@@ -111,7 +134,8 @@ PROMPT = """ต่อไปนี้คือถอดเสียงช่ว�
   คำเสริมเหล่านี้ไม่ได้ทำให้คำตอบเปลี่ยนเป็น "misleading"
 - ตอบ "misleading" เฉพาะเมื่อผู้ดำเนินรายการบอกว่า "ตัวข้อกล่าวอ้างเอง" ไม่ถูกต้องครบถ้วน
   ไม่ใช่เพราะมีข้อยกเว้นเล็กน้อย
-- quote ต้องคัดลอกตรงตัวจากถอดเสียงเท่านั้น ห้ามแต่งขึ้นเอง"""
+- quote ต้องคัดลอกตรงตัวจากถอดเสียงเท่านั้น ห้ามแต่งขึ้นเอง
+- quote ต้องสั้น ไม่เกิน 1 ประโยค (ไม่เกิน 120 ตัวอักษร) ห้ามคัดลอกทั้งถอดเสียง"""
 
 
 def norm(s: str) -> str:
