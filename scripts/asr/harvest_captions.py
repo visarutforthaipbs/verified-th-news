@@ -23,10 +23,22 @@ constraint is PER BURST -- roughly 30 caption fetches in close succession,
 largely regardless of the gap between them. Meanwhile the hourly probe has read
 CLEAR 116 times running, so recovery takes well under an hour.
 
-So the shape is small-batch-hourly, not one big daily run: --batch of 20 (safely
-under the observed ~30) driven by cron every hour gives ~480/day and clears the
-~4,800 backlog in about ten days. On a 429 it stops immediately rather than
-pushing through -- the block gets longer, not shorter, if you keep knocking.
+So the shape is small-batch-hourly, not one big daily run: --batch of 20 driven
+by cron every hour. On a 429 it stops immediately rather than pushing through --
+the block gets longer, not shorter, if you keep knocking.
+
+Corrected 2026-08-30, because the paragraph above understated the limit and the
+original estimate here (~480/day, backlog clear in ten days) was wrong by an
+order of magnitude. Recovery does NOT take under an hour: over 30 consecutive
+probe readings only 2 came back CLEAR. What actually happens is that a window
+opens a few times a day, and a run inside one returns exactly 20 before the 429
+-- 20 is YouTube's ceiling per window, not our batch size.
+
+Raising --batch does not help. It was tried at 75 and the run still stopped at
+record 21. Real throughput is ~60/day (three windows), so the remaining backlog
+is months, not days, on this IP. Do not re-run the raise-the-batch experiment;
+the number to change is the number of source IPs, or the relationship with the
+publisher, not this flag.
 
 Stores the transcript with an empty quote/verdict. The verdict extraction is a
 separate pass (asr_worker with USE_CAPTIONS reading these, or bench-validated
