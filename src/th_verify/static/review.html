@@ -2194,7 +2194,12 @@ function applyMode(){
     ? "A ยืนยันตามเครื่อง · 1–5 แก้เอง · T บทถอดเสียง · S ข้าม · U ย้อนกลับ"
     : "ป้าย: 1 ปลอม · 2 จริง · 3 บิดเบือน · 4 สื่อดัดแปลง · 5 เตือนภัย · N ไม่ใช่ข้อกล่าวอ้าง · S ข้าม · U ย้อนกลับ";
   const u = new URL(location);
-  cf ? u.searchParams.set("mode","conflicts") : u.searchParams.delete("mode");
+  // Every non-default mode must survive a reload. Verify was added after
+  // conflicts and this line only knew about conflicts, so choosing verify
+  // silently stripped ?mode= and the next refresh dropped the reviewer into
+  // the 6k main queue -- unlabelled, unpredicted, nothing to check.
+  mode === "queue" ? u.searchParams.delete("mode")
+                   : u.searchParams.set("mode", mode);
   window.history.replaceState(null, "", u);  // `history` here is the undo stack
 }
 function next(){
