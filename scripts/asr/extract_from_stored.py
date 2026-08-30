@@ -76,6 +76,16 @@ def ask(title: str, transcript: str, model: str) -> dict:
         return json.loads(json.loads(r.read())["response"])
 
 
+def gpu_awake(timeout: float = 6.0) -> bool:
+    """Cheap liveness check against the model host, seconds not minutes."""
+    probe = OLLAMA.rsplit("/api/", 1)[0] + "/api/tags"
+    try:
+        with urllib.request.urlopen(probe, timeout=timeout):
+            return True
+    except Exception:
+        return False
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -86,6 +96,16 @@ def main() -> int:
     args = ap.parse_args()
     if args.apply:
         assert_canonical(args.db, action="write verdicts into")
+
+    # The GPU node sleeps. Without this preflight an hourly cron run wakes to a
+    # dead host and waits out the 240s per-request timeout on EVERY record --
+    # 200 records is thirteen hours of hung process, and the next hour starts
+    # another one on top. A sleeping GPU is normal, not a failure, so say so
+    # and exit 0 rather than paging anyone.
+    if not gpu_awake():
+        print("GPU node is asleep -- nothing extracted. This is not an error; "
+              "the next hourly run picks it up once the node is awake.")
+        return 0
 
     from th_verify.models import utc_now  # noqa: E402
 
