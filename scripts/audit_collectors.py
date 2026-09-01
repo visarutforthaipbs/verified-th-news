@@ -118,11 +118,19 @@ async def live_check(source: str, sample: int, settings: Settings, rep: Report) 
                 async for rec in collectors[source]().collect(mode="delta", limit=sample):
                     got.append(rec)
                 last = None
-                break
+                # Retry an EMPTY result too, not just an exception. On
+                # 2026-09-01 AFNC answered 200-with-nothing at 03:34 and the
+                # banner went red; the same fetch returned six records on
+                # demand later that morning, and every stored check had passed.
+                # A publisher's momentary empty response was crying wolf just
+                # as loudly as a real outage -- which is the exact thing the
+                # retry above was added to stop.
+                if got or attempt == 2:
+                    break
             except Exception as exc:
                 last = exc
-                if attempt < 2:
-                    await asyncio.sleep(5 * (attempt + 1))
+            if attempt < 2:
+                await asyncio.sleep(5 * (attempt + 1))
         if last is not None:
             rep.add(FAIL, source,
                     f"live fetch failed 3 times, last {type(last).__name__}: {str(last)[:70]}")
