@@ -1,0 +1,33 @@
+{
+  "status": "live_complete",
+  "input": "/Users/lighthouse-control/Documents/antigravity/proud-nobel/runs/20260908_bertopic_v001/migrant_scope_decisions.csv",
+  "candidate_records": 332,
+  "pilot_records": 24,
+  "pilot_assistant_scope_counts": {
+    "resident_refugee_status": 6,
+    "crossborder_people_services": 6,
+    "out_of_scope": 6,
+    "unclear": 6
+  },
+  "pilot_year_counts": {
+    "2020": 2,
+    "2022": 2,
+    "2023": 1,
+    "2024": 2,
+    "2025": 9,
+    "2026": 8
+  },
+  "question_set_version": "2026-09-21.v1",
+  "question_set_sha256": "6db1971e9fec0b0b3f87c6b197c9226222b9ae6a1e4cee25281d55e6f6c7154a",
+  "live_requested": true,
+  "human_fields_modified": false,
+  "language_caveat": "Jev accepts Thai, but TypeSafe documents English as its strongest language; validate on Thai human-coded records before operational use.",
+  "warning": "TypeSafe outputs are screening signals, not verified facts or human narrative labels.",
+  "typesafe_model_versions": [
+    "jev-1.13.0"
+  ],
+  "scope_agreements_with_assistant": 15,
+  "high_priority_reviews": 14,
+  "input_tokens": 34313,
+  "output_tokens": 8416
+}

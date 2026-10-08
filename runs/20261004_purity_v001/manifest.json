@@ -1,0 +1,43 @@
+{
+  "script": "scripts/story_purity_checks.py",
+  "seed": 7,
+  "sample_n": 30,
+  "families": {
+    "invest_stock": [
+      1,
+      15,
+      24,
+      25,
+      38,
+      44,
+      45,
+      50,
+      62
+    ],
+    "bank_loan": [
+      3,
+      12,
+      14,
+      22,
+      34,
+      36,
+      47
+    ],
+    "victim_refund": [
+      11,
+      61
+    ],
+    "covid_related": [
+      4,
+      7,
+      18,
+      48,
+      58
+    ]
+  },
+  "inputs": {
+    "runs/20260908_bertopic_v001/assignments.csv": "4189e38be930f0f7ef23af0fd202811c484631ee882ccb875a66dd3bd38f7fce",
+    "runs/20260908_bertopic_v001/migrant_screened_assignments.csv": "29833b7cd2e967efa520fcc6ee1887543f0f283690634f55453316c75d56f81a"
+  },
+  "note": "families are an analyst keyword grouping; samples are for human purity reading (human_pure empty)"
+}

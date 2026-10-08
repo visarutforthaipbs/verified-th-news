@@ -1,0 +1,12 @@
+corpus human labels that went through the machine-proposal 'verify' path (ASR quote on file): 1207 of 3162
+Sure&Share human verdicts in DB: {('true', 'evidence'): 927, ('false', 'evidence'): 1349, ('misleading', 'evidence'): 676, ('misleading', 'title_only'): 272, ('false', 'title_only'): 603, ('true', 'title_only'): 789, ('scam_alert', 'evidence'): 111, ('scam_alert', 'title_only'): 84, ('altered_media', 'evidence'): 10, ('altered_media', 'title_only'): 1}
+Sure&Share share of corpus by period: 2015-19 93.4 % | 2020-26 13.2 %
+records 2015-2019: 1187 of 14429 (8.2%)
+
+stricter near-duplicate rule (cos>=0.97): 14429 -> 12831 (11.1% removed); denominators 2270, 4301
+  T4  virus cures       175/2270 (7.71%) -> 9/4301 (0.21%)
+  T7  infection reports 162/2270 (7.14%) -> 13/4301 (0.30%)
+  T1  invest-dividend   1/2270 (0.04%) -> 122/4301 (2.84%)
+  T2  driving licence   1/2270 (0.04%) -> 123/4301 (2.86%)
+  T11 victim refund     0/2270 (0.00%) -> 132/4301 (3.07%)
+  T6  Cambodia border   3/2270 (0.13%) -> 154/4301 (3.58%)

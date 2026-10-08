@@ -1,5 +1,104 @@
 # HANDOFF — Thai Fact-Check Database & Fake-News Detection
 
+> **Two parts.** Part A (below) is the **2026-10-04 session handoff**: the two-article analysis goal, what was done, and what to do next. Part B (after the divider) is the original **2026-08-14 ops handoff** (machines, collectors, cron, GPU node) — still accurate for operations but pre-dates the BERTopic analysis. Read `AGENTS.md` first for the rules.
+
+---
+
+## PART A — Session handoff, 2026-10-04 (article analysis)
+
+### Goal
+Two Thai longform news articles with data + methodology: **(1)** how 11 years of Thai fake news changed; **(2)** how fake news / narratives about migrants changed. The human owner writes and reports; the agent owns data integrity.
+
+### State of each story (details: `docs/STORIES.md`)
+| | Story 1 | Story 2 |
+|---|---|---|
+| Draft | `runs/20260908_bertopic_v001/story_1_draft_th.md` (full, ~50 KB; numbers re-verified) | `runs/20260908_bertopic_v001/story_2_draft_th.md` (written this session; numbers verified, verification table at end) |
+| Reader methodology | in draft §2 + `docs/METHODOLOGY_BERTOPIC_V2.md` | boxed section at end of draft + same method doc |
+| Data package | `deliverables/journalist_handoff_20260914/` (xlsx + CSVs; gitignored) | same + `deliverables/story2_coding/` |
+| Publishable? | No | No — and weaker than the outline implied |
+
+### What was done this session
+1. **Audit + reorganization** (nothing deleted, nothing committed): docs consolidated (`docs/historical/` = old methodology v1 EN, v2 TH Prachatai, DATA_AUDIT, EMBEDDING_BENCHMARK, PRD; `docs/METHODOLOGY_BERTOPIC_V2.md` current); `outputs/` → `deliverables/` (Finder duplicate in `_archive/`, hidden scratch in `_scratch/`); stale reports → `data/reports/_legacy/`; keyword-era story builders → `scripts/legacy_story_v1/` (paths fixed, one test import updated); `build_story_data_handoff.py` now writes to `deliverables/journalist_handoff_20260914`; `.gitignore` extended; created `AGENTS.md`, `CLAUDE.md`, `docs/STORIES.md`, `runs/INDEX.md`, `scripts/README.md`.
+   - Side effect to know: I re-ran `legacy_story_v1/build_investigative_feature.py` as a test, which regenerated `data/reports/investigative_11years_feature.{md,html}` (deterministic rebuild from the same CSVs).
+2. **Story 1 numbers independently recomputed** from `assignments.csv` (all headline figures matched the draft; adjacent-year JSD, source-balanced tests matched CSVs).
+3. **Story 2 draft written**, with these data findings: in-scope share of archive ≈0.3% (2020–22), 0.15% (2023), 0.66% (2024), 1.36% (2025), 3.62% (2026 partial); 76% of the 118 are AFNC; 56% of 2025–26 in-scope records mention Cambodia/Khmer — but **excluding Cambodia the share still rises more slowly** (0.58 → 0.66 → 1.49%), so don't say the rise is only the border conflict, and don't call it a narrative shift. Old "three-act" story (disease → economy → rights) is **not** supported.
+4. **Story 2 human-coding kit**: `docs/story2_codebook_th.md`; `scripts/build_story2_coding_sheet.py` → `deliverables/story2_coding/{coder_A,coder_B,master_key}.csv` (332 rows, 30 calibration, blind to model labels, independent order, refuses to overwrite); `scripts/score_story2_coding.py` → `agreement_report.json` (Cohen's kappa; <0.6 = codebook not stable) + `adjudication.csv`; tests in `tests/test_story2_coding.py`.
+5. **Purity/robustness checks** → `runs/20261004_purity_v001/` via `scripts/story_purity_checks.py`: topic-family timelines; publisher-series artifacts; 30-row purity samples for topics 1,2,4,7,11,18,6; Story 2 Cambodia sensitivity. Findings folded into both drafts:
+   - 30 of 38 vaccine records in 2024 are Sure&Share's "LIVE Retrovert" re-check series → not a trend.
+   - Topic 1 (invest–dividend) falling 208→30 ≠ fewer investment scams: 9-topic investment family stays ~9–11% (2023–25); bank-loan family also flat. Wording rule: "this topic fell", never "investment scams fell".
+   - Assistant read of ~20 samples/topic: topics 4, 11 pure; 7 mixed (COVID case reports + flu/HIV + a misfit); 2 has stray rows. **Assistant read, not human review.**
+6. Tests: 119 pass.
+
+### Consolidation (2026-10-04, second session)
+All TH Verify material on this Mac now lives in this directory. A full-disk audit found the project in 11 places; nothing was deleted, every move is in `_archive/MOVES.tsv` and `_archive/undo.sh` reverses them.
+- **Kept, superseded → `_archive/`** (gitignored, 761 MB; read `_archive/README.md`): the July monitoring-MVP predecessor; an **uncommitted fork** rescued from an old clone (`normalize.py` / `normalized_claim`, patch against `ba4a6b6` — periodic-report work, never in git anywhere); the Codex 2026-09-02 pre-BERTopic review track incl. the `th-verify-v1.0` tarball; the keyword-era methodology + 27,231-record article draft; the gpu01 bge-m3 BERTopic run.
+- **Redundant → `~/Documents/antigravity/_TH-VERIFY_SAFE_TO_DELETE/`** (4.7 GB, outside the repo so greps and IDE indexing don't hit stale code): two older clones of this repo (both HEADs are ancestors of ours), old virtualenvs, stale DB copies, sha256-identical duplicates. Owner deletes it when satisfied.
+- Moved out of this dir as redundant: root `pitch/` (identical to `data/pitch/`), `agy.log`, `data/stale-backup/`, orphan `data/th_verify_prod.db-{shm,wal}`, `deliverables/_archive/…finder_dup`.
+- **Deliberately not touched:** `~/Documents/Codex/2026-07-09/let-s-set-up-a-scheduled/` — holds the separate Fake News Lab website repo (`fake-news-lab-site`) and the unrelated, *live* Thai Migrant Watch automation. Also untouched: tracked `scratch/`, `eval/`, `scripts/launch_agent_team.py`, and `data/{th_verify_core_20260903.db,exports_20260903,index_20260903}` (`index_20260903` is read by hash-pinned `discovered_timeline.py`).
+- Local DB facts: `data/th_verify.db` = 29,001 records, newest 2026-09-02, 8,625 human labels — the freshest copy on this Mac; production is still lighthouse-core.
+
+### Article workspace on the Desktop (2026-10-04)
+`~/Desktop/Two-Articles-Thai-Fake-News/` is the owner's working folder for the two articles: a slim **copy** of this repo's article material (drafts, canonical-run tables and figures, purity run, journalist package, codebook, coder sheets A/B) at the **same relative paths**, 37 MB, no code/DB/embeddings. `00_START-HERE_TH.md` is the Thai guide; `_MANIFEST.tsv` records each file's sha256 at copy time and its role.
+- **Humans edit there, not here.** Six files are marked `edit`/`fill`: the two drafts, `coder_A.csv`, `coder_B.csv`, `named_topic_samples.csv`, `residual_editorial_review.csv`. Before working on a draft or scoring the coding, compare the Desktop copy against the manifest hash — it may be newer than the repo copy.
+- Pulling back: drafts overwrite the repo drafts; filled review sheets go into a **new** human-review location/run, never over a file in an existing run. `master_key.csv` was deliberately not copied (coders stay blind).
+- Open point for the owner/client: the Notion brief says "26,000 ข่าวปลอม"; the data supports 29,001 raw records and 14,429 false/misleading/altered.
+
+### End-to-end audit (2026-10-04) — read `runs/20261004_audit_v001/AUDIT.md` before editing either draft
+Data, computation and every number in both drafts check out (corpus rebuilds exactly; clustering re-runs to ARI 1.000; cited records match live pages). The **interpretation** does not fully hold:
+- **F1** "11 years" is two archives: 2015–19 is 93% Sure&Share, 2020+ is 70–85% AFNC. The "largest shift 2562→2563" and "health shrank 35 pts" are mostly that switch (within Sure&Share: JSD 0.323; Topic 0 88.7→75.6%).
+- **F2** The rising topics are AFNC repeating a few templates: 282 of 321 licence texts are one near-duplicate claim; counted once, the 2024–25 share is 0.5–2.9% vs 4.22% raw. The "source-balanced" +1.80/+1.42/+1.10 equal AFNC's change ÷ 3 — not independent evidence. Victim-refund boundary is seed-dependent.
+- **F3** 21.9% of verdicts (all Sure&Share, Cofact) were assigned by project reviewers, not the publisher; 877 have no recorded evidence (median 13.6 s per decision). The drafts say "สำนักตัดสินว่า" — wrong for those.
+- **F4** Sure&Share 2023–25 is 65–77% re-cut `#shorts` dated at re-upload.
+- **F5** Story 2 queue missed relevant records (≥7 found: 17106, 6389, 27145, 5180, 4571, 2802, 1117). **Extend the queue and reissue coder sheets before coding starts** (none filled yet).
+- **F6** `deliverables/journalist_handoff_20260914/INSIGHTS_TH.md` is stale.
+Robust: the decline of virus topics (holds in each publisher, survives dedup and seeds). Drafts were **not** edited by the audit.
+
+### Story 1 draft v2 (2026-10-04) — reframed after the audit, at the owner's direction
+Owner's decision: keep **all 11 years and all data**, but tell it **publisher by publisher** (each outlet has its own interest); no single blended trend line across the 2019/2020 publisher switch. `story_1_draft_th.md` was rewritten on that frame (audit F1–F4 applied: label-source disclosure, shorts re-cuts, records vs distinct claims, source-balanced sentence removed, reader methodology box added). Figures: `runs/20261004_story1_by_publisher_v001/` via `scripts/story1_by_publisher.py`. Old draft: `…/story_1_draft_th_before_reframe.md`.
+- New human-reading sheet: `runs/20261004_story1_by_publisher_v001/topic0_samples.csv` (70 rows; the draft now leans on Topic 0, which the purity samples did not cover).
+- Not done: `INSIGHTS_TH.md` in the journalist package is still the stale Sep-14 text — it was **not** hand-edited because the package manifest pins its hash; regenerate the package (`build_story_data_handoff.py`) once Story 1 is settled.
+- Story 2 is untouched; audit F5 (extend queue, reissue coder sheets) is still open.
+
+### Story 2 queue v2 and coder kit v2 (2026-10-04)
+Audit F5 is fixed. `scripts/story2_extend_queue.py` → `runs/20261004_story2_queue_v002/review_queue_v2.csv`: the 332 round-1 rows plus **181** unscreened corpus records matching a documented keyword rule (people/status terms, or a bare neighbouring-country name together with a people/service word) = **513**. A second semantic pass was tried and rejected (neighbours are dominated by the driving-licence template). New rows carry a provisional assistant scope (title + claim only): assistant in-scope 118 → **167**, unclear 7 → 28.
+- What round 1 missed: Israelis/Jews "settling" in Pai/Phangan (19, 2025–26), Chinese residents and "grey Chinese" (7), "Myanmar people get Thai taxes/blood/outnumber Thais" (6), Cambodian children crossing to study / scholarships (12), plus AFP's 2020 "people fleeing the outbreak from Myanmar".
+- Coder kit v2: `deliverables/story2_coding/{coder_A,coder_B,master_key}.csv` = 513 rows (30 calibration, 483 main), new coding column `target_group`; v1 sheets (unfilled) kept in `_v1_superseded_332rows/`. `build_story2_coding_sheet.py` now takes `--queue/--out` (defaults unchanged, test still asserts the 332-row default); `score_story2_coding.py` reports `target_group` agreement. Codebook is v1.1.
+- **Scope decided by the owner (2026-10-04): foreign residents of any origin are in; tourists/short-term visitors are out.** Codebook v1.1 records it. `scripts/story2_interim_analysis.py` → `runs/20261004_story2_interim_v002/` applies it (11 visitor rows moved from unclear to out; in-scope stays 167; unclear 17), re-fits the subtopic model (9 subtopics + 29 unclustered) and writes the interim tables. **`story_2_draft_th.md` is rewritten (v2) on those interim numbers**; round-1 draft kept as `runs/20261004_story2_interim_v002/story_2_draft_th_round1.md`. Every number is still assistant-screened and is replaced after human coding — next agent: write `story2_recompute_from_human_labels.py` (new run) reading the adjudicated sheets, including `target_group`.
+
+### Story 2 coding is SOLO now (2026-10-07) — read before touching the coding kit
+The owner has nobody to second-code, so the two-coder design (A/B sheets, inter-coder kappa) was replaced:
+- **One app**, `deliverables/story2_coding/coding_app.html` (`scripts/build_story2_coding_app.py`; template `assets/story2_coding_app/template.html`). Offline, one file, Thai UI with the SOP inside, autosave to localStorage, CSV export/import. 30 warm-up rows end in a non-blocking checkpoint; after all 513 rows it tells the coder to wait ≥48 h (confirm() under 24 h), then runs a **blind retest** of 104 seeded rows (stratified 62 likely-in / 42 likely-out, strata not embedded) **plus every row the coder called `unclear`** (method doc 9.5). Pass-1 answers freeze when the retest starts. Export = two CSVs (`coder_main_*`, `coder_retest_*`), the sheet's columns + `coded_at`.
+- **Scorer:** `scripts/score_story2_single_coder.py main.csv retest.csv --master deliverables/story2_coding/master_key.csv` → `self_consistency_report.json` (test-retest kappa per frame; kappa<0.6 = do not report; <5 uses = cannot judge; "kappa paradox" is flagged when a pass has no variation), `self_disagreements.csv`, `ai_second_look.csv` (rows where coder and assistant differ in in/out, plus coder-unclear). The owner resolves both lists; the AI is a second reader, never a validator.
+- **Method deviation is recorded** in `docs/METHODOLOGY_BERTOPIC_V2.md` (9.5 note) and codebook v1.2. The article must say: coded by one editor, reliability = test-retest, not inter-coder; the coder had read the assistant's draft, so agreement with the AI is not independent.
+- Retired (kept in `deliverables/story2_coding/_second_coder_unused/`): `coder_B.csv`, `coding_app_A.html`, `coding_app_B.html`. `coder_A.csv` is the sheet the app is built from; `master_key.csv` stays in the repo only (it holds the assistant's scope). `score_story2_coding.py` (A/B) is unchanged and still tested, but is not the process for this project.
+- Received exports are copied (read-only provenance) to `deliverables/story2_coding/received/` with a sha log. 2026-10-07: first 30 warm-up rows received (valid; 23 in / 6 out / 1 unclear; ~68 s median per row, 61 min). They were **deliberately not compared with the assistant's labels** (that comparison waits until after the retest so it cannot shape the remaining answers). Open codebook gap raised with the owner: `blamed_actor` was `migrants` on 23/23 in-scope warm-up rows and `victim_actor` was never `migrants` — the codebook does not say who is "blamed" when a claim says the state favours migrants; if the owner sets a rule, add it to codebook v1.2 and note it.
+- Next agent: when the exports arrive, run the scorer, hand the two lists to the owner, then write `story2_recompute_from_human_labels.py` (new run) from the owner's final decisions (pass-1 answers overridden by `final_*` columns where filled), and rewrite the Story 2 draft's numbers and methodology box.
+
+### Open items — need a human (do not simulate these)
+1. **Story 2:** the owner codes all 513 rows alone in `coding_app.html`, waits ≥48 h, re-codes the blind retest sample → `score_story2_single_coder.py` → owner resolves `self_disagreements.csv` and `ai_second_look.csv`. Then recompute all Story 2 tables from adjudicated labels (118 and every share will change) and update the draft. Review of scope rules in the codebook ("ข้อควรระวัง") by the editor is recommended **before** coding.
+2. **Story 1:** human reading of `runs/20261004_purity_v001/named_topic_samples.csv` (≥30 rows per named topic; fill `human_pure`); review of the 82 residual verdict-leak records (`residual_editorial_review.csv`; topic 54 clusters by correction phrasing); name/validate topics 0, 4/7 before quoting.
+3. **Both:** open source pages for every cited ID (lists in each draft's checklist), screenshot with date; verify LLM-extracted claim text (`claim_text_basis = llm`) before quoting; confirm AFNC affiliation/status wording; field reporting (interviews, editor accounts of how checks are chosen, agency comments).
+
+### Suggested next steps for the next agent
+- After coders finish: write `scripts/story2_recompute_from_human_labels.py` (new versioned run; do NOT edit the canonical run), regenerate the Story 2 tables/figures, update `story_2_draft_th.md` + verification table, mark Story 2 status in `docs/STORIES.md`.
+- Reconcile TypeSafe Jev pilot (`runs/20260921_typesafe_pilot_v001`) against human labels once available; only then consider running it on all 332 (the pilot report recommends a v2 Noul question set first).
+- Story 1: rerun the purity checks if topics are renamed; consider a figure for topic-family robustness; check that drafts' Buddhist-era years (e.g., 2563 = 2020) stay consistent in any new text.
+- If the user asks to commit: untracked work is large (≈55 entries incl. earlier-session scripts/runs/tests). Group commits: (a) reorg moves + docs, (b) story pipeline scripts/runs (check `.gitignore` first — `deliverables/`, `*.npy`, `*.jsonl`, `*.html` under runs are ignored), (c) drafts + coding kit + tests. Don't commit `.env`, DB, or deliverables.
+- Known leftovers: `.pytest_cache`, tracked `scratch/` and root `eval/` (duplicate of `data/eval/retrieval_benchmark.jsonl`), `scripts/launch_agent_team.py` (SSH helper, unrelated); HANDOFF Part B is not updated for the BERTopic phase. (`agy.log`, root `pitch/` and the Finder-duplicate deliverable were moved out in the consolidation above.)
+
+### Quick commands
+```bash
+.venv/bin/python -m pytest -q
+.venv/bin/python scripts/story_purity_checks.py            # writes runs/20261004_purity_v001 (overwrites that run's outputs; bump version for a new one)
+.venv/bin/python scripts/build_story2_coding_sheet.py      # refuses if sheets exist
+.venv/bin/python scripts/score_story2_coding.py            # after coders finish
+```
+(Re-running the canonical pipeline — `discovered_timeline.py` etc. — is only for a new snapshot into a new run dir; see `runs/20260908_bertopic_v001/README_TH.md`.)
+
+---
+
+## PART B — Original ops handoff (2026-08-14)
+
 Last updated: 2026-08-14. State of the project for anyone (human or agent)
 picking this up in a new session.
 
@@ -895,3 +994,21 @@ plus pyannote and a HF token, to fix errors that are not happening.
 7. Audit the remaining topic configs for the `explanation`-matching problem.
    Only `political_state` has been retuned; `migrant` has a draft; nobody has
    looked at `callcenter_scam` (843 records, all fields) with this in mind.
+
+## Story 2 AI coding (2026-10-07)
+Owner declined to code ("you do it for 513"). The assistant coded all 513 rows: `deliverables/story2_coding/ai_coded/` (see README_AI_CODING.md). Supersedes the solo-human-coding plan; test-retest/solo SOP and the coding app are now only for a validation sample. 156 in scope. Agreement with owner's 30 warm-up rows is weak on scope (19/30 exact, 21/30 in/out), so results are AI-coded and unvalidated. Owner chose **option A: no human validation** (2026-10-07). Done: codebook v1.3 note, SOP banner, STORIES.md, method-doc §9.5 update, Desktop START-HERE, and Story 2 draft v3 (`runs/20260908_bertopic_v001/story_2_draft_th.md`, numbers from `runs/20261007_story2_aicoded_v001/`; counts + examples only, no frame %). v2 draft kept in `runs/20261004_story2_interim_v002/story_2_draft_th_v2_screened167.md`. If the owner later wants frame numbers: blind-code ~60 random rows in the app and compare to the AI file.
+
+## Story 1 purity review app (2026-10-07)
+`deliverables/story1_review/purity_review_app.html` (built by `scripts/build_story1_review_app.py` from `assets/story1_review_app/template.html`): one-row-at-a-time review of the 280 sample rows (sheet A = `topic0_samples.csv` 70; sheet B = `named_topic_samples.csv` 210). Buttons 1 = ตรง, 0 = ไม่ตรง, ? = ไม่แน่ใจ; exports the two CSVs in the original columns/order (blank export verified cell-identical to the originals). Owner sends exports back; `python scripts/import_story1_purity_review.py EXPORT.csv [--apply]` validates (same rows/columns, values 1/0/?/blank), prints per-topic counts with 95% Wilson intervals, and with `--apply` backs up and replaces the original sheet (`story1_by_publisher.py` refuses to regenerate a sheet that has human answers). Topic rules shown in the app are the assistant's wording, changeable. The app does not show the assistant's earlier 63/70 read. Not verified here: localStorage autosave (the preview pane blocks it); export is the reliable save.
+
+### Story 1 purity: first human read received (2026-10-07)
+Owner returned both sheets (applied to `runs/.../topic0_samples.csv` and `named_topic_samples.csv`; originals backed up in `deliverables/story1_review/backup/`). Interim counts of `1` among decided rows: group 0 64/69 (1 row blank: id 26533), topic 1 30/30, 2 29/30, 4 30/30, 6 29/30, 7 30/30, 11 30/30, 18 30/30; no `?`, no notes. The assistant flagged rows where the answer `1` looks inconsistent with the rule shown in the app (e.g. 28025 and 1641 in the driving-licence topic; testing/side-effect claims in the "prevent/cure" topic 4; non-outbreak rows in topic 7; 916 and 3034 in topic 6) and asked the owner to re-check; answers are the owner's and have NOT been changed by the assistant. Do not write purity percentages into the article until that re-check is done and the blank row is filled.
+
+### Story 1 purity: AI second read APPLIED on the owner's instruction "เขียนทับเลย" (2026-10-07)
+Assistant second read of all 280 rows (titles/claims only): `deliverables/story1_review/assistant_second_read.csv`; script `scripts/story1_purity_second_read.py --apply`. Agreement with the owner 261/280 (93.2%); 19 disputed. The two sheets now hold the AI value for those 19 rows and `human_note` starts with "[AI อ่านซ้ำ: เจ้าของตอบ X -> Y; reason]". **The owner's untouched submission is in `deliverables/story1_review/owner_submitted_20261007/`** (and the pre-human blank sheets in `backup/`). So `human_pure` is NOT purely human: the article says "owner read, AI second read, disputed rows follow the AI". Final counts of 1 among decided rows: group 0 63/68 (93%), topic 1 28/28 (2 unsure), 2 27/30, 4 25/30 (83%), 6 27/29, 7 25/28, 11 30/30, 18 30/30. `story_1_article_th.md` updated accordingly (group 4 should not be called pure "prevent/cure"; 86.9% is the share of the model group, not of health claims).
+
+## Cluster explorer (2026-10-07)
+`runs/20261007_cluster_explorer_v001/cluster_explorer.html` (built by `scripts/build_cluster_explorer.py` from `assets/cluster_explorer/template.html`): interactive map of the 13,377 unique claim texts (14,429 records) in the 64 BERTopic topics of `runs/20260908_bertopic_v001`; positions = display-only 2-D UMAP (`runs/20261004_viz_v001/umap2d.npy`). Modes: colour by publisher (3 colours), by first year, or grey; click a topic to emphasise and zoom, search text, hover to read, click a point to open the source. Names are machine keywords; the 8 article topics also show the author's draft name and the owner+AI purity read. Open by double-clicking in Chrome (the Claude preview pane blocked file:// for this 3.8 MB file; served fine over localhost).
+
+## Story 1 article figures embedded (2026-10-07)
+`runs/20260908_bertopic_v001/story_1_article_th.md` now embeds four figures (relative paths, light PNGs): Fig 1 records per year by publisher (§2), Fig 2 cluster map (§2, `runs/20261007_cluster_explorer_v001/cluster_map_article_light.png`, rendered with `cluster_explorer.html?theme=light&export=map` via headless Chrome, window 1100x730 @2x), Fig 3 virus share by publisher (§4), Fig 4 records vs distinct claims (§5). Each has alt text and a caption with a link to the interactive version and the data CSV. Dark PNGs exist for Figs 1, 3, 4 (`*_dark.png`); the map has none (re-render with `theme=dark`).

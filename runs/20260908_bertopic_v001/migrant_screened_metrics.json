@@ -1,0 +1,28 @@
+{
+  "reviewed_candidates": 332,
+  "assistant_in_scope": 118,
+  "resident_records": 99,
+  "crossborder_records": 19,
+  "unclear": 7,
+  "unique_texts": 116,
+  "subtopics": 6,
+  "noise_records": 11,
+  "screening": "assistant claim/title-only record-level decisions, human review pending",
+  "selection": "leaf, min_cluster_size=8, min_samples=3; fine-grained exploratory themes; full sweep saved",
+  "umap": {
+    "n_neighbors": 10,
+    "n_components": 5,
+    "min_dist": 0,
+    "random_state": 42,
+    "metric": "cosine"
+  },
+  "script_sha256": "adb979fead06781fdab4494415eed91a82472a8cd4e7e52cd01e541599f1b628",
+  "csv_sha256": {
+    "migrant_screened_sensitivity.csv": "97ce5cbb39d29a8012d6b2b074e063439a3f10796c971f7d2ad2c37e07cad5c8",
+    "migrant_screened_timeline.csv": "1ecbea1b38e4312faf97913d9bbb485e8f8e6bf21eb0bbd1c7167e352899cb15",
+    "migrant_screened_assignments.csv": "29833b7cd2e967efa520fcc6ee1887543f0f283690634f55453316c75d56f81a",
+    "migrant_screened_words_over_time.csv": "203a6af07a7c487620d24cfaf097c9bca783d8d01b350f40288869b3b9c01727",
+    "migrant_screened_topics.csv": "25dbf544490e3ad65c3356122fb00b9a171bce50c634114f9df7a3f9d68ed057",
+    "migrant_screened_exemplars.csv": "919452947cdb1954430753bfc1ba703bc2b1752a09a0268b50bf356aab671d89"
+  }
+}

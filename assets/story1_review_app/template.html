@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>อ่านตรวจกลุ่มข่าว เรื่อง 1</title>
+<style>
+:root{--page:#f9f9f7;--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--muted:#6f6d67;--line:#e1e0d9;--ring:rgba(11,11,11,.12);--wash:#efeee9;--accent:#2a78d6;--yes:#006300;--yes-bg:#e3f2e3;--no:#a52a2a;--no-bg:#fbe5e3;--unk:#8a5a00;--unk-bg:#fdf0d4}
+@media (prefers-color-scheme:dark){:root{--page:#0d0d0d;--surface:#1a1a19;--ink:#fff;--ink2:#c3c2b7;--muted:#a09e96;--line:#2c2c2a;--ring:rgba(255,255,255,.14);--wash:#232321;--accent:#6da7ec;--yes:#7fd37f;--yes-bg:#173417;--no:#f19a94;--no-bg:#3a1a18;--unk:#f0c15e;--unk-bg:#392b0c}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI","Thonburi","Sarabun","Noto Sans Thai",sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding:16px}
+header{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;margin-bottom:10px}
+h1{font-size:18px;margin:0;font-weight:650}
+.seg{display:inline-flex;border:1px solid var(--ring);border-radius:10px;overflow:hidden}
+.seg button{font:inherit;font-size:14px;background:transparent;color:var(--ink2);border:0;padding:6px 12px;cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--accent);color:#fff}
+.bar{height:8px;background:var(--wash);border-radius:6px;overflow:hidden;margin:6px 0 4px}.bar i{display:block;height:100%;background:var(--accent);width:0}
+.prog{font-size:13px;color:var(--ink2);display:flex;flex-wrap:wrap;gap:4px 14px}
+.card{background:var(--surface);border:1px solid var(--ring);border-radius:14px;padding:18px;margin-top:12px}
+.topic{background:var(--wash);border-radius:10px;padding:10px 12px;font-size:14px;color:var(--ink2)}
+.topic b{color:var(--ink)}.topic small{display:block;color:var(--muted);margin-top:2px}
+.meta{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13px;color:var(--muted);margin:14px 0 6px}
+.title{font-size:20px;line-height:1.5;margin:4px 0 8px;font-weight:650;word-break:break-word}
+.claim{font-size:16px;color:var(--ink2);margin:0 0 10px;word-break:break-word}.claim span{color:var(--muted);font-size:13px}
+a.open{display:inline-block;font-size:14px;color:var(--accent);border:1px solid var(--ring);border-radius:8px;padding:6px 12px;text-decoration:none}
+a.open:hover{background:var(--wash)}
+.q{margin:16px 0 8px;font-weight:650}
+.btns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.btns button{font:inherit;font-size:17px;font-weight:650;border-radius:12px;border:2px solid var(--ring);background:var(--surface);color:var(--ink);padding:14px 8px;cursor:pointer}
+.btns button small{display:block;font-weight:400;font-size:12px;color:var(--muted)}
+.btns button:focus-visible,a.open:focus-visible,.tool:focus-visible,.chip:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.btns button.on.y{border-color:var(--yes);background:var(--yes-bg);color:var(--yes)}.btns button.on.n{border-color:var(--no);background:var(--no-bg);color:var(--no)}.btns button.on.u{border-color:var(--unk);background:var(--unk-bg);color:var(--unk)}
+textarea{width:100%;min-height:64px;font:inherit;font-size:15px;color:var(--ink);background:var(--surface);border:1px solid var(--ring);border-radius:10px;padding:8px 10px;margin-top:10px;resize:vertical}
+.nav{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-top:14px}
+.tool{font:inherit;font-size:14px;background:transparent;color:var(--ink2);border:1px solid var(--ring);border-radius:8px;padding:6px 12px;cursor:pointer}.tool:hover{background:var(--wash)}.tool:disabled{opacity:.4;cursor:default}
+.hint{font-size:12.5px;color:var(--muted);margin-top:10px}
+.panel{background:var(--surface);border:1px solid var(--ring);border-radius:14px;padding:14px;margin-top:12px}.panel h2{font-size:15px;margin:0 0 8px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font:inherit;font-size:13px;min-width:38px;padding:4px 8px;border-radius:8px;border:1px solid var(--ring);background:var(--surface);color:var(--ink2);cursor:pointer}
+.chip.cur{outline:2px solid var(--accent)}.chip.y{background:var(--yes-bg);color:var(--yes)}.chip.n{background:var(--no-bg);color:var(--no)}.chip.u{background:var(--unk-bg);color:var(--unk)}
+table{border-collapse:collapse;width:100%;font-size:13.5px}th,td{text-align:left;padding:5px 8px;border-bottom:1px solid var(--line)}td.r,th.r{text-align:right}
+.warn{font-size:13px;background:var(--unk-bg);color:var(--unk);border-radius:10px;padding:8px 12px;margin-top:10px}
+.hidden{display:none!important}
+.filter{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;align-items:center;font-size:13px;color:var(--ink2)}
+</style></head><body><div class="wrap">
+<header><h1>อ่านตรวจกลุ่มข่าว — เรื่อง 1</h1>
+<div class="seg" role="group" aria-label="เลือกชุด"><button id="sA" aria-pressed="true">ชุด A · กลุ่ม 0 (70 ข้อ)</button><button id="sB" aria-pressed="false">ชุด B · 7 หัวข้อ (210 ข้อ)</button></div></header>
+<div class="bar"><i id="barfill"></i></div><div class="prog" id="prog"></div>
+<div class="warn" id="warn">ข้อมูลบันทึกอัตโนมัติในเบราว์เซอร์นี้เท่านั้น ถ้าล้างข้อมูลเบราว์เซอร์หรือเปิดคนละเบราว์เซอร์ คำตอบจะไม่ตามไป <b>กด “ส่งออก CSV” ทุกครั้งที่เลิกทำ</b> <button class="tool" id="warnx" style="margin-left:6px">รับทราบ</button></div>
+<div class="filter hidden" id="filterB"><span>แสดงเฉพาะหัวข้อ:</span><span class="chips" id="topicChips"></span></div>
+
+<div class="card" id="card" aria-live="polite">
+ <div class="topic" id="topic"></div>
+ <div class="meta" id="meta"></div>
+ <div class="title" id="title"></div>
+ <p class="claim hidden" id="claim"></p>
+ <a class="open" id="open" target="_blank" rel="noopener noreferrer">เปิดต้นทางในแท็บใหม่ ↗</a>
+ <div class="q" id="q"></div>
+ <div class="btns" role="group" aria-label="คำตอบ">
+  <button class="y" id="by">ตรง<small>กด 1 หรือ Y</small></button>
+  <button class="n" id="bn">ไม่ตรง<small>กด 0 หรือ N</small></button>
+  <button class="u" id="bu">ไม่แน่ใจ<small>กด ? หรือ U</small></button></div>
+ <textarea id="note" placeholder="หมายเหตุ (ไม่บังคับ แต่ถ้ากด “ไม่ตรง” หรือ “ไม่แน่ใจ” ช่วยจดสั้น ๆ ว่าเป็นเรื่องอะไร)"></textarea>
+ <div class="nav"><button class="tool" id="prev">← ก่อนหน้า</button><span id="pos" style="color:var(--ink2);font-size:14px"></span><button class="tool" id="next">ถัดไป →</button></div>
+ <div class="nav"><button class="tool" id="nextun">ไปข้อที่ยังไม่ตอบ</button><label style="font-size:13px;color:var(--ink2)"><input type="checkbox" id="auto" checked> ตอบแล้วไปข้อถัดไปเอง</label></div>
+ <div class="hint">ตัดสินจาก <b>หัวข้อหลักของข้ออ้าง</b> ไม่ต้องตัดสินว่าข่าวจริงหรือเท็จ ลูกศรซ้าย/ขวา = ข้อก่อนหน้า/ถัดไป</div>
+</div>
+
+<div class="panel"><h2>รายการทั้งหมด (กดเพื่อกระโดดไปข้อนั้น)</h2><div class="chips" id="chips"></div>
+ <div class="hint">✓ ตรง · ✗ ไม่ตรง · ? ไม่แน่ใจ · ว่าง = ยังไม่ตอบ</div></div>
+
+<div class="panel"><h2>ส่งออก / นำเข้า</h2>
+ <div class="nav" style="margin-top:0"><button class="tool" id="exA">ส่งออก topic0_samples.csv</button><button class="tool" id="exB">ส่งออก named_topic_samples.csv</button><label class="tool" style="cursor:pointer">นำเข้าไฟล์ที่เคยส่งออก<input id="imp" type="file" accept=".csv" multiple hidden></label></div>
+ <div class="hint">ไฟล์ที่ส่งออกมีคอลัมน์และลำดับแถวเหมือนไฟล์เดิมทุกประการ ต่างกันเฉพาะช่อง <code>human_pure</code> (1 = ตรง, 0 = ไม่ตรง, ? = ไม่แน่ใจ) และ <code>human_note</code> ส่งไฟล์ให้ผู้ช่วยตรวจและวางทับไฟล์เดิม ไม่ต้องแก้เอง</div></div>
+
+<div class="panel"><h2>สรุปคำตอบ</h2><div id="sum"></div></div>
+</div>
+<script>
+const DATA=__DATA__;
+const LS="story1_purity_review_v1";
+const $=id=>document.getElementById(id);
+let st={ans:{},pos:{A:0,B:0},sheet:"A",topic:"all",warned:false};
+try{const s=JSON.parse(localStorage.getItem(LS)||"null");if(s&&s.ans)st=Object.assign(st,s)}catch(e){}
+const save=()=>{try{localStorage.setItem(LS,JSON.stringify(st))}catch(e){}};
+const key=(sh,i)=>sh+":"+DATA[sh].rows[i].id+":"+DATA[sh].rows[i].topic_id;
+const get=(sh,i)=>st.ans[key(sh,i)]||{v:"",note:""};
+function visible(){const sh=st.sheet,rows=DATA[sh].rows,out=[];rows.forEach((r,i)=>{if(sh==="B"&&st.topic!=="all"&&r.topic_id!==st.topic)return;out.push(i)});return out}
+function cur(){const v=visible();let p=st.pos[st.sheet];if(!v.includes(p)){p=v[0];st.pos[st.sheet]=p}return p}
+function render(){
+ const sh=st.sheet,D=DATA[sh],vis=visible(),i=cur(),r=D.rows[i],a=get(sh,i);
+ $("sA").setAttribute("aria-pressed",sh==="A");$("sB").setAttribute("aria-pressed",sh==="B");$("filterB").classList.toggle("hidden",sh!=="B");
+ $("warn").classList.toggle("hidden",st.warned);
+ const tp=D.topics[r.topic_id];$("topic").textContent="";const b=document.createElement("b");b.textContent=`กลุ่ม ${r.topic_id}: ${tp.name}`;const sm=document.createElement("small");sm.textContent=`เกณฑ์ “ตรง”: ${tp.rule}${tp.keywords?" · คำสำคัญของโมเดล: "+tp.keywords:""}`;$("topic").append(b,sm);
+ $("meta").textContent="";[`ID ${r.id}`,`ปี ${r.year} (พ.ศ. ${+r.year+543})`,`สำนัก: ${({sure_share:"ชัวร์ก่อนแชร์",afnc:"AFNC",afp:"AFP",cofact:"Cofact",thaipbs:"Thai PBS Verify"})[r.source]||r.source}`].forEach(t=>{const s=document.createElement("span");s.textContent=t;$("meta").append(s)});
+ $("title").textContent=r.title;
+ const hasClaim=!!r.claim_text&&r.claim_text!==r.title;$("claim").classList.toggle("hidden",!hasClaim);if(hasClaim){$("claim").textContent="";const l=document.createElement("span");l.textContent="ข้ออ้างที่ดึงมา: ";$("claim").append(l,document.createTextNode(r.claim_text))}
+ const ok=/^https?:\/\//.test(r.url||"");$("open").classList.toggle("hidden",!ok);if(ok)$("open").href=r.url;
+ $("q").textContent=`ข้อความนี้ ตรงกับกลุ่ม “${tp.name}” หรือไม่?`;
+ [["by","1"],["bn","0"],["bu","?"]].forEach(([id,v])=>{$(id).classList.toggle("on",a.v===v);$(id).setAttribute("aria-pressed",a.v===v)});
+ $("note").value=a.note||"";
+ const k=vis.indexOf(i);$("pos").textContent=`ข้อ ${k+1} / ${vis.length}${st.sheet==="B"&&st.topic!=="all"?" (หัวข้อที่เลือก)":""}`;
+ $("prev").disabled=k<=0;$("next").disabled=k>=vis.length-1;
+ const doneA=DATA.A.rows.filter((_,j)=>get("A",j).v).length,doneB=DATA.B.rows.filter((_,j)=>get("B",j).v).length,totA=DATA.A.rows.length,totB=DATA.B.rows.length;
+ const dn=sh==="A"?doneA:doneB,tt=sh==="A"?totA:totB;$("barfill").style.width=(100*dn/tt)+"%";
+ $("prog").textContent="";[`ชุดนี้ ${dn}/${tt}`,`ชุด A ${doneA}/${totA}`,`ชุด B ${doneB}/${totB}`,`รวม ${doneA+doneB}/${totA+totB}`].forEach(t=>{const s=document.createElement("span");s.textContent=t;$("prog").append(s)});
+ // topic chips (B)
+ $("topicChips").textContent="";[["all","ทั้งหมด"],...Object.entries(DATA.B.topics).map(([id,t])=>[id,`${id} ${t.short}`])].forEach(([id,l])=>{const c=document.createElement("button");c.className="chip"+(st.topic===id?" cur":"");c.textContent=l;c.onclick=()=>{st.topic=id;save();render()};$("topicChips").append(c)});
+ // chips
+ $("chips").textContent="";vis.forEach((j,n)=>{const v=get(sh,j).v,c=document.createElement("button");c.className="chip"+(v==="1"?" y":v==="0"?" n":v==="?"?" u":"")+(j===i?" cur":"");c.textContent=(n+1)+(v==="1"?" ✓":v==="0"?" ✗":v==="?"?" ?":"");c.setAttribute("aria-label",`ข้อ ${n+1}`);c.onclick=()=>{st.pos[sh]=j;save();render()};$("chips").append(c)});
+ summary();
+}
+function summary(){const el=$("sum");el.textContent="";const t=document.createElement("table"),h=document.createElement("tr");["ชุด / กลุ่ม","ตอบแล้ว","ตรง (1)","ไม่ตรง (0)","ไม่แน่ใจ (?)"].forEach((s,k)=>{const c=document.createElement("th");c.textContent=s;if(k)c.className="r";h.append(c)});t.append(h);
+ const groups=[["A","0"],...Object.keys(DATA.B.topics).map(id=>["B",id])];
+ groups.forEach(([sh,id])=>{const idx=DATA[sh].rows.map((r,j)=>[r,j]).filter(([r])=>r.topic_id===id);const vs=idx.map(([r,j])=>get(sh,j).v);const c1=vs.filter(v=>v==="1").length,c0=vs.filter(v=>v==="0").length,cu=vs.filter(v=>v==="?").length;
+  const tr=document.createElement("tr");[`${sh} · ${id} ${DATA[sh].topics[id].short}`,`${c1+c0+cu}/${idx.length}`,c1,c0,cu].forEach((s,k)=>{const c=document.createElement("td");c.textContent=s;if(k)c.className="r";tr.append(c)});t.append(tr)});
+ el.append(t);const p=document.createElement("div");p.className="hint";p.textContent="ตัวเลขนี้ยังเป็นผลระหว่างทาง ใช้ในบทความได้เมื่อตอบครบทั้งชุดและผู้ช่วยตรวจไฟล์แล้ว";el.append(p)}
+function setAns(v){const sh=st.sheet,i=cur(),k=key(sh,i),a=st.ans[k]||{v:"",note:""};a.v=(a.v===v?"":v);a.t=new Date().toISOString();st.ans[k]=a;save();
+ if(a.v&&$("auto").checked){const vis=visible(),n=vis.indexOf(i);if(n<vis.length-1)st.pos[sh]=vis[n+1]}render()}
+function go(d){const vis=visible(),n=vis.indexOf(cur())+d;if(n>=0&&n<vis.length){st.pos[st.sheet]=vis[n];save();render()}}
+function nextUn(){const sh=st.sheet,vis=visible(),n=vis.indexOf(cur());for(let s=1;s<=vis.length;s++){const j=vis[(n+s)%vis.length];if(!get(sh,j).v){st.pos[sh]=j;save();render();return}}alert("ตอบครบทุกข้อในชุดนี้แล้ว")}
+$("by").onclick=()=>setAns("1");$("bn").onclick=()=>setAns("0");$("bu").onclick=()=>setAns("?");
+$("prev").onclick=()=>go(-1);$("next").onclick=()=>go(1);$("nextun").onclick=nextUn;
+$("note").addEventListener("input",e=>{const k=key(st.sheet,cur()),a=st.ans[k]||{v:"",note:""};a.note=e.target.value;a.t=new Date().toISOString();st.ans[k]=a;save();summary()});
+$("sA").onclick=()=>{st.sheet="A";save();render()};$("sB").onclick=()=>{st.sheet="B";save();render()};
+$("warnx").onclick=()=>{st.warned=true;save();render()};
+document.addEventListener("keydown",e=>{const tg=e.target.tagName;if(tg==="TEXTAREA"||tg==="INPUT"||e.ctrlKey||e.metaKey||e.altKey)return;
+ const k=e.key.toLowerCase();if(k==="1"||k==="y")setAns("1");else if(k==="0"||k==="n")setAns("0");else if(k==="?"||k==="u")setAns("?");else if(e.key==="ArrowLeft")go(-1);else if(e.key==="ArrowRight")go(1)});
+// CSV
+const csvq=s=>{s=String(s==null?"":s);return /[",\n\r]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s};
+function exportCsv(sh){const D=DATA[sh];const lines=[D.columns.join(",")];
+ D.rows.forEach((r,i)=>{const a=get(sh,i);lines.push(D.columns.map(c=>c==="human_pure"?csvq(a.v):c==="human_note"?csvq(a.note):csvq(r.orig[c])).join(","))});
+ const blob=new Blob(["﻿"+lines.join("\n")+"\n"],{type:"text/csv;charset=utf-8"}),u=URL.createObjectURL(blob),a=document.createElement("a");a.href=u;a.download=D.filename;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),2000)}
+$("exA").onclick=()=>exportCsv("A");$("exB").onclick=()=>exportCsv("B");
+function parseCsv(t){t=t.replace(/^﻿/,"");const rows=[];let row=[],f="",q=false;for(let i=0;i<t.length;i++){const c=t[i];if(q){if(c==='"'){if(t[i+1]==='"'){f+='"';i++}else q=false}else f+=c}else if(c==='"')q=true;else if(c===","){row.push(f);f=""}else if(c==="\n"||c==="\r"){if(c==="\r"&&t[i+1]==="\n")i++;row.push(f);f="";if(row.length>1||row[0]!=="")rows.push(row);row=[]}else f+=c}
+ if(f!==""||row.length){row.push(f);rows.push(row)}return rows}
+$("imp").addEventListener("change",async e=>{let n=0,bad=0;for(const file of e.target.files){const rows=parseCsv(await file.text()),h=rows[0]||[],ix=Object.fromEntries(h.map((c,i)=>[c,i]));
+  const sh=("claim_text" in ix)?"A":"B";if(!("id" in ix)||!("human_pure" in ix)||!("topic_id" in ix)){bad++;continue}
+  const map=new Map(rows.slice(1).map(r=>[r[ix.id]+":"+r[ix.topic_id],r]));
+  DATA[sh].rows.forEach((r,i)=>{const m=map.get(r.id+":"+r.topic_id);if(!m)return;const v=(m[ix.human_pure]||"").trim(),note=ix.human_note!=null?m[ix.human_note]||"":"";if(v||note){if(["1","0","?",""].includes(v)){st.ans[key(sh,i)]={v,note,t:new Date().toISOString()};n++}}})}
+ save();render();alert(`นำเข้าแล้ว ${n} แถว`+(bad?` · ข้ามไฟล์ที่รูปแบบไม่ตรง ${bad} ไฟล์`:""));e.target.value=""});
+render();
+</script></body></html>

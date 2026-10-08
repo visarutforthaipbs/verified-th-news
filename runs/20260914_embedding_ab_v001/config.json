@@ -1,0 +1,67 @@
+{
+  "purpose": "controlled embedding-model benchmark; does not overwrite production outputs",
+  "input": "data/reports/journalist_handoff_2026-09-08/02_false_misleading_altered_records.csv",
+  "input_sha256": "12053ef4652e0cf42feca1b38a003dad7cd64e7214da6100f80588357c11cf93",
+  "records": 14429,
+  "unique_exact_texts": 13377,
+  "arms": {
+    "e5_passage": {
+      "model": "intfloat/multilingual-e5-small",
+      "revision": "614241f622f53c4eeff9890bdc4f31cfecc418b3",
+      "prefix": "passage: ",
+      "reuse": "runs/20260908_bertopic_v001/unique_embeddings.npy"
+    },
+    "e5_query": {
+      "model": "intfloat/multilingual-e5-small",
+      "revision": "614241f622f53c4eeff9890bdc4f31cfecc418b3",
+      "prefix": "query: ",
+      "reuse": null
+    },
+    "paraphrase_minilm": {
+      "model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+      "revision": "e8f8c211226b894fcb81acc59f3b34ba3efd5f42",
+      "prefix": "",
+      "reuse": null
+    }
+  },
+  "seeds": [
+    42,
+    7,
+    21
+  ],
+  "umap": {
+    "n_neighbors": 15,
+    "n_components": 10,
+    "min_dist": 0.0,
+    "metric": "cosine"
+  },
+  "hdbscan": {
+    "min_cluster_size": 30,
+    "min_samples": 5,
+    "metric": "euclidean",
+    "cluster_selection_method": "eom"
+  },
+  "min_cluster_size_sensitivity": [
+    15,
+    30,
+    50,
+    80
+  ],
+  "device": "mps",
+  "decision_rule": "prioritize seed stability and editorial usefulness; treat intrinsic scores and assistant-reviewed migrant labels as diagnostics, not ground truth",
+  "limitations": [
+    "no independently human-coded topic gold standard",
+    "E5 passage arm reuses audited vectors",
+    "2015 and 2026 are partial years"
+  ],
+  "packages": {
+    "sentence-transformers": "5.6.1",
+    "torch": "2.13.0",
+    "umap-learn": "0.5.12",
+    "hdbscan": "0.8.44",
+    "scikit-learn": "1.9.0",
+    "numpy": "2.4.6",
+    "pandas": "3.0.5"
+  },
+  "python": "3.11.15"
+}

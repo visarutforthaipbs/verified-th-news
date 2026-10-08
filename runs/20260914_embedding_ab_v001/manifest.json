@@ -1,0 +1,15 @@
+{
+  "files_sha256": {
+    "REPORT_TH.md": "d8b057c7c34d6e010f65f84d2ea6740dc9144214b7e146a498540cc3ca3cd37c",
+    "model_summary.csv": "5fb4e7024e413c536e9b93b77c2c9419a4cfefad49f0418800f3bf8eff818aa6",
+    "seed_stability.csv": "c227208d39bab81ced505a0fc153075ff6ed9b003d72780d4e23056ff5b379be",
+    "cluster_sensitivity.csv": "ee4e92a4aa0a14e89acb6d8dfab786d3fca3b34d037ee7e0ffce7ba5a133a783",
+    "story_topic_continuity.csv": "d9a73b5cbd2ea9b561c535fe02529396b5bfd57f86d7440ceb444d61db82b611",
+    "model_comparison.png": "492e0345ed71af2e8c5dde9c403610573482216f4db6da2c45511a4c18b5255b",
+    "model_comparison.svg": "3535e71251f5d2edf65cf6e1602fef6fd92eb7e0224cadb94435cd1fe0f43b21",
+    "embedding_model_ab.ipynb": "95d66265f60dbd11f0f16467fdbde74e7b8114bdcb4c2260425d7fa591978b01",
+    "embedding_model_ab.executed.ipynb": "23379e69c303cb3c1f2195581386564620c5f9fe05fa13411822aebc150e6ef7",
+    "embedding_model_ab.html": "16508751063f285e2676dbf48d82c3e5319aa0d0bfc018f33d3f77721b1d86d1",
+    "config.json": "e2d1df9b9685226a39e99f29b7c74b435195317413c3ae699c7eb374ae526d76"
+  }
+}
