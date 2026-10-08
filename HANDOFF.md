@@ -1012,3 +1012,9 @@ Assistant second read of all 280 rows (titles/claims only): `deliverables/story1
 
 ## Story 1 article figures embedded (2026-10-07)
 `runs/20260908_bertopic_v001/story_1_article_th.md` now embeds four figures (relative paths, light PNGs): Fig 1 records per year by publisher (§2), Fig 2 cluster map (§2, `runs/20261007_cluster_explorer_v001/cluster_map_article_light.png`, rendered with `cluster_explorer.html?theme=light&export=map` via headless Chrome, window 1100x730 @2x), Fig 3 virus share by publisher (§4), Fig 4 records vs distinct claims (§5). Each has alt text and a caption with a link to the interactive version and the data CSV. Dark PNGs exist for Figs 1, 3, 4 (`*_dark.png`); the map has none (re-render with `theme=dark`).
+
+## 2026-10-08: first push of the story work; Story 2 long-form draft
+- Owner asked to commit and push. Two decisions recorded via question: **article drafts are pushed to the public repo**, and **run CSVs with claim text are committed** (AGENTS.md rule and .gitignore comment updated). Three commits on `story/article1-figures-and-ai-coding`, merged to `main` (`98ded8d`) and pushed. `deliverables/`, `data/`, `runs/**/*.html|npy|jsonl` remain untracked.
+- Story 2 reader-facing draft: `runs/20260908_bertopic_v001/story_2_article_th.md` (~2,650 words of narrative, ~3,700 with notes), two embedded figures from `runs/20261008_story2_viz_v001/`. Every cited ID re-checked against `assignments.csv` (date, publisher, verdict) and against the AI coding (all in scope). One wording fix carried into the working draft too: ID 1215 is "cancel the MoE announcement that lets foreign children study free", not the announcement itself.
+- NOT committed yet: the Story 2 article, its figures, `scripts/story2_viz.py`, and today's doc edits.
+
