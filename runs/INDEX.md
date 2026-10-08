@@ -22,4 +22,6 @@ Journalist package built from it: `deliverables/journalist_handoff_20260914/` (`
 
 | `20261007_story2_aicoded_v001` | Story 2 tables from the assistant's AI coding of the 513-row queue (156 in scope; AI-coded, not human-validated; owner chose no validation): by year/group/source/subtopic. Built by `scripts/story2_ai_analysis.py` from `deliverables/story2_coding/ai_coded/ai_coding_v1.csv`. Supersedes the 20261004 interim numbers in the Story 2 draft (v3). |
 
+| `20261008_story2_viz_v001` | Story 2 figures from the AI-coded tables: in-scope records per year stacked by target group (other / Cambodia / Israel) with share of each year's archive, and a timeline of two claims AFNC fact-checked four times each. HTML + light PNG + tidy CSVs; `scripts/story2_viz.py`. AI-coded, not human-validated. |
+
 **Not a run of this pipeline:** a separate gpu01 BERTopic fit (bge-m3, 27,231 rows incl. true/unknown, outliers forced into 30 topics) is kept in `_archive/2026-09-14_gpu01_bgem3_bertopic/`. It breaks the canonical rules — do not cite.
