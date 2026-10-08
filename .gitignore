@@ -29,3 +29,17 @@ pitch/
 
 # Agent run log
 agy.log
+
+# Journalist deliverables, LLM payloads, large embeddings and generated HTML stay
+# out of git. Run CSVs (including claim text) and article drafts under runs/ are
+# committed by owner decision 2026-10-08; see AGENTS.md.
+deliverables/
+runs/**/*.npy
+runs/**/*.jsonl
+runs/**/*.ipynb
+runs/**/*.html
+.claude/
+
+# Superseded material consolidated from other folders on the dev Mac (2026-10-04).
+# Old drafts, pre-canonical analysis, claim-text dumps. See _archive/README.md.
+/_archive/

@@ -1,4 +1,7 @@
 # 📐 Methodology & Analytical Framework
+
+> Historical document — not the validated results of the current run. The keyword taxonomy, hard-coded template counts and old significance claims below must not be presented as BERTopic findings. Use [Methodology v2](../METHODOLOGY_BERTOPIC_V2.md) and the [2026-09-08 fitted BERTopic analysis](../../runs/20260908_bertopic_v001/README_TH.md) for the current method, actual outputs, caveats and updated Thai journalist outlines. Human narrative validation remains pending.
+
 ## Dynamic Topic & Narrative Shift Analysis for Longitudinal Fact-Check Archives (2015–2026)
 
 **Document Version:** 1.0  
