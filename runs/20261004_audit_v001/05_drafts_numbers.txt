@@ -1,0 +1,60 @@
+== STORY 1: remaining figures ==
+ investment family share: {'2023': 11.1, '2024': 9.3, '2025': 11.4, '2026': 6.7}  (draft: 11.1 / 9.3 / 11.4 / 6.7)
+ family topics keywords:
+    T1: ปันผล | ลงทุน | ตลาดหลักทรัพย์ | กองทุน | เริ่มต้น | บาท | บาท ปันผล |
+    T15: ก.ล.ต. | สำนักงาน ก.ล.ต. | สำนักงาน | ไลน์ | การลงทุน | บัญชี ไลน์ | ช
+    T24: or | amazon | หุ้น | หุ้น or | เริ่มต้น | ลงทุน หุ้น | ซอน | ลงทุน
+    T25: ปตท. | หุ้น | ptt | บาท ปตท. | ลงทุน | ปตท. ลงทุน | ลงทุน หุ้น | หุ้น 
+    T38: ตลาดหลักทรัพย์ | สอน | ฟรี | หุ้น | คอร์ส | เทรด | สอน เทรด | หุ้น ฟรี
+    T44: เฮง | เซ่ง เฮง | ฮั่ว | ฮั่ว เซ่ง | เซ่ง | set | หุ้น set | gold
+    T45: set | เรียน | ฟรี | set คอร์ส | คอร์ส | หลักสูตร | หุ้น | คอร์ส เรียน
+    T50: ก.ล.ต. เว็บไซต์ | เว็บไซต์ | ก.ล.ต. | สำนักงาน | สำนักงาน ก.ล.ต. | การ
+    T62: ตลาดหลักทรัพย์ | ตลาดหลักทรัพย์ เพจ | เพจ เฟซบุ๊ก | ตลาดหลักทรัพย์ ประ
+ 'LIVE Retrovert' records: 55 | by year {'2024': 54, '2025': 1} | sources {'sure_share': 55} | in vaccine topic 2024: 30 of 38
+ noise share: {'2020': 18.35, '2025': 21.33, '2026': 27.72} (draft 18.35 / 21.33 / 27.72)
+
+== STORY 1 + 2: every record cited by ID — does the draft describe it correctly? ==
+  36 cited records checked; 0 mismatches in publisher/date
+  story 2 verdicts stated in draft vs data — mismatches: none
+
+== STORY 2: scope numbers ==
+ cols: ['id', 'source', 'date', 'year', 'verdict', 'verdict_origin', 'claim_text', 'claim_text_basis', 'title', 'url', 'topic_flags', 'migrant_match', 'border_match', 'frame_flags', 'text_family', 'topic_id', 'retrieval_route', 'similarity', 'nearest_seed_id', 'reviewed_scope', 'reviewed_frame', 'review_status', 'assistant_scope', 'scope_basis', 'scope_evidence', 'human_scope', 'human_frame', 'human_review_status']
+ assistant_scope: {'out_of_scope': 207, 'resident_refugee_status': 99, 'unclear': 7, 'crossborder_people_services': 19}
+ retrieval_route: {'semantic_neighbor': 204, 'keyword_seed': 128}
+ screened rows 118 | source {'afnc': 90, 'cofact': 18, 'afp': 3, 'thaipbs': 7} | year {'2020': 4, '2021': 4, '2022': 6, '2023': 4, '2024': 16, '2025': 33, '2026': 51}
+ share by year: {'2020': 0.34, '2021': 0.31, '2022': 0.32, '2023': 0.15, '2024': 0.66, '2025': 1.36, '2026': 3.62}
+ subtopic totals: {'-1': 11, '0': 27, '1': 25, '2': 20, '3': 15, '4': 11, '5': 9}
+ 2025-26: 84 records; mention Cambodia/Khmer: 47 (56.0%)
+ excl. Cambodia share: {'2023': 0.15, '2024': 0.58, '2025': 0.66, '2026': 1.49}
+ human_scope filled: 0 | claim_text_basis=llm: 18
+
+== STORY 2: did the keyword+semantic queue miss migrant-related records? (recall probe on the full 14,429) ==
+   ต่างด้าว                 in corpus   44 | in the 332 queue   43 | NOT reviewed    1
+   แรงงานข้ามชาติ           in corpus    3 | in the 332 queue    3 | NOT reviewed    0
+   แรงงานต่างชาติ           in corpus    5 | in the 332 queue    5 | NOT reviewed    0
+   ชาวต่างชาติ/คนต่างชาติ   in corpus   18 | in the 332 queue    2 | NOT reviewed   16
+   เมียนมา/พม่า             in corpus   60 | in the 332 queue   22 | NOT reviewed   38
+   โรฮิงญา/โรฮีนจา          in corpus    1 | in the 332 queue    0 | NOT reviewed    1
+   ผู้ลี้ภัย/ผู้อพยพ        in corpus   12 | in the 332 queue    6 | NOT reviewed    6
+   ไร้สัญชาติ/ไร้รัฐ        in corpus    0 | in the 332 queue    0 | NOT reviewed    0
+   ลักลอบเข้าเมือง          in corpus    0 | in the 332 queue    0 | NOT reviewed    0
+   ชาวกัมพูชา/คนเขมร        in corpus   63 | in the 332 queue   56 | NOT reviewed    7
+   ชาวลาว/แรงงานลาว         in corpus    3 | in the 332 queue    2 | NOT reviewed    1
+   ชาวจีน/คนจีน             in corpus   18 | in the 332 queue    1 | NOT reviewed   17
+   สัญชาติไทย               in corpus   15 | in the 332 queue   15 | NOT reviewed    0
+  distinct records matching any probe but never screened: 83
+  of those, matching the narrow people-terms: 43; sample:
+     2025-08-04 afp         17133 | คลิปแผ่นดินไหวรุนแรง 8.0 นอกชายฝั่งตะวันออกของรัสเซีย
+     2021-03-23 afp         17030 | ภาพแสดงท่อแก๊สระเบิดในประเทศเมียนมาร์?
+     2025-05-13 afnc         4083 | รอยแยกสะกายในพม่าลั่นแรง ร้าวถึงไทยในทุก 100 ปี
+     2025-04-15 afnc         4333 | 13 เม.ย. 68 เกิดแผ่นดินไหวที่ประเทศเมียนมา ขนาด 6.0 แมกนิจูด
+     2025-04-17 afnc         4314 | เปิดปฏิบัติการตรวจร้านคาราโอเกะ-บาร์โฮส 10 แห่ง ใน กทม.
+     2025-03-29 thaipbs     27053 | ตึกใบหยก "เอียง-ร้าว" จากการแผ่นดินไหวที่เมียนมา
+     2020-09-22 afp         17106 | ภาพคนแห่หนีการระบาดจากเมียนมาร์มาไทย?
+     2021-03-09 afp         16808 | ทหารพม่า ฆ่าหมาตามหมู่บ้าน เพราะมันเห่าเวลาเจ้าหน้าที่ทหารไปตามจับชาวบ้านที่ต่อต้านการยึดอำน
+     2022-12-20 afp         17176 | Vitaccino กาแฟช่วยลดน้ำหนัก มีเลข อย.
+     2025-04-03 afp         16844 | วิดีโอความเสียหายหลังแผ่นดินไหวในเมียนมา
+     2025-09-22 afnc         2802 | เจ้าหน้าที่ไทยบังคับคนต่างชาติไปทำงานแก๊งคอลเซ็นเตอร์ที่เมียนมา
+     2025-04-04 afp         17003 | คลิปเหตุการณ์แผ่นดินไหวระดับ 7.7 ที่ประเทศเมียนมา วันที่ 28 มี.ค.
+     2021-03-17 afp         16838 | ภาพแสดงท่อส่งน้ำมันของจีนถูกเผาในประเทศเมียนมาร์?
+     2020-11-06 afp         16858 | ซีไอเอรับรองคำขอลี้ภัยในหสรัฐฯ ให้แกนนำผู้ประท้วง?

@@ -1,0 +1,39 @@
+== 1. reproducibility ==
+ unique texts 13377 | X (13377, 384) | Z (13377, 10) | every unique text has exactly one topic: True
+ HDBSCAN re-run on stored UMAP coords: clusters=64 noise=16.83%  ARI vs published labels=1.0000
+ full re-run from embeddings (UMAP seed 42 -> HDBSCAN): clusters=64 noise=16.83%  ARI vs published=1.0000  max|Z-Z2|=0.0000
+
+== 2. published tables recomputed from assignments ==
+ topic_timeline.csv: 4680 rows checked, 0 mismatches
+ adjacent_year_shifts.csv: max abs difference from my recomputation = 0.000000
+
+== 3. is the 2562->2563 shift a change in content or a change of publisher? ==
+  2019->2020: all sources JSD=0.490 | sure_share only=0.323 (n 319->193) | afnc only=0.607 (n 70->865)
+  2024->2025: all sources JSD=0.370 | sure_share only=0.257 (n 383->242) | afnc only=0.395 (n 1889->1853)
+  Topic 0 (health/food big cluster) within Sure&Share: 2019 283/319 (88.7%) -> 2020 146/193 (75.6%)
+  Topic 4 (virus cures) within Sure&Share: 2019 0/319 (0.0%) -> 2020 21/193 (10.9%)
+  Topic 7 (infection reports) within Sure&Share: 2019 0/319 (0.0%) -> 2020 3/193 (1.6%)
+  Topic 0 = 5292 records; by source {'sure_share': 2486, 'afnc': 2651, 'afp': 96, 'cofact': 44, 'thaipbs': 15}
+  Sure&Share records in Topic 0: 2486/2861  | AFNC: 2651/10356
+
+== 4. headline topics by publisher, 2020-21 vs 2024-25 (count/denominator) ==
+  T4  virus cures       | all: 193/2465 (7.83%) -> 9/4836 (0.19%) | afnc: 135/1911 (7.06%) -> 6/3742 (0.16%) | sure_share: 33/359 (9.19%) -> 3/625 (0.48%) | afp: 25/193 (12.95%) -> 0/247 (0.00%)
+  T7  infection reports | all: 169/2465 (6.86%) -> 14/4836 (0.29%) | afnc: 160/1911 (8.37%) -> 13/3742 (0.35%) | sure_share: 3/359 (0.84%) -> 0/625 (0.00%) | afp: 6/193 (3.11%) -> 1/247 (0.40%)
+  T1  invest-dividend   | all: 3/2465 (0.12%) -> 129/4836 (2.67%) | afnc: 3/1911 (0.16%) -> 129/3742 (3.45%) | sure_share: 0/359 (0.00%) -> 0/625 (0.00%) | afp: 0/193 (0.00%) -> 0/247 (0.00%)
+  T2  driving licence   | all: 1/2465 (0.04%) -> 204/4836 (4.22%) | afnc: 1/1911 (0.05%) -> 204/3742 (5.45%) | sure_share: 0/359 (0.00%) -> 0/625 (0.00%) | afp: 0/193 (0.00%) -> 0/247 (0.00%)
+  T11 victim refund     | all: 0/2465 (0.00%) -> 161/4836 (3.33%) | afnc: 0/1911 (0.00%) -> 159/3742 (4.25%) | sure_share: 0/359 (0.00%) -> 0/625 (0.00%) | afp: 0/193 (0.00%) -> 0/247 (0.00%)
+  T6  Cambodia border   | all: 3/2465 (0.12%) -> 156/4836 (3.23%) | afnc: 2/1911 (0.10%) -> 122/3742 (3.26%) | sure_share: 0/359 (0.00%) -> 0/625 (0.00%) | afp: 1/193 (0.52%) -> 1/247 (0.40%)
+  T18 vaccine           | all: 39/2465 (1.58%) -> 44/4836 (0.91%) | afnc: 30/1911 (1.57%) -> 6/3742 (0.16%) | sure_share: 8/359 (2.23%) -> 34/625 (5.44%) | afp: 1/193 (0.52%) -> 4/247 (1.62%)
+  'source-balanced' effect vs AFNC's own change divided by 3: {2: (1.8, 1.8), 11: (1.42, 1.42), 1: (1.1, 1.1)}
+
+== 5. do the headline topics survive a different random seed? (UMAP seeds 7, 21 vs published 42) ==
+  seed 42: clusters=64 ARI vs published=1.000 | T2: J=1.00 0.04%->4.22% | T11: J=1.00 0.00%->3.33% | T1: J=1.00 0.12%->2.67% | T4: J=1.00 7.83%->0.19% | T7: J=1.00 6.86%->0.29% | T6: J=1.00 0.12%->3.23% |
+  seed 7: clusters=59 ARI vs published=0.876 | T2: J=0.99 0.08%->4.22% | T11: J=0.46 0.12%->6.08% | T1: J=0.92 0.12%->2.92% | T4: J=0.91 7.67%->0.17% | T7: J=0.76 7.26%->0.29% | T6: J=0.43 0.89%->5.87% |
+  seed 21: clusters=66 ARI vs published=0.824 | T2: J=0.99 0.12%->4.22% | T11: J=0.72 0.00%->2.65% | T1: J=0.75 0.08%->1.72% | T4: J=0.87 7.46%->0.23% | T7: J=0.85 6.53%->0.31% | T6: J=0.60 0.04%->2.50% |
+
+== 6. how many distinct claims are inside the rising topics? (texts within cosine 0.95 treated as one claim) ==
+  T2  driving licence  : 324 records, 321 exact-unique texts -> 39 near-duplicate groups; largest group holds 282 texts (88%)
+  T11 victim refund    : 184 records, 183 exact-unique texts -> 46 near-duplicate groups; largest group holds 137 texts (75%)
+  T1  invest-dividend  : 385 records, 384 exact-unique texts -> 154 near-duplicate groups; largest group holds 214 texts (56%)
+  T4  virus cures      : 266 records, 257 exact-unique texts -> 124 near-duplicate groups; largest group holds 101 texts (39%)
+  T7  infection reports: 225 records, 219 exact-unique texts -> 191 near-duplicate groups; largest group holds 5 texts (2%)

@@ -1,0 +1,31 @@
+{
+  "surface": "local newsroom Markdown + standalone PNG/SVG exports",
+  "overview": {
+    "family": "line small multiples",
+    "question": "Which discovered topics rise or fall in archive share?",
+    "points": 12,
+    "selected_topics": [
+      4,
+      7,
+      1,
+      2,
+      11,
+      6
+    ],
+    "denominator": "all eligible records per year including noise",
+    "palette": "single blue root",
+    "partial_years": [
+      2015,
+      2026
+    ],
+    "not_full_inventory": true
+  },
+  "migrant": {
+    "family": "heatmap",
+    "question": "When do the six discovered subthemes occur in the assistant-screened pool?",
+    "years": 7,
+    "cells": "counts, not validated frame prevalence",
+    "palette": "single blue root",
+    "low_n": "annual n printed; no zero extrapolation before 2020"
+  }
+}

@@ -1,0 +1,514 @@
+﻿id,source,date,year,claim_text,queue_round,assistant_scope,scope_interim,group_marker
+16428,afnc,2020-02-22,2020,รัฐบาลเมินช่วยคนงานเชฟโรเลต ไล่ไปเปิด google หางาน,1,out_of_scope,out_of_scope,generic_or_other
+16390,afnc,2020-03-05,2020,การออกบัตรให้มุสลิมต่างด้าวทางสื่อออนไลน์,1,resident_refugee_status,resident_refugee_status,generic_or_other
+16852,afp,2020-03-11,2020,"ชายต่างด้าวสมรสหญิงไอซ์แลนด์ได้เงินเดือน 170,000 บาทจากรัฐบาล?",1,out_of_scope,out_of_scope,generic_or_other
+16192,afnc,2020-04-04,2020,กระทรวงการต่างประเทศฝ่าฝืนคำสั่ง ออกเอกสารให้คนเดินทางเข้าประเทศไทย,1,out_of_scope,out_of_scope,generic_or_other
+15735,afnc,2020-10-04,2020,ชาวพม่ามาตรวจไทรอยด์ที่รพ.ราชวิถี แต่,1,resident_refugee_status,resident_refugee_status,myanmar
+15731,afnc,2020-10-06,2020,ชาวพม่าอพยพเข้าไทยหนีโควิด-19 ที่ด่านพรมแดนแม่สอด จ.ตาก,1,resident_refugee_status,resident_refugee_status,myanmar
+15549,afnc,2020-12-22,2020,แรงงานต่างชาติลักลอบทุบกำแพง หลังพื้นที่กักกันเพื่อหลบหนี,1,resident_refugee_status,resident_refugee_status,generic_or_other
+15481,afnc,2021-01-11,2021,คลังอนุมัติ ให้ยกเลิกจ่ายเงินบำนาญแก่ข้าราชการ,1,out_of_scope,out_of_scope,generic_or_other
+15406,afnc,2021-02-01,2021,กระทรวงแรงงาน ปลดล็อก 5 อาชีพ ให้แรงงานต่างชาติ,1,resident_refugee_status,resident_refugee_status,generic_or_other
+14882,afnc,2021-07-16,2021,กรมการจัดหางาน ยกเลิกโครงการช่วยเหลือคนต่างด้าวด้านสาธารณสุข,1,resident_refugee_status,resident_refugee_status,generic_or_other
+14480,afnc,2021-10-24,2021,ผู้ว่าฯ จังหวัดภูเก็ต แอบลักลอบนำมุสลิมต่างด้าวเข้ามาในประเทศอย่างผิดกฎหมาย,1,resident_refugee_status,resident_refugee_status,generic_or_other
+14318,afnc,2021-11-24,2021,ข้าราชการไทย ออกบัตรประชาชนให้มุสลิมต่างด้าว โดยไม่ทำตามกฎหมาย,1,resident_refugee_status,resident_refugee_status,generic_or_other
+13929,afnc,2022-01-29,2022,กระทรวงแรงงาน ปลดล็อก 5 อาชีพ ให้สามารถจ้างแรงงานต่างชาติทำงานได้,1,resident_refugee_status,resident_refugee_status,generic_or_other
+13918,afnc,2022-01-31,2022,มีการแอบลักลอบนำชาวมุสลิมต่างด้าวหลายคนเข้า จ.ภูเก็ต ในเวลากลางคืนด้วยรถตู้,1,resident_refugee_status,resident_refugee_status,generic_or_other
+13904,afnc,2022-02-02,2022,ผู้นำซาอุฯ แต่งตั้งตำแหน่งให้นายกฯ นำคนอิสลามเข้าไทยแบบผิดกฎหมาย,1,resident_refugee_status,resident_refugee_status,generic_or_other
+13599,afnc,2022-03-17,2022,คลังอนุมัติ ให้ยกเลิกจ่ายเงินบำนาญแก่ข้าราชการ,1,out_of_scope,out_of_scope,generic_or_other
+13339,afnc,2022-04-22,2022,ข้าราชการไทยออกบัตรประชาชนให้มุสลิม โดยไม่ทำตามกฎหมาย,1,unclear,unclear,generic_or_other
+13229,afnc,2022-05-08,2022,ตำรวจเตือน มีแก๊งค้าอวัยวะระบาดในประเทศไทย,1,out_of_scope,out_of_scope,generic_or_other
+13201,afnc,2022-05-12,2022,ทหารไทยทำลายสะพานข้ามพรมแดนของผู้ลี้ภัยชาวเมียนมา,1,resident_refugee_status,resident_refugee_status,myanmar
+13177,afnc,2022-05-15,2022,กระทรวงแรงงาน ปลดล็อก 5 อาชีพ ให้สามารถจ้างแรงงานต่างชาติทำงานได้,1,resident_refugee_status,resident_refugee_status,generic_or_other
+12750,afnc,2022-07-13,2022,รับทำใบขับขี่แบบเร่งด่วน ไม่ต้องสอบ บัตรออกโดยกรมขนส่งทางบก มีในระบบถูกต้องตามกฎหมาย,1,out_of_scope,out_of_scope,generic_or_other
+12277,afnc,2022-09-17,2022,ทำใบขับขี่ไม่ต้องสอบที่ขนส่ง แบบถูกกฎหมาย 100% ผ่านไลน์,1,out_of_scope,out_of_scope,generic_or_other
+12068,afnc,2022-10-16,2022,ทำใบขับขี่แบบเร่งด่วนจากขนส่ง กทม. ผ่านช่องทางออนไลน์,1,out_of_scope,out_of_scope,generic_or_other
+12036,afnc,2022-10-21,2022,มีการแอบลักลอบนำชาวมุสลิมต่างด้าวหลายคนเข้า จ.ภูเก็ต ในเวลากลางคืนด้วยรถตู้,1,resident_refugee_status,resident_refugee_status,generic_or_other
+11947,afnc,2022-11-02,2022,กรมการจัดหางานเปิดรับคนไทยไปทำงานที่เกาหลี,1,out_of_scope,out_of_scope,generic_or_other
+11596,afnc,2022-12-16,2022,กรมขนส่งเปิดลงทะเบียนทำใบขับขี่ออนไลน์ ผ่านเพจ Drive safe,1,out_of_scope,out_of_scope,generic_or_other
+11489,afnc,2022-12-29,2022,ข้าราชการไทยออกบัตรประชาชนให้มุสลิม โดยไม่ทำตามกฎหมาย,1,unclear,unclear,generic_or_other
+11436,afnc,2023-01-04,2023,ทำใบขับขี่แบบเร่งด่วน ไม่ต้องสอบ ออกบัตรโดยกรมขนส่งทางบก มีในระบบถูกต้องตามกฎหมาย,1,out_of_scope,out_of_scope,generic_or_other
+11408,afnc,2023-01-07,2023,กระทรวงแรงงานเปิดลงทะเบียนช่วยเหลือการว่างงานของรัฐ,1,out_of_scope,out_of_scope,generic_or_other
+11337,afnc,2023-01-16,2023,เพจรับทำใบขับขี่ถูกกฎหมาย จากกรมการขนส่งทางบก,1,out_of_scope,out_of_scope,generic_or_other
+11134,afnc,2023-02-10,2023,เริ่มเก็บค่าบริการสำหรับการต่อใบอนุญาตทำงานและวีซ่าของแรงงานต่างด้าว ตั้งแต่วันที่ 13 ก.พ. 66 ถึง 68,1,resident_refugee_status,resident_refugee_status,generic_or_other
+11087,afnc,2023-02-15,2023,เพจเปิดรับลงทะเบียนทำบัตรประชาชน สำหรับผู้ที่อาศัยอยู่ในประเทศไทยมานาน,1,resident_refugee_status,resident_refugee_status,generic_or_other
+11070,afnc,2023-02-17,2023,ออมสินเปิดลงทะเบียนสินเชื่อประชาชน ผ่านเพจ BKBTH,1,out_of_scope,out_of_scope,generic_or_other
+10936,afnc,2023-03-05,2023,กรมการขนส่งทางบกรับทำใบขับขี่แบบเร่งด่วนทุกชนิดผ่านไลน์,1,out_of_scope,out_of_scope,generic_or_other
+10912,afnc,2023-03-08,2023,ทำใบขับขี่ออนไลน์ผ่านเพจ ไม่ต้องสอบเองที่ขนส่ง ถูกกฎหมาย 100%,1,out_of_scope,out_of_scope,generic_or_other
+10770,afnc,2023-03-24,2023,ทำใบขับขี่ผ่านไลน์ถูกกฎหมาย 100%,1,out_of_scope,out_of_scope,generic_or_other
+10723,afnc,2023-03-30,2023,กรมการจัดหางานเปิดรับสมัครพนักงานผ่านโครงการเพื่อสร้างรายได้,1,out_of_scope,out_of_scope,generic_or_other
+10601,afnc,2023-04-14,2023,กรมการจัดหางานช่วยเหลือผู้ที่อยู่บ้านทั่วประเทศ ให้ทำงานรายได้ 300 บาทขึ้นไป,1,out_of_scope,out_of_scope,generic_or_other
+10204,afnc,2023-06-01,2023,กรมการขนส่งทางบกเปิดเพจ รับทำใบขับขี่-รถทุกชนิด เพื่อให้บริการทางออนไลน์,1,out_of_scope,out_of_scope,generic_or_other
+10114,afnc,2023-06-12,2023,กรมการขนส่งรับทำใบขับขี่รถทุกชนิด ทุกสัญชาติ ผ่านเพจรับทำใบขับขี่ รถยนต์ มอเตอร์ไซค์,1,unclear,unclear,generic_or_other
+10083,afnc,2023-06-16,2023,กรมการจัดหางาน ส่ง SMS แจ้งกลุ่มรายชื่อตกหล่น รับเงินชดเชยว่างงาน,1,out_of_scope,out_of_scope,generic_or_other
+10046,afnc,2023-06-20,2023,เปิดลงทะเบียนทำบัตรประชาชนต่างด้าว ผ่านเพจสำนักบริหารการทะเบียนกลาง,1,resident_refugee_status,resident_refugee_status,generic_or_other
+9938,afnc,2023-07-03,2023,กรมการจัดหางาน เปิดโครงการ “ไม่เลือกงาน ไม่ยากจน” ให้คนไทยมีรายได้เสริม,1,out_of_scope,out_of_scope,generic_or_other
+9882,afnc,2023-07-10,2023,ขบ. รับทำและต่อใบขับขี่เร่งด่วนผ่านเพจเฟซบุ๊ก,1,out_of_scope,out_of_scope,generic_or_other
+9833,afnc,2023-07-16,2023,กรมการจัดหางานจับมือบริษัททั่วประเทศ เปิดโครงการสร้างอาชีพอบรมฟรี,1,out_of_scope,out_of_scope,generic_or_other
+9791,afnc,2023-07-21,2023,กรมการจัดหางานร่วมกับ DBD รับสมัครงานอาชีพเสริมหลังเลิกงาน,1,out_of_scope,out_of_scope,generic_or_other
+9781,afnc,2023-07-22,2023,ผู้อื่นสามารถสอบใบขับขี่แทนได้,1,out_of_scope,out_of_scope,generic_or_other
+9740,afnc,2023-07-27,2023,ลักลอบนำชาวต่างด้าวหลายคนเข้าภูเก็ตในเวลากลางคืนด้วยรถตู้,1,resident_refugee_status,resident_refugee_status,generic_or_other
+9705,afnc,2023-08-01,2023,เพจสำนักงานขนส่งทางบก รับทำใบขับขี่ผ่านระบบออนไลน์,1,out_of_scope,out_of_scope,generic_or_other
+9668,afnc,2023-08-05,2023,ทำใบขับขี่ออนไลน์แบบใหม่ผ่านเพจใบการขับรถครบวงจร ของกรมการขนส่งฯ,1,out_of_scope,out_of_scope,generic_or_other
+9660,afnc,2023-08-06,2023,กรมบัญชีกลางเปิดเว็บ https://dps.pr-th.cc/ ให้โหลดแอปพลิเคชัน,1,out_of_scope,out_of_scope,generic_or_other
+9196,afnc,2023-09-30,2023,รับทำบัตรประชาชนถูกต้องตามกฎหมาย ออกบัตรโดยกระทรวงมหาดไทย ผ่านเพจเฟซบุ๊ก,1,out_of_scope,out_of_scope,generic_or_other
+9151,afnc,2023-10-05,2023,เพจ “ขับขี่ปลอดภัยเร่งด่วน.v1” รับทำใบขับขี่ ทุกประเภท,1,out_of_scope,out_of_scope,generic_or_other
+8990,afnc,2023-10-25,2023,กรมขนส่งทางบกรับทำใบขับขี่ ผ่านเพจ ทำใบขับขี่ออนไลน์,1,out_of_scope,out_of_scope,generic_or_other
+17279,afp,2023-11-21,2023,กัมพูชาล้มละลาย หันหน้าขอเงินจากไทย,1,out_of_scope,out_of_scope,cambodia
+8761,afnc,2023-11-22,2023,เพจเฟซบุ๊กสำนักงานขนส่ง ทางบก รับทำใบขับขี่ทุกประเภท,1,out_of_scope,out_of_scope,generic_or_other
+8746,afnc,2023-11-24,2023,รอง ผบ.ตร. เปิดรับทำใบขับขี่ ผ่านเพจรับ ทำใบขับขี่เร่งด่วน,1,out_of_scope,out_of_scope,generic_or_other
+8739,afnc,2023-11-25,2023,วัดไทยในประเทศกัมพูชา สร้างขึ้นสมัยรัชกาลที่ 5 ได้ถูกรื้อทิ้ง และมียอดปรางค์หล่นทับคนกัมพูชาเสียชีวิต 1 ราย,1,out_of_scope,out_of_scope,cambodia
+8661,afnc,2023-12-06,2023,เพจเฟซบุ๊กเปิดรับทำใบขับขี่ทุกประเภท ไม่ต้องอบรม ไม่ต้องสอบ ถูกต้องตามกฎหมาย 100%,1,out_of_scope,out_of_scope,generic_or_other
+8467,afnc,2024-01-06,2024,คลังอนุมัติให้ยกเลิกจ่ายเงินบำนาญแก่ข้าราชการ,1,out_of_scope,out_of_scope,generic_or_other
+8340,afnc,2024-01-27,2024,กัมพูชาทวงคืน 31 จังหวัดของประเทศไทย,1,out_of_scope,out_of_scope,cambodia
+7946,afnc,2024-03-20,2024,กัมพูชาตัดขาดไทย ดึงแรงงานกัมพูชากลับประเทศ,1,resident_refugee_status,resident_refugee_status,cambodia
+7940,afnc,2024-03-21,2024,กระทรวงแรงงานปลดล็อก 5 อาชีพ ให้แรงงานต่างชาติ,1,resident_refugee_status,resident_refugee_status,generic_or_other
+7616,afnc,2024-04-25,2024,ลงทะเบียนทำใบขับขี่ออนไลน์กับกรมการขนส่งทางบกผ่านเพจ จัดทำ ออกใบขับขี่ โดยตรงจาก DLT,1,out_of_scope,out_of_scope,generic_or_other
+7566,afnc,2024-04-30,2024,ทำใบขับขี่หรือต่อใบขับขี่ ผ่านเพจ DLT รับต่อและทำใบขับขี่-เร่งด่วน,1,out_of_scope,out_of_scope,generic_or_other
+7501,afnc,2024-05-07,2024,ตำรวจเตือน มีแก๊งค้าอวัยวะระบาดในประเทศไทย,1,out_of_scope,out_of_scope,generic_or_other
+7425,afnc,2024-05-16,2024,ทำใบขับขี่ออนไลน์ผ่านเพจ ใบขับขี่ออนไลน์,1,out_of_scope,out_of_scope,generic_or_other
+7337,afnc,2024-05-25,2024,ทำใบขับขี่ไม่ต้องสอบที่ขนส่ง แบบถูกกฎหมาย 100% ผ่านไลน์,1,out_of_scope,out_of_scope,generic_or_other
+7333,afnc,2024-05-26,2024,ทำใบขับขี่ได้ที่บ้าน ผ่านเพจรับจัดทำใบขับขี่ แบบออนไลน์ ทั่วประเทศ,1,out_of_scope,out_of_scope,generic_or_other
+7311,afnc,2024-05-28,2024,เพจรับทำใบขับขี่ ทุกชนิด เปิดให้ทำและต่อใบขับขี่ถูกกฎหมาย 100%,1,out_of_scope,out_of_scope,generic_or_other
+7273,afnc,2024-06-01,2024,รับทำใบขับขี่ สำหรับชาวต่างชาติ ผ่านเพจ DLT Smart Queue,1,resident_refugee_status,resident_refugee_status,generic_or_other
+7225,afnc,2024-06-07,2024,รับทำใบขับขี่ออนไลน์ ผ่านเพจ Transport888,1,out_of_scope,out_of_scope,generic_or_other
+7205,afnc,2024-06-09,2024,ใบขับขี่ออนไลน์ ไม่ต้องไปขนส่ง ผ่านเพจ รับทำใบขับขี่รถทุกรุ่น A,1,out_of_scope,out_of_scope,generic_or_other
+7177,afnc,2024-06-12,2024,ลงทะเบียนต่อใบขับขี่ออนไลน์ ผ่านเพจ ศูนย์ทำใบขับขี่ จัดส่งทั่วประเทศ,1,out_of_scope,out_of_scope,generic_or_other
+7146,afnc,2024-06-15,2024,ทำใบขับขี่ได้ที่บ้าน ไม่ต้องไปขนส่ง ผ่านเพจ จัดทำใบขับขี่ กรมการขนส่งทางบก,1,out_of_scope,out_of_scope,generic_or_other
+7102,afnc,2024-06-20,2024,ทำใบขับขี่ผ่านเพจ รับทำใบขับขี่ออนไลน์ ราคาถูก,1,out_of_scope,out_of_scope,generic_or_other
+16888,afp,2024-06-27,2024,ผู้ลี้ภัยเผาธงชาติฝรั่งเศสในประเทศฝรั่งเศส,1,out_of_scope,out_of_scope,generic_or_other
+7030,afnc,2024-06-28,2024,รับทำใบขับขี่ถูกกฎหมาย ไม่ต้องไปสอบเอง ทางเพจสอบให้,1,out_of_scope,out_of_scope,generic_or_other
+6922,afnc,2024-07-09,2024,เพจศูนย์ออกบัตรใบขับขี่ จาก กรมการขนส่ง รับทำใบขับขี่ ต่อใบขับขี่ออนไลน์,1,out_of_scope,out_of_scope,generic_or_other
+6909,afnc,2024-07-11,2024,ทำใบขับขี่ออนไลน์ผ่านเพจ รับออกบัตรใบขับขี่ ออนไลน์ DLT โดยตรง,1,out_of_scope,out_of_scope,generic_or_other
+6896,afnc,2024-07-12,2024,เพจ ครูโชด รับทำใบขับขี่ทุกชนิดครับ เปิดรับทำใบขับขี่ถูกกฎหมาย 100% ไม่ต้องสอบเองที่ขนส่ง มีผู้สอบให้,1,out_of_scope,out_of_scope,generic_or_other
+27645,cofact,2024-07-15,2024,“บัตรสีชมพู” เปิดช่องแรงงานข้ามชาติ ได้สัญชาติไทยจริงหรือ?,1,resident_refugee_status,resident_refugee_status,generic_or_other
+6851,afnc,2024-07-17,2024,ต่อใบขับขี่ถูกกฎหมาย 100% ทางเพจรับทำต่อใบขับขี่,1,out_of_scope,out_of_scope,generic_or_other
+6758,afnc,2024-07-27,2024,DLT รับทำใบขับขี่ทุกประเภท ผ่านเพจสอบใบขับขี่ด่วน.,1,out_of_scope,out_of_scope,generic_or_other
+6743,afnc,2024-07-29,2024,รับทำและต่ออายุใบขับขี่ถูกต้องตามกฎหมาย บัตรออกโดยขนส่ง ผ่านเพจรับทำใบขับขี่ทุกชนิด,1,out_of_scope,out_of_scope,generic_or_other
+6542,afnc,2024-08-19,2024,แรงงานชาวเมียนมาร์ เรียกร้องสิทธิเทียบเท่าคนไทย,1,resident_refugee_status,resident_refugee_status,myanmar
+6395,afnc,2024-09-05,2024,รับทำใบขับขี่ทุกประเภท ผ่านเพจนางวัชราภรณ์,1,out_of_scope,out_of_scope,generic_or_other
+6381,afnc,2024-09-06,2024,ธุรกิจนายหน้า นำแรงงานพม่าเข้าประเทศไทย ไร้การควบคุม,1,resident_refugee_status,resident_refugee_status,myanmar
+6349,afnc,2024-09-10,2024,เพจทำใบขับขี่ กับครูโชคแบบเร่งด่วน รับเป็นตัวแทนสอบและอบรมทำใบขับขี่ที่ขนส่งฯ,1,out_of_scope,out_of_scope,generic_or_other
+6278,afnc,2024-09-17,2024,"แรงงานต่างด้าวเข้าประเทศทำงานแล้วหลายแสนคน ส่งผลให้แรงงานไทยตกงานแล้วกว่า 430,000 คน",1,resident_refugee_status,resident_refugee_status,generic_or_other
+6249,afnc,2024-09-20,2024,บัตร 10 ปีที่ต่างด้าวได้รับ ถูกจำหน่ายออกจากระบบ,1,resident_refugee_status,resident_refugee_status,generic_or_other
+6120,afnc,2024-10-04,2024,สาวพม่าจ่ายเงินซื้อสัญชาติไทยจำนวน 8 หมื่นบาท,1,resident_refugee_status,resident_refugee_status,myanmar
+6100,afnc,2024-10-06,2024,พบแรงงานต่างด้าวจ้างคนไทยเป็นเจ้านาย หรือเรียกว่า นายจ้างให้เช่า,1,resident_refugee_status,resident_refugee_status,generic_or_other
+5947,afnc,2024-10-23,2024,รับทำใบขับขี่ออนไลน์ได้ทุกประเภท ผ่านเพจ สำนักงานขนส่งกรุงเทพมหานครพื้นที่ 2 ตลิ่งชัน,1,out_of_scope,out_of_scope,generic_or_other
+5929,afnc,2024-10-25,2024,ไทยตัดขาดความสัมพันธ์ระหว่างประเทศกับลาว และกัมพูชา จึงได้ทำการส่งตัวแรงงานจากลาว และกัมพูชากลับประเทศ,1,resident_refugee_status,resident_refugee_status,cambodia
+5894,afnc,2024-10-29,2024,เพจเฟซบุ๊ก วราพร เปิดให้ทำใบขับขี่เร่งด่วนแบบถูกกฎหมาย,1,out_of_scope,out_of_scope,generic_or_other
+5889,afnc,2024-10-29,2024,รับสมัครแรงงานไทยไปต่างประเทศ แบบถูกกฎหมาย รับรองจากกรมแรงงาน,1,out_of_scope,out_of_scope,generic_or_other
+5871,afnc,2024-10-31,2024,เพจเฟซบุ๊ก รับทำใบขับขี่รถทุกชนิด ถูกกฎหมาย รับทำใบขับขี่ออนไลน์ บัตรออกโดยกรมการขนส่งทางบก,1,out_of_scope,out_of_scope,generic_or_other
+5828,afnc,2024-11-05,2024,เพจเฟซบุ๊ก ขับขีปลอดภัย by DLT รับทำต่อใบขับขี่ทุกชนิดถูกกฎหมาย,1,out_of_scope,out_of_scope,generic_or_other
+5698,afnc,2024-11-19,2024,เพจเจ้าหน้าที่ขนส่งแห่งประเทศไทย รับทำใบขับขี่ ต่อใบขับขี่ แบบออนไลน์ บัตรออกจากกรมขนส่งโดยตรง ทำได้ทั่วประเทศ,1,out_of_scope,out_of_scope,generic_or_other
+5683,afnc,2024-11-21,2024,กรมการขนส่งทางบก เปิดเพจ ใบขับขี่ออนไลน์ เพื่อให้บริการทำใบขับขี่อย่างถูกกฎหมาย,1,out_of_scope,out_of_scope,generic_or_other
+5626,afnc,2024-11-27,2024,ลงทะเบียนทำใบขับขี่ออนไลน์ ผ่านเพจ ต่ออายุใบขับขี่ทุกประเภท DLT,1,out_of_scope,out_of_scope,generic_or_other
+5600,afnc,2024-11-30,2024,เปิดให้แรงงานต่างด้าวขึ้นทะเบียน หรือต่ออายุทำงาน และแรงงานเถื่อนก็สามารถขึ้นทะเบียนได้,1,resident_refugee_status,resident_refugee_status,generic_or_other
+5597,afnc,2024-11-30,2024,กรมการขนส่งทางบก เปิดให้ลงทะเบียนทำใบขับขี่ออนไลน์ ผ่านเพจ ข้อมูลใบขับขี่ Thailand,1,out_of_scope,out_of_scope,generic_or_other
+5541,afnc,2024-12-06,2024,ชาวเมียนมาสามารถทำใบขับขี่ได้โดยไม่ต้องสอบ,1,resident_refugee_status,resident_refugee_status,myanmar
+5522,afnc,2024-12-08,2024,พบต่างด้าวผลิตไอศกรีมรถเข็นขายเอง ไม่ได้มาตรฐาน ไม่มี อย,1,resident_refugee_status,resident_refugee_status,generic_or_other
+5515,afnc,2024-12-09,2024,กระทรวงแรงงานเปลี่ยนแปลงกฎหมายเอื้อคนพม่า ประกาศขึ้นทะเบียนอาชีพอิสระมากถึง 9 ล้านคน,1,resident_refugee_status,resident_refugee_status,myanmar
+17349,afp,2024-12-11,2024,ภาพอดีตปธน.บาชาร์ อัล-อัสซาด ปรากฏตัวที่กรุงมอสโกในฐานะผู้ลี้ภัย,1,out_of_scope,out_of_scope,generic_or_other
+5485,afnc,2024-12-12,2024,กรมการขนส่งทางบกเปิดเพจ รับทำใบขับขี่ออนไลน์ ทุกชนิด,1,out_of_scope,out_of_scope,generic_or_other
+5432,afnc,2024-12-18,2024,เพจ ครูกร ที่ปรึกษาสอนขับ เปิดรับทำใบขับขี่ออนไลน์ รับรองโดย กรมการขนส่งทางบก,1,out_of_scope,out_of_scope,generic_or_other
+5366,afnc,2024-12-25,2024,คนไทยถูกหักเงินประกันสังคม 750 บาท เพื่อเอื้อประโยชน์ให้แรงงานต่างด้าว,1,resident_refugee_status,resident_refugee_status,generic_or_other
+5309,afnc,2024-12-31,2024,ทำใบขับขี่ถูกกฎหมาย ไม่ต้องสอบเองที่กรมการขนส่งทางบก ผ่านเพจ กมลวรรณ์ นามวงศ์,1,out_of_scope,out_of_scope,generic_or_other
+5235,afnc,2025-01-08,2025,ลูกแรงงานต่างด้าว มีสิทธิ์ขอสัญชาติไทย,1,resident_refugee_status,resident_refugee_status,generic_or_other
+5170,afnc,2025-01-15,2025,ออกบัตรประชาชนให้พม่าเป็นสัญชาติไทย โดยไม่ตรวจประวัติ,1,resident_refugee_status,resident_refugee_status,myanmar
+5062,afnc,2025-01-27,2025,ไทยปล่อยต่างด้าวเข้าประเทศแบบไม่คัดกรอง จีนเทาฉวยโอกาส จับเด็กไปขอทาน,1,resident_refugee_status,resident_refugee_status,china
+27802,cofact,2025-02-06,2025,พม่าเรียกค่าแรง 600-700 บาท พร้อมโลโก้พรรคประชาชนในคลิป,1,resident_refugee_status,resident_refugee_status,myanmar
+16862,afp,2025-02-06,2025,ภาพแรงงานพม่าเรียกร้องค่าแรงขั้นต่ำ 700 บาท,1,resident_refugee_status,resident_refugee_status,myanmar
+17289,afp,2025-02-06,2025,วิดีโอแรงงานเมียนมาประท้วงขอขึ้นค่าแรงเป็น 700 บาท,1,resident_refugee_status,resident_refugee_status,myanmar
+27076,thaipbs,2025-02-17,2025,แรงงานพม่าในไทยเหิมเกริมมากเกิน ทำการเดินขบวนชุมนุมที่หน้าสนง.ยูเอ็น เรียกร้องค่าแรงขั้นต่ำวันละ 700 บาท,1,resident_refugee_status,resident_refugee_status,myanmar
+4807,afnc,2025-02-24,2025,กรมการขนส่งทางบกเปิดลงทะเบียนทำใบขับขี่ออนไลน์ ผ่านเพจ บริการขับขี่ปลอดภัย,1,out_of_scope,out_of_scope,generic_or_other
+4787,afnc,2025-02-26,2025,ต่างด้าวใน อ.ปาย มีบัตร ปชช. เป็นคนไทย,1,resident_refugee_status,resident_refugee_status,generic_or_other
+4785,afnc,2025-02-26,2025,บริการทำใบขับขี่ออนไลน์! แค่ 1 ชั่วโมง ได้รับบัตรรับรองโดยกรมการขนส่งทางบก,1,out_of_scope,out_of_scope,generic_or_other
+4776,afnc,2025-02-27,2025,นายจ้างที่มีต่างด้าวผิดกฎหมาย ต้องส่งแรงงานเข้าไปจัดเก็บอัตลักษณ์บุคคล ภายในวันที่ 28 มิ.ย. 68,1,resident_refugee_status,resident_refugee_status,generic_or_other
+4768,afnc,2025-02-28,2025,ทำใบขับขี่ออนไลน์ บัตรออกจากกรมขนส่งโดยตรง ทำได้ทั่วประเทศ,1,out_of_scope,out_of_scope,generic_or_other
+4750,afnc,2025-03-02,2025,รับทำใบขับขี่ออนไลน์ทุกชนิดให้คนไทยและคนต่างชาติ ผ่านเพจ รับทำใบขับขี่ออนไลน์,1,resident_refugee_status,resident_refugee_status,generic_or_other
+4743,afnc,2025-03-03,2025,รับทำบัตรประชาชนไทย ผ่านเพจเฟซบุ๊ก รับใบอนุญาต,1,out_of_scope,out_of_scope,generic_or_other
+4720,afnc,2025-03-05,2025,ต่างด้าวยกพวกตีกัน ในหมู่บ้านเอื้ออาทร อ.พิมาย,1,resident_refugee_status,resident_refugee_status,generic_or_other
+4669,afnc,2025-03-11,2025,กลาโหม สั่งประชาชนไทย-กัมพูชา ห้ามจัดกิจกรรมบนปราสาทตาเมือนธม,1,out_of_scope,out_of_scope,cambodia
+4644,afnc,2025-03-13,2025,แก๊งค้ามนุษย์-ขอทานต่างด้าวระบาดทั่วไทย ไร้การจัดการ,1,resident_refugee_status,resident_refugee_status,generic_or_other
+4586,afnc,2025-03-20,2025,เพจใบขับขี่ออนไลน์ เปิดให้ทำใบขับขี่ถูกกฎหมาย 100% ไม่ต้องสอบ,1,out_of_scope,out_of_scope,generic_or_other
+4489,afnc,2025-03-30,2025,รับสมัครแรงงานไทย รับรองวีซ่าและอบรมผ่านกรมแรงงาน,1,out_of_scope,out_of_scope,generic_or_other
+4327,afnc,2025-04-16,2025,ลูกชาวพม่าและเขมร สามารถเรียนหลักสูตรนักศึกษาวิชาทหารไทยได้,1,resident_refugee_status,resident_refugee_status,myanmar
+4176,afnc,2025-05-02,2025,ตม. เปิดเว็บไซต์ลงทะเบียนบัตรขาเข้าประเทศแบบเก็บค่าธรรมเนียม รองรับนักท่องเที่ยว VIP,1,out_of_scope,out_of_scope,generic_or_other
+4169,afnc,2025-05-03,2025,กัมพูชาให้ไทยขุดหลักแดนออก เนื่องจากล้ำเขตประเทศกัมพูชา,1,out_of_scope,out_of_scope,cambodia
+3885,afnc,2025-06-03,2025,ไทยเตรียมประกาศปิดด่านชายแดนไทย-กัมพูชา 6 แห่ง,1,out_of_scope,out_of_scope,cambodia
+3877,afnc,2025-06-04,2025,รัฐบาลกัมพูชาสั่งนายกรัฐมนตรีไทย ห้ามปิดด่านชายแดน,1,out_of_scope,out_of_scope,cambodia
+27012,thaipbs,2025-06-10,2025,คลิปทหารกัมพูชา พร้อมอาวุธ เป็นภาพจริงจากเหตุการณ์ตึงเครียดชายแดนไทย-กัมพูชา,1,out_of_scope,out_of_scope,cambodia
+16772,afp,2025-06-18,2025,วิดีโอชาวกัมพูชาประท้วงขับไล่ผู้นำคนปัจจุบัน,1,out_of_scope,out_of_scope,cambodia
+3739,afnc,2025-06-18,2025,ประเทศไทย เตรียมบุกไปกัมพูชาแล้ว,1,out_of_scope,out_of_scope,cambodia
+3661,afnc,2025-06-27,2025,กัมพูชาปิดด่าน จ.จันทบุรี ทำให้รถขนสินค้าไทยกลับเข้าประเทศไม่ได้,1,out_of_scope,out_of_scope,cambodia
+3659,afnc,2025-06-27,2025,สั่งห้ามกัมพูชาขนเกลือจากไทยกลับประเทศ,1,out_of_scope,out_of_scope,cambodia
+3658,afnc,2025-06-27,2025,ระงับนำเข้าสินค้าเกษตร ระหว่างไทย–กัมพูชา ทำไทยเสียหายหลักแสน,1,out_of_scope,out_of_scope,cambodia
+3650,afnc,2025-06-28,2025,แรงงานลาวแห่ทะลักเข้าไทย หลังแรงงานกัมพูชาทยอยกลับ,1,resident_refugee_status,resident_refugee_status,cambodia
+3628,afnc,2025-06-30,2025,เพจ Alinda รับทำใบขับขี่ออนไลน์ ถูกกฎหมาย ทั้งรถยนต์-มอเตอร์ไซค์,1,out_of_scope,out_of_scope,generic_or_other
+3625,afnc,2025-07-01,2025,กองกำลังบูรพา ออกหนังสือยกเลิกผ่อนผันแรงงานกัมพูชา ที่ถือ Border Pass อยู่ไทย,1,resident_refugee_status,resident_refugee_status,cambodia
+27614,cofact,2025-07-04,2025,จีนออกโรงห้ามกัมพูชาใช้อาวุธของจีนโจมตีไทย,1,out_of_scope,out_of_scope,china
+3587,afnc,2025-07-05,2025,กัมพูชา สั่งห้ามนำเข้าสินค้าไทยผ่านทางทะเล,1,out_of_scope,out_of_scope,cambodia
+3552,afnc,2025-07-09,2025,กัมพูชาสั่งห้ามไทย ส่งยาให้ผู้ป่วยผ่านด่านช่องจอม,1,out_of_scope,out_of_scope,cambodia
+3548,afnc,2025-07-09,2025,คนต่างด้าวทำบัตรประชาชนคนไทยได้แล้ว,1,resident_refugee_status,resident_refugee_status,generic_or_other
+3536,afnc,2025-07-10,2025,เจ้าหน้าที่สำนักงานตรวจคนเข้าเมือง เป็นเพื่อนกับเจ้าของร้านอาหารชาวจีน,1,unclear,unclear,china
+3528,afnc,2025-07-11,2025,กัมพูชายื่น UNESCO ขอชุดไทยแลกเปลี่ยนเพื่อจบปัญหาชายแดน,1,out_of_scope,out_of_scope,cambodia
+17214,afp,2025-07-14,2025,ภาพมาครงนำสนธิสัญญาให้ไทยกรณีพิพาทชายแดนกับกัมพูชา,1,out_of_scope,out_of_scope,cambodia
+16922,afp,2025-07-14,2025,คลิปชาวกัมพูชาประท้วงหลังไทยปิดด่าน,1,out_of_scope,out_of_scope,cambodia
+3466,afnc,2025-07-18,2025,ทำใบขับขี่ถูกกฎหมาย ได้ทั้งรถยนต์-มอเตอร์ไซค์ ติดต่อเพจเฟซบุ๊กธิติรัตน์ รับทำใบขับขี่ออนไลน์,1,out_of_scope,out_of_scope,generic_or_other
+3456,afnc,2025-07-19,2025,ไทยลักลอบส่งออกนมสดไปกัมพูชา,1,out_of_scope,out_of_scope,cambodia
+26997,thaipbs,2025-07-24,2025,โพสต์อ้างกัมพูชายิงเครื่องบิน F-16 ไทยตกสภาพยับเยิน กองทัพอากาศไทยยืนยันแล้ว ไม่เป็นความจริง,1,out_of_scope,out_of_scope,cambodia
+26998,thaipbs,2025-07-24,2025,สื่อกัมพูชาอ้าง 'ทหารไทยต่อรองขอยอมจำนน',1,out_of_scope,out_of_scope,cambodia
+27728,cofact,2025-07-24,2025,ทหารกัมพูชาไล่ยิงนักศึกษาใน จ.สุรินทร์,1,out_of_scope,out_of_scope,cambodia
+3395,afnc,2025-07-25,2025,กองทัพกัมพูชา ยิงเครื่องบินรบไทยตกสําเร็จ,1,out_of_scope,out_of_scope,cambodia
+3358,afnc,2025-07-28,2025,ทหารไทยใช้เครื่องบินปล่อยสารพิษ สังหารพลเมืองกัมพูชา,1,out_of_scope,out_of_scope,cambodia
+3338,afnc,2025-07-29,2025,ทหารไทยทำร้ายและตัดหัวทหารกัมพูชา,1,out_of_scope,out_of_scope,cambodia
+26985,thaipbs,2025-07-31,2025,เพจอ้าง “บิ๊กเล็ก” ใช้คำแรง ปัดความช่วยเหลือกัมพูชาด้านการแพทย์ในไทย กลาโหมยืนยันไม่เป็นความจริง,1,crossborder_people_services,crossborder_people_services,cambodia
+3323,afnc,2025-07-31,2025,กองทัพไทยโจมตีพื้นที่พลเรือนของกัมพูชา,1,out_of_scope,out_of_scope,cambodia
+3320,afnc,2025-07-31,2025,ไทยเสียปราสาทตาควายให้ทหารกัมพูชา,1,out_of_scope,out_of_scope,cambodia
+28031,cofact,2025-08-04,2025,กองทัพกัมพูชา ยิงเครื่องบินรบไทยตกสำเร็จ,1,out_of_scope,out_of_scope,cambodia
+3252,afnc,2025-08-06,2025,กรมการขนส่งทางบก เปิดรับทำใบขับขี่ออนไลน์ผ่านเพจ พัชรา,1,out_of_scope,out_of_scope,generic_or_other
+16877,afp,2025-08-07,2025,ชาวกัมพูชาเรียกร้องให้ฮุนเซนออกตามหาทหารแนวหน้าที่ติดต่อไม่ได้,1,out_of_scope,out_of_scope,cambodia
+27891,cofact,2025-08-07,2025,โรงพยาบาลในจังหวัดสุรินทร์ไม่รับรักษาคนกัมพูชา,1,crossborder_people_services,crossborder_people_services,cambodia
+3235,afnc,2025-08-08,2025,รับทำใบขับขี่ด่วน ทันใจ ถูกต้องตามกฎหมาย ผ่านเพจ ใบขับขี่ปลอดภัยby DLT,1,out_of_scope,out_of_scope,generic_or_other
+3233,afnc,2025-08-08,2025,สั่งจับแรงงานกัมพูชาส่งกลับประเทศ ไม่ให้ประกอบอาชีพในไทย,1,resident_refugee_status,resident_refugee_status,cambodia
+3206,afnc,2025-08-11,2025,ไทยควบคุมตัวทหารกัมพูชา 18 นาย ผิดกฎหมายมนุษยธรรมระหว่างประเทศ,1,out_of_scope,out_of_scope,cambodia
+3185,afnc,2025-08-13,2025,สถานการณ์ชายแดนไทย-กัมพูชา กลับมาตึงเครียดอีกครั้ง ขอให้อพยพออกจากพื้นที่,1,out_of_scope,out_of_scope,cambodia
+3176,afnc,2025-08-14,2025,แรงงานกัมพูชาในไทยแห่กลับบ้านกว่า 8 แสนคน,1,resident_refugee_status,resident_refugee_status,cambodia
+3174,afnc,2025-08-14,2025,สั่งอพยพประชาชนบ้านด่าน จ.สุรินทร์ ออกจากพื้นที่เสี่ยงชายแดนไทย-กัมพูชา,1,out_of_scope,out_of_scope,cambodia
+3171,afnc,2025-08-14,2025,รัฐบาลเตรียมยุบ ศบ.ทก. เพื่อแสดงความจริงใจต่อกัมพูชา,1,out_of_scope,out_of_scope,cambodia
+3164,afnc,2025-08-15,2025,รับทำใบขับขี่ออนไลน์ ถูกต้องตามกฎหมาย ติดต่อได้ที่เพจ จุฬาลักษณ์,1,out_of_scope,out_of_scope,generic_or_other
+3160,afnc,2025-08-15,2025,ทหารกัมพูชารื้อถอนลวดหนามในเขตแดนไทย,1,out_of_scope,out_of_scope,cambodia
+28124,cofact,2025-08-15,2025,กฎหมาย พ.ร.บ. ชาติพันธุ์อาจมีแอบแฝงแจกที่ทำกินให้ครอบครัวละ 20 ไร่ สุดท้ายแล้วคนไทยแท้ไม่มีที่ทำกิน แต่กลุ่มต่างด้าวที่แฝงเป็นชาติติพันธุ์อาจได้ที่ทำกิน,1,resident_refugee_status,resident_refugee_status,generic_or_other
+17193,afp,2025-08-15,2025,ชาวกัมพูชาวางเพลิงตึกคอลเซ็นเตอร์ที่มีคนไทยอยู่จำนวนมาก,1,out_of_scope,out_of_scope,cambodia
+3128,afnc,2025-08-18,2025,กัมพูชาใช้รถตักดินรื้อถอนหลักเขตแดนไทย,1,out_of_scope,out_of_scope,cambodia
+17235,afp,2025-08-19,2025,การประท้วงเกี่ยวกับชายแดนไทยกัมพูชา,1,out_of_scope,out_of_scope,cambodia
+3102,afnc,2025-08-21,2025,แม่ทัพภาค 2 สั่งรื้อบ้านเรือนชาวกัมพูชา 80 หลังคาเรือน ที่ช่องอานม้า,1,unclear,unclear,cambodia
+17033,afp,2025-08-22,2025,ชาวกัมพูชาประท้วงขับไล่รัฐบาลจากการก่อสงครามและปกปิดความจริงเรื่องศพทหาร,1,out_of_scope,out_of_scope,cambodia
+3045,afnc,2025-08-27,2025,ตม. ไทย เปิดด่านให้ชาวกัมพูชาเข้ามาใช้บริการโรงพยาบาลได้ตามปกติแล้ว,1,crossborder_people_services,crossborder_people_services,cambodia
+3044,afnc,2025-08-27,2025,ชาวกัมพูชาบ้านหนองจานที่อาศัยในไทยมานาน สามารถยื่นขอสัญชาติไทยได้,1,resident_refugee_status,resident_refugee_status,cambodia
+3034,afnc,2025-08-28,2025,แม่ทัพภาค 1 และฝ่ายความมั่นคง เสนอมอบสัญชาติไทยให้ชาวกัมพูชา บ้านหนองจาน,1,resident_refugee_status,resident_refugee_status,cambodia
+26964,thaipbs,2025-08-29,2025,แม่ทัพภาคที่ 1 เสนอมอบสัญชาติไทยให้ชาวกัมพูชา พื้นที่บ้านหนองจาน ต.โนนหมากมุ่น อ.โคกสูง จ.สระแก้ว,1,resident_refugee_status,resident_refugee_status,cambodia
+17027,afp,2025-09-09,2025,วิดีโอพายุถล่มประเทศกัมพูชา,1,out_of_scope,out_of_scope,cambodia
+2820,afnc,2025-09-20,2025,กรมการขนส่งทางบก รับทำใบขับขี่เร่งด่วน ถูกกฎหมาย ผ่านเพจ Thai driving license service,1,out_of_scope,out_of_scope,generic_or_other
+27715,cofact,2025-09-23,2025,ชาวกัมพูชาใช้ “เนปาลโมเดล” ประท้วงขับไล่รัฐบาล,1,out_of_scope,out_of_scope,cambodia
+2773,afnc,2025-09-25,2025,กรมการขนส่งทางบก รับทำใบขับขี่รถทุกชนิดถูกกฎหมาย ผ่านเพจ ธันยนันท์,1,out_of_scope,out_of_scope,generic_or_other
+2765,afnc,2025-09-26,2025,กัมพูชาจะตัดความช่วยเหลือไทยอย่างเด็ดขาด หากยังไม่เปิดด่าน,1,out_of_scope,out_of_scope,cambodia
+16837,afp,2025-09-30,2025,ภาพทหารกัมพูชาประชิดชายแดนไทย,1,out_of_scope,out_of_scope,myanmar
+27851,cofact,2025-10-03,2025,คลิปทหารกัมพูชาโชว์ใช้ฟันลากรถขู่ทหารไทย,1,out_of_scope,out_of_scope,cambodia
+2644,afnc,2025-10-09,2025,ไทยขายใบนัดแพทย์ปลอม ให้คนกัมพูชาใช้ผ่านข้ามแดน,1,crossborder_people_services,crossborder_people_services,cambodia
+2601,afnc,2025-10-14,2025,ทำใบขับขี่ออนไลน์ ถูกกฎหมาย ไม่ต้องสอบเอง ได้ที่เพจรับทำใบขับขี่ออนไลน์ ทั่วไทย,1,out_of_scope,out_of_scope,generic_or_other
+2582,afnc,2025-10-16,2025,ชาวกัมพูชาบ้านหนองจาน ใช้ไฟฟ้าจากไทย,1,crossborder_people_services,crossborder_people_services,cambodia
+27229,cofact,2025-10-16,2025,ภาพชาวเขมรประท้วงเกาหลีใต้ กรณีนักศึกษาเสียชีวิตในกัมพูชา,1,out_of_scope,out_of_scope,cambodia
+26928,thaipbs,2025-10-18,2025,ตำรวจเกาหลีใต้จับกุมผีน้อยเขมร หลังแรงงานกัมพูชาเถื่อนออกมาประท้วงเรียกร้องความยุติธรรมให้กับประเทศของเขา (กัมพูชา) ร่วมกับกลุ่มผู้ชุมนุมประมาณ 12 คน ถูกตำรวจจับในเช้าวันนี้,1,out_of_scope,out_of_scope,cambodia
+2566,afnc,2025-10-18,2025,เปิดให้ทำใบขับขี่ออนไลน์ ผ่านเพจ กรมการขนส่งทางบก - รับทำใบขับขี่ทุกชนิด,1,out_of_scope,out_of_scope,generic_or_other
+2529,afnc,2025-10-22,2025,ทำใบขับขี่ออนไลน์ ไม่ต้องสอบเอง ได้ที่เพจ ทำใบขับขี่ ทุกชนิด,1,out_of_scope,out_of_scope,generic_or_other
+17319,afp,2025-10-22,2025,คลิปชาวกัมพูชาประท้วงหลังนักศึกษาเกาหลีเสียชีวิตในกัมพูชา,1,out_of_scope,out_of_scope,cambodia
+17147,afp,2025-10-24,2025,ภาพแรงงานชาวกัมพูชาถูกจับระหว่างประท้วงในเกาหลีใต้,1,out_of_scope,out_of_scope,cambodia
+16854,afp,2025-10-24,2025,ึคลิปกองทัพเกาหลีตอบโต้กัมพูชา,1,out_of_scope,out_of_scope,cambodia
+2486,afnc,2025-10-26,2025,ทำใบขับขี่ออนไลน์ ถูกกฎหมาย ไม่ต้องไปสอบเอง ผ่านเพจ ทำใบขับขี่-ต่ออายุใบขับขี่ ทุกชนิด,1,out_of_scope,out_of_scope,generic_or_other
+2442,afnc,2025-10-31,2025,ทำใบขับขี่ออนไลน์ ถูกกฎหมาย ไม่ต้องสอบเอง ติดต่อเพจ ทำใบขับขี่แบบเร่งด่วน,1,out_of_scope,out_of_scope,generic_or_other
+16848,afp,2025-10-31,2025,คลิปการบุกทลายศูนย์สแกมเมอร์ในกัมพูชา,1,out_of_scope,out_of_scope,cambodia
+2426,afnc,2025-11-02,2025,ทำใบขับขี่ผ่านระบบออนไลน์ ไม่ต้องเสียเวลาไปทำเอง เจ้าหน้าที่ดำเนินการให้ทุกขั้นตอน,1,out_of_scope,out_of_scope,generic_or_other
+2415,afnc,2025-11-03,2025,กรมการขนส่งทางบก เปิดรับทำใบขับขี่ออนไลน์ ผ่านเพจ DLT License ใบขับขี่เร่งด่วน,1,out_of_scope,out_of_scope,generic_or_other
+27940,cofact,2025-11-05,2025,ด่วน! แรงงานเขมร ลักลอบเข้าไทย โดยวิธีการต่างๆ ดัดแปลงกระบะ ขนต่างด้าวเข้าเมือง,1,resident_refugee_status,resident_refugee_status,myanmar
+2368,afnc,2025-11-08,2025,ใช้สิทธิ์คนละครึ่งพลัส ที่แม็คโคร-โลตัส ได้แล้ว,1,out_of_scope,out_of_scope,generic_or_other
+2362,afnc,2025-11-09,2025,กรมการขนส่งทางบก เปิดรับทำใบขับขี่ออนไลน์ทุกชนิด ผ่านเพจ DLT Driving License ใบขับขี่ด่วน,1,out_of_scope,out_of_scope,generic_or_other
+2342,afnc,2025-11-11,2025,DLT รับทำใบขับขี่ทุกประเภท ผ่านเพจ สอบใบขับขี่ เร่งด่วน ไม่ต้องลางาน,1,out_of_scope,out_of_scope,generic_or_other
+2305,afnc,2025-11-15,2025,กรมการขนส่งทางบก เปิดรับทำใบขับขี่แบบเร่งด่วน ผ่านเพจ รับทำใบขับขี่ - ทุกชนิด,1,out_of_scope,out_of_scope,generic_or_other
+17138,afp,2025-11-17,2025,คลิปชาวกัมพูชา 2 คน ในกระบะดัดแปลงลักลอบขนต่างด้าวเข้าไทย,1,resident_refugee_status,resident_refugee_status,myanmar
+2272,afnc,2025-11-19,2025,บริการทำใบขับขี่ออนไลน์แบบครบวงจร ติดต่อได้ที่เพจ รับทำใบขับขี่ออนไลน์ บัตรเสร็จแล้วค่อยจ่าย,1,out_of_scope,out_of_scope,generic_or_other
+2260,afnc,2025-11-20,2025,ต้องการทำใบขับขี่ออนไลน์แบบถูกกฎหมาย ไม่ต้องสอบเอง ติดต่อได้ที่เพจ ฉันทยา,1,out_of_scope,out_of_scope,generic_or_other
+2232,afnc,2025-11-23,2025,รับทำใบขับขี่ถูกกฎหมายแบบเร่งด่วนสำหรับคนต่างด้าว ผ่านเพจ รับทำใบขับขี่แบบถูกกฏหมาย100%,1,resident_refugee_status,resident_refugee_status,generic_or_other
+2215,afnc,2025-11-25,2025,กรมการขนส่งทางบก เปิดรับทำใบขับขี่ออนไลน์ทุกชนิด ผ่านเพจ Driving License ใบขับขี่ด่วน,1,out_of_scope,out_of_scope,generic_or_other
+2207,afnc,2025-11-26,2025,ช่องทางใหม่! ทำใบขับขี่เร่งด่วน ถูกกฎหมาย 100% ติดต่อที่ TikTok nordinfitri,1,out_of_scope,out_of_scope,generic_or_other
+2196,afnc,2025-11-27,2025,เพจ “ทำใบขับขี่ทั่วไทยส่งด่วน” เปิดรับทำใบขับขี่ออนไลน์ ถูกกฎหมาย ไม่ต้องสอบเอง,1,out_of_scope,out_of_scope,generic_or_other
+26880,thaipbs,2025-12-08,2025,ชาวกัมพูชาโพสต์ภาพเครื่องบินทิ้งระเบิดอ้างเป็นเหตุการณ์ไทยปะทะกัมพูชารอบใหม่,1,out_of_scope,out_of_scope,cambodia
+26872,thaipbs,2025-12-12,2025,“สื่อกัมพูชา” อ้าง “ทหารไทย” กักตัว “ชาวกัมพูชา” คาด่าน,1,crossborder_people_services,crossborder_people_services,cambodia
+2035,afnc,2025-12-13,2025,รัฐบาลไทยยังส่งออกน้ำมันให้กัมพูชา,1,out_of_scope,out_of_scope,cambodia
+2031,afnc,2025-12-14,2025,กรมการขนส่งทางบก เปิดรับทำใบขับขี่ออนไลน์ทุกชนิด ผ่านเพจ รับทำใบขับขี่ของแท้100%,1,out_of_scope,out_of_scope,generic_or_other
+2009,afnc,2025-12-16,2025,สั่งปิดอ่าวไทย สกัดเส้นทางลำเลียงอาวุธที่อาจเชื่อมไปกัมพูชา,1,out_of_scope,out_of_scope,cambodia
+26867,thaipbs,2025-12-17,2025,ชาวกัมพูชาโพสต์ภาพร่างทหาร ชี้ให้ชาวสุรินทร์ดูไว้,1,out_of_scope,out_of_scope,cambodia
+1998,afnc,2025-12-17,2025,กัมพูชาจับกุมทหารไทยหนีทัพ,1,out_of_scope,out_of_scope,cambodia
+1958,afnc,2025-12-21,2025,เปิดรับทำใบขับขี่ออนไลน์ถูกกฎหมาย ไม่ต้องสอบเองที่ขนส่ง ผ่านเพจ คน ล่าฝัน,1,out_of_scope,out_of_scope,generic_or_other
+27415,cofact,2025-12-22,2025,คลิปเครื่องบิน F-16 ของไทยบินผาดโผนหลังทิ้งระเบิดโจมตีกัมพูชา,1,out_of_scope,out_of_scope,cambodia
+27206,cofact,2025-12-24,2025,"สว.อังคณาระบุมีชาวกัมพูชา 750,000 คน ได้รับผลกระทบจากการสู้รบกับไทย",1,out_of_scope,out_of_scope,cambodia
+1927,afnc,2025-12-24,2025,ลูกจ้างชาวกัมพูชาที่ทำงานในไทยทุกคน จะอยู่ทำงานได้ถึงวันที่ 13 ก.พ. 69 เท่านั้น หากจ้างต่อจะถูกดำเนินคดีตามกฎหมาย,1,resident_refugee_status,resident_refugee_status,cambodia
+28091,cofact,2025-12-26,2025,กรมการปกครองเสนอแก้ไข พ.ร.บ.สัญชาติ เปิดช่องให้ลูกแรงงานต่างด้าวที่เกิดในไทยได้สัญชาติไทย,1,resident_refugee_status,resident_refugee_status,generic_or_other
+1906,afnc,2025-12-26,2025,บอร์ดปตท. ลักลอบส่งน้ำมันให้กับกัมพูชา,1,out_of_scope,out_of_scope,cambodia
+1905,afnc,2025-12-26,2025,สำนักงานตรวจคนเข้าเมืองของไทย คุกคามนักท่องเที่ยวที่เดินทางมาเปลี่ยนเครื่องเพื่อไปกัมพูชา,1,unclear,unclear,cambodia
+1904,afnc,2025-12-26,2025,ประชาชนผู้บริสุทธิ์ของกัมพูชาได้รับความเดือดร้อนจากการปฏิบัติการของฝ่ายไทย,1,out_of_scope,out_of_scope,cambodia
+1901,afnc,2025-12-27,2025,ทำใบขับขี่ออนไลน์ถูกกฎหมายได้แล้วที่เพจ โชคชัย รับทำใบขับขี่ ทุกชนิด,1,out_of_scope,out_of_scope,generic_or_other
+1872,afnc,2025-12-30,2025,รับทำใบขับขี่ออนไลน์ถูกกฎหมาย ไม่ต้องสอบเองที่ขนส่ง ผ่านเพจ Wannisa Chalerm,1,out_of_scope,out_of_scope,generic_or_other
+1863,afnc,2025-12-31,2025,ทำใบขับขี่ไม่ใช่เรื่องยาก ผ่านเพจ พงษ์เพชร์ กงพล รับทำใบขับขี่ออนไลน์ถูกกฎหมายแบบครบวงจร,1,out_of_scope,out_of_scope,generic_or_other
+1858,afnc,2025-12-31,2025,รับทำใบขับขี่ออนไลน์ถูกกฎหมาย ไม่ต้องสอบเองที่ขนส่ง ผ่านเพจ นายธีรศักดิ์ โฉมศิริ,1,out_of_scope,out_of_scope,generic_or_other
+1843,afnc,2026-01-02,2026,ทำใบขับขี่ไทย ถูกกฎหมาย 100% ไม่ต้องไปสอบเองที่ขนส่ง ติดต่อที่เพจ นาย ธนสิทธิ์ ตันสกุล,1,out_of_scope,out_of_scope,generic_or_other
+1822,afnc,2026-01-04,2026,ทำใบขับขี่ออนไลน์ถูกกฎหมาย ได้ที่เพจ ณัฐวุฒิ รับทำใบขับขี่ทุกชนิด,1,out_of_scope,out_of_scope,generic_or_other
+1794,afnc,2026-01-07,2026,กองทัพไทย บุกยึดของทรัพย์สินมีค่า-รถจักรยานยนต์ จากบ้านเรือนชาวกัมพูชา,1,out_of_scope,out_of_scope,cambodia
+26851,thaipbs,2026-01-10,2026,ตรีนุช สั่งแรงงานกัมพูชาไม่ต้องกลับประเทศ 13 ก.พ. 69,1,resident_refugee_status,resident_refugee_status,cambodia
+1764,afnc,2026-01-10,2026,อยากทำใบขับขี่ แต่ไม่มีเวลาสอบ ทำได้ที่เพจ กรมการขนส่งทางบก รับทำใบขับขี่ทุกชนิด รับรองถูกกฎหมาย 100%,1,out_of_scope,out_of_scope,generic_or_other
+1730,afnc,2026-01-14,2026,กรมการขนส่งทางบก เปิดรับทำใบขับขี่ถูกกฏหมายทุกชนิด ผ่านเพจ ภิญญดา สารมณี,1,out_of_scope,out_of_scope,generic_or_other
+1665,afnc,2026-01-21,2026,ทำใบขับขี่ทุกชนิด ไม่ต้องสอบเองที่ขนส่ง ผ่านเพจ รับทำใบขับขี่ทุกชนิด,1,out_of_scope,out_of_scope,generic_or_other
+1639,afnc,2026-01-24,2026,เตรียมแก้ไข พ.ร.บ.สัญชาติฯ ให้บุตรของคนต่างด้าวที่เกิดในประเทศไทย ตามมาตรา 7 ทวิ วรรคสอง ได้สัญชาติไทยโดยการเกิด,1,resident_refugee_status,resident_refugee_status,generic_or_other
+1623,afnc,2026-01-26,2026,ต่างด้าวสามารถสวมสิทธิ์โครงการคนละครึ่งได้,1,resident_refugee_status,resident_refugee_status,generic_or_other
+1610,afnc,2026-01-27,2026,ไทยใช้กำลังทหารปฏิบัติการในพื้นที่กัมพูชา ขัดต่อกฎหมายระหว่างประเทศ,1,out_of_scope,out_of_scope,cambodia
+1601,afnc,2026-01-28,2026,ตม.ดอนเมือง จับกุมสายลับชาวกัมพูชาแฝงตัวลักลอบเข้าไทย,1,crossborder_people_services,crossborder_people_services,cambodia
+1600,afnc,2026-01-28,2026,ไทยคือผู้สังหารผู้ลี้ภัยจากเขมรแดง เมื่อ 47 ปีก่อน,1,resident_refugee_status,resident_refugee_status,cambodia
+28080,cofact,2026-01-28,2026,กัมพูชานำคนป่วยมาทิ้งไว้ที่ชายแดนฝั่งไทย หวังให้โรงพยาบาลในไทยรับไปรักษาตัวโดยไม่ต้องเสียค่าใช้จ่าย,1,crossborder_people_services,crossborder_people_services,cambodia
+1543,afnc,2026-02-03,2026,ตม.ไทย ไม่ต้อนรับชาวกัมพูชาและยกเลิกใช้ฟรีวีซ่า เพื่อสกัดกั้นทหารรับจ้าง,1,crossborder_people_services,crossborder_people_services,cambodia
+1540,afnc,2026-02-03,2026,ชาวกัมพูชายังคงเข้ามาซื้อสินค้าในตลาดช่องจอม อ.กาบเชิง จ.สุรินทร์ แม้จะมีการประกาศปิดด่าน,1,crossborder_people_services,crossborder_people_services,cambodia
+1531,afnc,2026-02-04,2026,เจ้าหน้าที่ตรวจคนเข้าเมืองไทย มีหลักเกณฑ์พิจารณาอนุญาตให้เดินทางเข้าประเทศที่ต่างกันในแต่ละสนามบิน,1,unclear,unclear,generic_or_other
+1510,afnc,2026-02-06,2026,ตัวแทนรัฐบาลไทยเตือนฝรั่งเศส ไม่ให้ช่วยเหลือกัมพูชาในการยึดดินแดนคืน,1,out_of_scope,out_of_scope,cambodia
+1473,afnc,2026-02-10,2026,ผู้บัญชาการทหารสูงสุดสั่งการ ผู้ใดให้ความช่วยเหลือเด็กต่างด้าว ให้เรียนฟรี ต้องใช้เงินส่วนตัวแทนเท่านั้น,1,resident_refugee_status,resident_refugee_status,generic_or_other
+1465,afnc,2026-02-11,2026,กรมการขนส่งทางบก เปิดรับทำใบขับขี่ทุกชนิด ผ่านเพจ ทำใบขับขี่ทุกประเภทด่วน คีย์ระบบแท้,1,out_of_scope,out_of_scope,generic_or_other
+1445,afnc,2026-02-13,2026,รับทำใบขับขี่ถูกกฏหมายทุกชนิด ผ่านเพจ DLT สำนักงานขนส่ง รับต่อและทำใบขับขี่-เร่งด่วน,1,out_of_scope,out_of_scope,generic_or_other
+1426,afnc,2026-02-15,2026,กรมการขนส่งทางบก เปิดรับทำใบขับขี่ทุกชนิด ผ่านเพจ รับทำใบขับขี่ทุกชะนิด,1,out_of_scope,out_of_scope,generic_or_other
+1418,afnc,2026-02-16,2026,กรมการขนส่งทางบก เปิดรับทำใบขับขี่ทุกชนิด ผ่านเพจ รับทำใบขับขี่,1,out_of_scope,out_of_scope,generic_or_other
+1412,afnc,2026-02-17,2026,เปิดรับทำใบขับขี่เร่งด่วนถูกกฎหมาย ใบอนุญาตรูปแบบใหม่ ผ่านบัญชี TikTok : anwrymjqsqz ผ่านกรมการขนส่งทางบก,1,out_of_scope,out_of_scope,generic_or_other
+1398,afnc,2026-02-18,2026,กรมการขนส่งทางบก เปิดรับทำใบขับขี่ทุกชนิด ผ่านเพจ DLT กรมการขนส่งทางบก รับทำใบขับขี่ทุกชนิด,1,out_of_scope,out_of_scope,generic_or_other
+27700,cofact,2026-02-21,2026,สว.อังคณาออกมาคัดค้านการตัดงบประมาณด้านการศึกษาของนักเรียนชาวกัมพูชาในไทย,1,resident_refugee_status,resident_refugee_status,cambodia
+27606,cofact,2026-02-21,2026,เพจเฟซบุ๊กคล้ายเพจ นสพ.ข่าวสด โพสต์ภาพทหารไทยก่อสร้างถนนที่ชายแดนไทย-กัมพูชา,1,out_of_scope,out_of_scope,cambodia
+27675,cofact,2026-02-23,2026,ปัจจุบันมีการเสนอแก้ไขมาตรา 7 ทวิวรรคสอง ของ พ.ร.บ.สัญชาติ เปิดช่องให้ลูกหลานแรงงานต่างด้าวที่เกิดในไทยได้สัญชาติไทยโดยการเกิด,1,resident_refugee_status,resident_refugee_status,generic_or_other
+27959,cofact,2026-02-24,2026,รังสิมันต์ โรม เสนอให้ออกบัตรประจำตัวประชาชนพิเศษให้ชาวเมียนมา ให้เข้าไทยได้โดยไม่ต้องขออนุญาต เพราะเป็นฐานเสียงทางการเมือง,1,resident_refugee_status,resident_refugee_status,myanmar
+27584,cofact,2026-02-25,2026,ศธ. ประกาศให้รับเด็กที่ไม่มีสัญชาติไทยเข้าเรียนในไทย หลังคลิปเด็กกัมพูชาเดินข้ามจุดผ่านแดนเข้ามาเรียน,1,resident_refugee_status,resident_refugee_status,cambodia
+27544,cofact,2026-02-26,2026,นักสิทธิมนุษยชนแห่งชาติเสนอให้เด็กต่างด้าวในไทยเรียนฟรีถึงปริญญาตรี,1,resident_refugee_status,resident_refugee_status,generic_or_other
+1319,afnc,2026-02-26,2026,26 ก.พ. 69 ชาวกัมพูชา หนีตายทะลักเข้าไทย จำนวน 4.2 แสนคน,1,crossborder_people_services,crossborder_people_services,cambodia
+1311,afnc,2026-02-27,2026,ชาวกัมพูชาซื้อสัญชาติลาว เพื่อเดินทางเข้าไทย,1,resident_refugee_status,resident_refugee_status,cambodia
+1309,afnc,2026-02-27,2026,ไทยลักลอบค้าขายกับกัมพูชา เงินสะพัด 5 พันล้าน,1,out_of_scope,out_of_scope,cambodia
+1256,afnc,2026-03-04,2026,รมต.ต่างประเทศของไทย ยืนยัน ไม่ขอช่วยเหลือกัมพูชาจากสาเหตุต่างๆ ที่เกิดขึ้น,1,out_of_scope,out_of_scope,cambodia
+1233,afnc,2026-03-06,2026,ระเบียบการใหม่ให้สิทธินักเรียนต่างด้าวเดินทางข้ามแดนมาเรียนแบบเช้าไป-เย็นกลับ,1,resident_refugee_status,resident_refugee_status,generic_or_other
+1215,afnc,2026-03-08,2026,ยกเลิกประกาศของ ศธ. ให้เด็กต่างชาติเรียนฟรีถึงระดับปริญญาตรีในประเทศไทย,1,resident_refugee_status,resident_refugee_status,generic_or_other
+1174,afnc,2026-03-12,2026,แรงงานกัมพูชากว่า 7 แสนคน ไม่ยอมกลับประเทศ ยอมจ่ายเงินเพื่อให้ได้สัญชาติไทย,1,resident_refugee_status,resident_refugee_status,cambodia
+1166,afnc,2026-03-13,2026,ชาวกัมพูชาพยายามแหกด่าน เพื่อมารักษาวัณโรคฟรีที่ไทย,1,crossborder_people_services,crossborder_people_services,cambodia
+1162,afnc,2026-03-13,2026,ตม. ไทยไม่ให้ชาวกัมพูชาเดินทางเข้าประเทศ และบังคับให้ซื้อตั๋วเครื่องบินกลับกัมพูชาทันที,1,crossborder_people_services,crossborder_people_services,cambodia
+1154,afnc,2026-03-14,2026,มีการลักลอบส่งสินค้าไปกัมพูชาอย่างต่อเนื่อง,1,out_of_scope,out_of_scope,cambodia
+1146,afnc,2026-03-15,2026,แรงงานกัมพูชาเริ่มกลับมาลักลอบเข้า-ออก ไทยอีกครั้ง ผ่านช่องทางลับที่ชายแดน,1,resident_refugee_status,resident_refugee_status,cambodia
+1106,afnc,2026-03-19,2026,กัมพูชานำเข้าน้ำมันจากไทย โดยใช้เส้นทางอ้อมผ่าน สปป.ลาว,1,out_of_scope,out_of_scope,cambodia
+1080,afnc,2026-03-22,2026,กองทัพไทยเตือน ลักลอบขนน้ำมันไปกัมพูชา มีโทษถึงประหารชีวิต,1,out_of_scope,out_of_scope,cambodia
+1079,afnc,2026-03-22,2026,ตม. สกัดเข้ม ห้ามกัมพูชาเข้าประเทศไทย หากจับได้ส่งกลับทันที,1,crossborder_people_services,crossborder_people_services,cambodia
+1006,afnc,2026-03-30,2026,กัมพูชาลักลอบนำมะม่วงเข้าไทยผ่านชายแดนลาว เพื่อสวมรอยเป็นมะม่วงไทย,1,out_of_scope,out_of_scope,cambodia
+1004,afnc,2026-03-30,2026,นายทุนลักลอบนำเข้ามันสำปะหลังจากกัมพูชา ผ่าน สปป.ลาวเข้าสู่ประเทศไทย,1,out_of_scope,out_of_scope,cambodia
+1003,afnc,2026-03-30,2026,"ผู้พลัดถิ่นชาวกัมพูชากว่า 36,000 คน ยังตกค้างชายแดนไทย",1,crossborder_people_services,crossborder_people_services,cambodia
+830,afnc,2026-04-16,2026,รัฐบาลไม่อนุญาตให้แรงงานกัมพูชาทำงานในประเทศไทย และผลักดันออกนอกประเทศ,1,resident_refugee_status,resident_refugee_status,cambodia
+778,afnc,2026-04-22,2026,ต้มยำกุ้ง เป็นสูตรอาหารที่ชาวกัมพูชาคิดค้น โดยใช้ชื่อว่า กุ้งเปรี้ยว,1,out_of_scope,out_of_scope,cambodia
+28026,cofact,2026-04-24,2026,ไทยให้เด็กต่างชาติเรียนฟรีถึงปริญญาตรี,1,resident_refugee_status,resident_refugee_status,generic_or_other
+737,afnc,2026-04-26,2026,พบชาวกัมพูชาเดินทางข้ามแดนเข้าไทย ในพื้นที่ จ.จันทบุรี ได้โดยง่าย,1,crossborder_people_services,crossborder_people_services,cambodia
+669,afnc,2026-05-03,2026,คนไทยกว่า 600 คน กลับประเทศไม่ได้ หลังกัมพูชาไม่เปิดด่านตามที่ตกลง,1,out_of_scope,out_of_scope,cambodia
+656,afnc,2026-05-04,2026,เครือข่ายสแกมเมอร์ หลอกคนไทยเช่าบัญชี พาข้ามแดนไปกัมพูชา,1,out_of_scope,out_of_scope,cambodia
+655,afnc,2026-05-04,2026,รมว.ต่างประเทศ เสนอให้ตัดทุนการศึกษาเด็กกัมพูชา,1,resident_refugee_status,resident_refugee_status,cambodia
+639,afnc,2026-05-06,2026,รับทำใบขับขี่ทุกประเภท ผ่านเพจ Learn to drive ครูทิวร์ โปร่งใส ตรวจสอบได้,1,out_of_scope,out_of_scope,generic_or_other
+26715,thaipbs,2026-05-10,2026,อังคณา นีละไพจิตร สว. ระบุว่า “คนกัมพูชาเดือดร้อนจากฝนที่ตก คนไทยควรช่วยสร้างบ้านให้”,1,crossborder_people_services,crossborder_people_services,cambodia
+580,afnc,2026-05-12,2026,กัมพูชากวาดล้างแก๊งคอลเซ็นเตอร์ ทำให้ลักลอบทะลักมาทางชายแดนไทย,1,crossborder_people_services,crossborder_people_services,cambodia
+561,afnc,2026-05-14,2026,"รัฐบาลต่ออายุใบอนุญาตทำงานให้กับแรงงานกัมพูชากว่า 200,000 คน ที่ยังอยู่นอกระบบ",1,resident_refugee_status,resident_refugee_status,cambodia
+16703,afp,2026-05-15,2026,คลิปเสียงนายกฯ อนุทินเตรียมเปิดชายแดนไทย-กัมพูชา,1,out_of_scope,out_of_scope,cambodia
+527,afnc,2026-05-18,2026,คนไทยเจาะบ่อบาดาลขออนุญาต แต่ต่างด้าวทำกิจการปิโตรเคมีได้โดยไม่ต้องขออนุญาต,1,resident_refugee_status,resident_refugee_status,generic_or_other
+454,afnc,2026-05-26,2026,ทหารกัมพูชาแพ้ทหารไทยในการรบ เพราะทหารไทยเสพยาบ้า,1,out_of_scope,out_of_scope,cambodia
+451,afnc,2026-05-26,2026,ภาพชาวกัมพูชารวมตัวทั้งประเทศ เรียกร้องให้ไทยจ่ายคนละครึ่งพลัสให้กับแรงงานกัมพูชาทุกคน,1,resident_refugee_status,resident_refugee_status,cambodia
+6,afp,2026-05-29,2026,ดีไซเนอร์ชาวกัมพูชาถูกเจ้าหน้าที่พาตัวออกไปจากเทศกาลหนังเมืองคานส์,1,out_of_scope,out_of_scope,cambodia
+415,afnc,2026-05-30,2026,กัมพูชา ซื้อหัวโขนจากไทย เพื่อเอาไปเป็นต้นแบบ,1,out_of_scope,out_of_scope,cambodia
+396,afnc,2026-06-01,2026,ด่านปิดมา 1 ปี แต่ยังพบชาวกัมพูชาสัญจรไปมา-อาศัยในพื้นที่ คลองลึก โรงเกลือ จ.สระแก้ว,1,resident_refugee_status,resident_refugee_status,cambodia
+27211,cofact,2026-06-05,2026,"บักบอย อินฟลูเอ็นเซอร์ชาวเขมรเรียกร้องให้แรงงานเขมรในไทยได้รับสิทธิ์โครงการคนละครึ่งและขอขึ้นค่าแรงขั้นต่ำเป็น 1,500 บาท",1,resident_refugee_status,resident_refugee_status,cambodia
+330,afnc,2026-06-08,2026,ทำใบขับขี่ออนไลน์ได้แล้ว ผ่านเพจ ครูรุจ ทำใบขับขี่ออนไลน์ สอนขับรถ ทุกชนิด,1,out_of_scope,out_of_scope,generic_or_other
+301,afnc,2026-06-11,2026,ทหารไทยสร้างถนนยาวกว่า 200 กม. ให้ชาวลาว โดยไม่คิดค่าแรง,1,out_of_scope,out_of_scope,laos_vietnam
+298,afnc,2026-06-11,2026,"แรงงานกัมพูชา จ่าย 7,000 บาท ก็กลับมาทำงานที่ไทยได้",1,resident_refugee_status,resident_refugee_status,cambodia
+286,afnc,2026-06-12,2026,รัฐบาลให้สิทธิบัตรสวัสดิการแห่งรัฐกับคนพม่า,1,resident_refugee_status,resident_refugee_status,myanmar
+27187,cofact,2026-06-15,2026,รัฐบาลกำลังร่างกฎหมายให้สัญชาติไทยและบัตรประชาชนแก่คนต่างด้าวรวมถึงคนต่างด้าวที่เข้ามาทำงานในไทยเป็นเวลานาน,1,resident_refugee_status,resident_refugee_status,generic_or_other
+252,afnc,2026-06-16,2026,แรงงานต่างด้าวฝากครรภ์ในโรงพยาบาลไทย หลังคลอดมีเงินบำรุงบุตร มีสวัสดิการ,1,resident_refugee_status,resident_refugee_status,generic_or_other
+28118,cofact,2026-06-17,2026,โพสต์กล่าวหารัฐบาลเพื่อไทย-ภูมิใจไทย “แจกสัญชาติไทยอย่างกับแจกกระดาษชำระ,1,resident_refugee_status,resident_refugee_status,generic_or_other
+234,afnc,2026-06-18,2026,กัมพูชาลากรถถัง 90 คัน ประชิดชายแดนอีสานใต้ของไทย,1,out_of_scope,out_of_scope,cambodia
+224,afnc,2026-06-19,2026,คนต่างด้าว แม้เป็นแรงงานผิดกฎหมาย หากคลอดลูกในไทย จะได้สัญชาติไทยทันที,1,resident_refugee_status,resident_refugee_status,generic_or_other
+222,afnc,2026-06-19,2026,ทหารกัมพูชา ถืออาวุธบุกรุกดินแดนไทย,1,out_of_scope,out_of_scope,cambodia
+219,afnc,2026-06-19,2026,ผู้ป่วยต่างด้าวรับการรักษาในโรงพยาบาลของรัฐบาลไทย ด้วยเงินภาษีของคนไทย,1,resident_refugee_status,resident_refugee_status,generic_or_other
+159,afnc,2026-06-26,2026,ไทยละเมิดอธิปไตยและบูรณภาพแห่งดินแดนของกัมพูชา,1,out_of_scope,out_of_scope,cambodia
+138,afnc,2026-06-28,2026,"นายหน้าชาวเมียนมารับเปิดบัญชีธนาคาร 1,500 บาท ให้กับชาวเมียนมาในภูเก็ต",1,resident_refugee_status,resident_refugee_status,myanmar
+27872,cofact,2026-06-30,2026,คลิปยุทโธปกรณ์ของกัมพูชาที่ได้รับจากจีน-ตั้งขบวนเตรียมรบกับไทยรอบ 3,1,out_of_scope,out_of_scope,china
+99,afnc,2026-07-02,2026,"ชาวกัมพูชาแอบลักลอบเข้าไทย จ่ายค่านายหน้า 7,500 - 8,000 บาท",1,resident_refugee_status,resident_refugee_status,cambodia
+89,afnc,2026-07-03,2026,พบชาวกัมพูชาเดิน ตลาดโรงเกลือ เกือบ 100 เปอร์เซ็นต์ ทั้งที่ด่านปิด,1,resident_refugee_status,resident_refugee_status,cambodia
+69,afnc,2026-07-05,2026,"ไทยได้สังหารหมู่ผู้ลี้ภัยชาวกัมพูชา มากกว่า 45,000 คน ภายในเวลาเพียง 1 วัน",1,resident_refugee_status,resident_refugee_status,cambodia
+59,afnc,2026-07-06,2026,ทหารไทยสั่งปิดท่าข้ามแม่สอด ป้องกันส่งเสบียงฝั่งพม่า หลังกระสุนตกใส่บ้านไทย,1,out_of_scope,out_of_scope,myanmar
+58,afnc,2026-07-06,2026,รั้วชายแดนเอาไม่อยู่ รถตู้ VIP จากกัมพูชา วิ่งผ่านเข้าไทยได้อย่างง่ายดาย,1,crossborder_people_services,crossborder_people_services,cambodia
+50,afnc,2026-07-07,2026,กรมการขนส่งทางบก เปิดรับทำใบขับขี่ ผ่านเพจ รับทำใบขับขี่-เร่งด่วน,1,out_of_scope,out_of_scope,generic_or_other
+42,afnc,2026-07-08,2026,กัมพูชากล่าวหาคณะ AOT ฝ่ายไทย ปลูกต้นกล้าบริเวณปราสาทคนาโดยไม่ขออนุญาต,1,out_of_scope,out_of_scope,cambodia
+39,afnc,2026-07-08,2026,ภูเก็ตมีแรงงานข้ามชาติทั้งในและนอกระบบรวมกว่า 2 แสนคน,1,resident_refugee_status,resident_refugee_status,generic_or_other
+28176,thaipbs,2026-07-14,2026,หญิงต่างด้าวรอคลอดเต็มโรงพยาบาล ทำให้เด็กต่างด้าวเกิดใหม่ก้าวกระโดดแซงหน้าเด็กไทย,1,resident_refugee_status,resident_refugee_status,generic_or_other
+28224,cofact,2026-07-17,2026,อาชีพนายหน้าหรือว่าล่ามแปลภาษา เป็นอาชีพสงวนของคนไทย ต่างด้าวพม่ารามัญไม่สามารถทำได้,1,resident_refugee_status,resident_refugee_status,myanmar
+28752,cofact,2026-08-19,2026,คลิปประชาสัมพันธ์การแข่งขันยิงปืนของกองทัพเรือ ถูกนำมาสร้างความเข้าใจผิดว่าเป็นเหตุปะทะไทย-กัมพูชา,1,out_of_scope,out_of_scope,cambodia
+28891,cofact,2026-08-27,2026,ข่าว นศ. ร้องเรียนปัญหากู้เงิน กยศ. ถูกนำมาเติมข้อความและบิดเบือน เพื่อปลุกปั่นความเกลียดชังคนต่างด้าว,1,resident_refugee_status,resident_refugee_status,generic_or_other
+26615,sure_share,2015-10-09,2015,ภาพถ่ายจานบินที่ลาวที่มีคนแชร์กันอย่างต่อเนื่องในโลกออนไลน์นั้นเป็นเรื่องจริง,2,out_of_scope,out_of_scope,laos_vietnam
+26575,sure_share,2016-01-09,2016,แม่ชาวอินเดียคลอดลูกแฝด 11 คน,2,out_of_scope,out_of_scope,generic_or_other
+16541,afnc,2020-01-27,2020,พบผู้ป่วยชาวจีนติดเชื้อไวรัสโคโรนา รักษาตัวที่ รพ. ราชธานี จ.พระนครศรีอยุธยา,2,unclear,out_of_scope,china
+16531,afnc,2020-01-29,2020,เชื้อไวรัสโคโรนาทำพิษ ชาวจีนล้มตึงกลางสุวรรณภูมิ,2,unclear,out_of_scope,china
+16517,afnc,2020-01-31,2020,นักท่องเที่ยวชาวจีนติดเชื้อไวรัสโคโรนา รักษาตัว รพ.ย่านชลบุรี,2,unclear,out_of_scope,china
+16449,afnc,2020-02-17,2020,แพทย์เตือน ‘แม่สอด’ แหล่งพักคนจีน พื้นที่แพร่ระบาดเชื้อไวรัสโควิด-19,2,resident_refugee_status,resident_refugee_status,china
+16444,afnc,2020-02-18,2020,พบชาวจีนติดเชื้อไวรัสโคโรนาหนึ่งราย รักษาตัวอยู่ที่ รพ. ย่านบางแค,2,unclear,out_of_scope,china
+17228,afp,2020-02-27,2020,ฮุนเซนติดไวรัสโคโรน่า,2,out_of_scope,out_of_scope,cambodia
+16382,afnc,2020-03-06,2020,บุรีรัมย์อย่าไปกันนะ ตอนนี้ติด COVID-19 จำนวน 20 กว่าคนละ ปิดข่าวกัน เค้าบอกว่าเชื้อมาจากคนจีนแก่,2,unclear,unclear,china
+16353,afnc,2020-03-11,2020,จังหวัดเพชรบุรี,2,unclear,unclear,generic_or_other
+16351,afnc,2020-03-11,2020,พบชาวต่างชาติเสียชีวิตจำนวน 1 ราย ด้วยโรค COVID-19 ที่โรงพยาบาลแห่งหนึ่งในจังหวัดภูเก็ต,2,unclear,out_of_scope,generic_or_other
+17106,afp,2020-09-22,2020,ภาพคนแห่หนีการระบาดจากเมียนมาร์มาไทย?,2,crossborder_people_services,crossborder_people_services,myanmar
+16858,afp,2020-11-06,2020,ซีไอเอรับรองคำขอลี้ภัยในหสรัฐฯ ให้แกนนำผู้ประท้วง?,2,out_of_scope,out_of_scope,generic_or_other
+16855,afp,2020-12-02,2020,วิดีโอแสดงลูกสาวของ โจ ไบเดน และ สี จิ้นผิง แสดงบนเวทีด้วยกัน?,2,out_of_scope,out_of_scope,china
+15590,afnc,2020-12-09,2020,โควิด-19 ระบาดในกัมพูชา มีผู้ติดเชื้อกว่าหมื่นคน,2,out_of_scope,out_of_scope,cambodia
+17344,afp,2021-02-05,2021,ภาพแสดงทหารถอดเครื่องแบบเพื่อแสดงอารยะขัดขืนต่อการรัฐประหารเมียนมาร์?,2,out_of_scope,out_of_scope,myanmar
+17331,afp,2021-02-16,2021,ภาพแสดงผู้คนประท้วงในเมียนมาร์หลังการรัฐประหาร?,2,out_of_scope,out_of_scope,myanmar
+16808,afp,2021-03-09,2021,ทหารพม่า ฆ่าหมาตามหมู่บ้าน เพราะมันเห่าเวลาเจ้าหน้าที่ทหารไปตามจับชาวบ้านที่ต่อต้านการยึดอำนาจ ตอนกลางคืน..?,2,out_of_scope,out_of_scope,myanmar
+17034,afp,2021-04-07,2021,ภาพแสดงผู้หญิงถูกฆ่าในการประท้วงต่อต้านรัฐประหารเมียนมาร์ในปี 2564?,2,out_of_scope,out_of_scope,myanmar
+15147,afnc,2021-04-25,2021,ชาวต่างชาติอินเดียติดเชื้อโควิด-19 เช่าเครื่องบินเหมาลำ เข้าประเทศไทย จำนวน 7 ราย,2,crossborder_people_services,crossborder_people_services,generic_or_other
+17016,afp,2021-05-31,2021,ชาวอินเดียโยนรูปปั้นเทพเจ้าต่างๆ ทิ้งลงในแม่น้ำ เพราะพวกเขาไม่พอใจที่เทพเจ้าเหล่านี้ไม่สามารถปกป้องพวกเขาจากโรคโควิด-19,2,out_of_scope,out_of_scope,generic_or_other
+14966,afnc,2021-06-19,2021,ประเทศลาวเปิดให้คนไทย เข้ารับการฉีดวัคซีนโควิด-19 ยี่ห้อ Pfizer ฟรี,2,out_of_scope,out_of_scope,laos_vietnam
+17341,afp,2021-06-30,2021,ภาพแสดงสถานการณ์ในเมียนมาร์ภายหลังการรัฐประหาร ในปี 2564?,2,out_of_scope,out_of_scope,myanmar
+14931,afnc,2021-07-01,2021,ประเทศลาวเปิดให้คนไทยฉีดวัคซีน Sinopharm ฟรี เพียงแค่แสดงบัตรประชาชน,2,out_of_scope,out_of_scope,laos_vietnam
+14822,afnc,2021-08-03,2021,กลุ่มคนไทย 7 คนหลงป่าข้ามไปยังเขตแดนประเทศลาว ถูกจับแล้วได้รับการฉีดวัคซีน mRNA ก่อนส่งกลับไทย,2,out_of_scope,out_of_scope,laos_vietnam
+14527,afnc,2021-10-15,2021,ตำรวจปฏิเสธการรับแจ้งความ จากเหตุการณ์ที่ชาวต่างชาติพลัดตกบ่อน้ำพุร้อน,2,out_of_scope,out_of_scope,generic_or_other
+14502,afnc,2021-10-20,2021,จีนไม่ออกพาสปอร์ตและห้ามคนจีนเที่ยวต่างประเทศอย่างต่ำ 2 ปี รัฐบาลและผู้ประกอบการเตรียมรับมือด่วน,2,out_of_scope,out_of_scope,china
+14496,afnc,2021-10-21,2021,ปตท. ขายส่งดีเซลให้พม่าลิตรละ 14 บาท และให้พ่อค้าฝั่งพม่านำน้ำมันกลับมาขายให้คนไทยลิตรละ 21 บาท,2,out_of_scope,out_of_scope,myanmar
+14485,afnc,2021-10-23,2021,พบนักท่องเที่ยวชาวต่างชาติเดินทางเข้าภูเก็ต 6 ประเทศ มีผลติดเชื้อโควิด-19 ทุกราย,2,unclear,out_of_scope,generic_or_other
+13656,afnc,2022-03-09,2022,โรงแรมในจังหวัดกระบี่ และภูเก็ต งดรับบัตรเครดิตนักท่องเที่ยวชาวรัสเซีย,2,unclear,out_of_scope,generic_or_other
+17031,afp,2022-03-30,2022,เด็กชายตัวน้อยๆคนนี้ เดินร้องไห้ หนีสงครามจากยูเครนข้ามพรมแดนมาเพียงคนเดียว,2,out_of_scope,out_of_scope,generic_or_other
+11818,afnc,2022-11-19,2022,ที่ปรึกษาการรถไฟแห่งประเทศไทยถูกจับเกี่ยวกับทุนจีนสีเทา,2,out_of_scope,out_of_scope,china
+27475,cofact,2023-01-22,2023,ภาพเด็กนั่งปัสสาวะบนรันเวย์สนามบินในเวียดนาม ถูกนำมาสร้างความรู้สึกไม่ดีต่อนักท่องเที่ยวจีนในไทย,2,unclear,out_of_scope,china
+10599,afnc,2023-04-14,2023,กัมพูชาติดต่อขอให้ประเทศไทยเปิดสอนภาษาเขมรในโรงเรียน,2,unclear,unclear,cambodia
+27368,cofact,2023-07-12,2023,เขมรโจมตีไทย หน่วยงานรัฐไทยแจง…ทำเป็นขบวนการ เหตุไม่พอใจเลียนแบบเขมร,2,out_of_scope,out_of_scope,cambodia
+17064,afp,2023-10-31,2023,ชาวอิสราเอลและปาเลสไตน์หลายล้านคนกลายเป็นผู้ไร้บ้าน,2,out_of_scope,out_of_scope,israel_jewish
+17074,afp,2023-11-06,2023,สามีภรรยาคู่หนึ่งในเทศกาลดนตรีถ่ายรูปคู่ก่อนถูกกลุ่มฮามาสยิงเสียชีวิต,2,out_of_scope,out_of_scope,israel_jewish
+8102,afnc,2024-03-01,2024,การบินไทยจัดโปรโมชัน ดึงดูดชาวต่างชาติให้เดินทาง พร้อมแจกตั๋วเครื่องบินฟรี,2,out_of_scope,out_of_scope,generic_or_other
+17086,afp,2024-03-28,2024,ผู้อพยพชาวเคิร์ตก่อความวุ่นวายในเมืองไซตามะของญี่ปุ่น,2,out_of_scope,out_of_scope,generic_or_other
+7835,afnc,2024-04-01,2024,กัมพูชาเรียกเก็บค่าลิขสิทธิ์ไทยสร้างวัดเลียนแบบนครวัด,2,out_of_scope,out_of_scope,cambodia
+7825,afnc,2024-04-02,2024,กองทัพกัมพูชาวางแผนรบใกล้เกาะกูด,2,out_of_scope,out_of_scope,cambodia
+20476,sure_share,2024-05-31,2024,ดื่มน้ำจากกลางลำต้นของกล้วยช่วยรักษาไต ป้องกันไม่ให้เป็นนิ่ว หรือถ้าเป็นแล้วก็จะหายเป็นปลิดทิ้ง ชาวอินเดียไม่เคยมีปัญหาเรื่องนิ่วเพราะเขาทำสิ่งนี้,2,out_of_scope,out_of_scope,generic_or_other
+6609,afnc,2024-08-12,2024,จ้างเปลี่ยนสัญชาติจีนเป็นไทย ได้ใบเกิด ทะเบียนบ้าน และบัตรประชาชน สามารถทำได้ทุกอย่างเหมือนคนไทย,2,resident_refugee_status,resident_refugee_status,china
+6389,afnc,2024-09-05,2024,โรงเรียนแห่งหนึ่งในประเทศไทย ให้นักเรียนเข้าแถวร้องเพลงชาติเมียนมาทุกเช้า,2,resident_refugee_status,resident_refugee_status,myanmar
+6337,afnc,2024-09-11,2024,เด็กไทยต้องเสียค่าเทอม แต่เด็กต่างชาติได้เรียนฟรี โดยใช้ภาษีจากคนไทย,2,resident_refugee_status,resident_refugee_status,generic_or_other
+27145,thaipbs,2024-10-24,2024,เงินจากภาษีของคนไทย แต่พม่าได้สิทธิ??? ไม่ต้องกลัวนะครับคนไทยที่ไม่ได้รับสิทธิสิทธิของท่านพม่าได้รับไว้ให้แล้ว ส่วนคนไทยต้องมานั่งใช้หนี้ให้พม่า,2,resident_refugee_status,resident_refugee_status,myanmar
+27409,cofact,2024-11-21,2024,‘MOU44’ยกดินแดนไทยให้กัมพูชาจริงไหม?,2,out_of_scope,out_of_scope,cambodia
+27099,thaipbs,2024-12-19,2024,คลิปการซ้อมรบของทหารเวียดนามถูกเข้าใจผิดว่าเป็นภาพทหารไทใหญ่โจมตีที่มั่นของทหารว้าแดง,2,out_of_scope,out_of_scope,laos_vietnam
+5413,afnc,2024-12-20,2024,เพจ Progressing and developing the future รับลงทะเบียนคุ้มครองสิทธิ คืนเงินผู้เสียหายจากแก๊งจีนเทา,2,out_of_scope,out_of_scope,china
+5180,afnc,2025-01-14,2025,เลือดสำรองคนไทยถูกนำไปให้พม่าใช้ จนโลหิตในคลังขาดแคลน,2,resident_refugee_status,resident_refugee_status,myanmar
+5026,afnc,2025-01-31,2025,เจ้าพ่อจีนเทา ถูกทำร้ายและขังเดี่ยวในเรือนจำไทย,2,unclear,unclear,china
+4904,afnc,2025-02-13,2025,จีนเทาบุกรุกถางป่า ปลูกทุเรียน ต.ด่านชุมพล อ.บ่อไร่ จ.ตราด,2,resident_refugee_status,resident_refugee_status,china
+4851,afnc,2025-02-19,2025,"ชาวยิวอิสราเอลกว่า 30,000 คน มาตั้งถิ่นฐานใน อ.ปาย",2,resident_refugee_status,resident_refugee_status,israel_jewish
+17181,afp,2025-02-20,2025,"ชาวอิสราเอลย้ายมา ""ตั้งถิ่นฐาน"" ในอ.ปายหลังอิสราเอล-ฮามาสหยุดยิง",2,resident_refugee_status,resident_refugee_status,israel_jewish
+4811,afnc,2025-02-23,2025,ชาวยิวที่มาตั้งถิ่นฐานใน อ.ปาย ไม่ใช่นักท่องเที่ยว แต่เป็นหน่วยรบ,2,resident_refugee_status,resident_refugee_status,israel_jewish
+4789,afnc,2025-02-26,2025,โบสถ์ Chabad of Pai ของชาวยิวใน อ.ปาย ห้ามคนไทยเข้าไปเด็ดขาด,2,resident_refugee_status,resident_refugee_status,israel_jewish
+16856,afp,2025-02-27,2025,วิดีโอการเฉลิมฉลองในอ.ปาย ดินแดนแห่งเทพเจ้าของชาวยิว,2,resident_refugee_status,resident_refugee_status,israel_jewish
+4706,afnc,2025-03-07,2025,ชาวยิว อิสราเอล สร้างชาบัด 6 แห่ง ทั่วประเทศไทย,2,resident_refugee_status,resident_refugee_status,israel_jewish
+4622,afnc,2025-03-16,2025,เขมรส่งโดรนบินสำรวจตอนมืดและขุดบังเกอร์ขนาดใหญ่จุ 40 คน,2,out_of_scope,out_of_scope,cambodia
+4571,afnc,2025-03-21,2025,ประชากรพม่าใน จ.สมุทรสาคร มากกว่าประชากรไทยในพื้นที่,2,resident_refugee_status,resident_refugee_status,myanmar
+4314,afnc,2025-04-17,2025,เปิดปฏิบัติการตรวจร้านคาราโอเกะ-บาร์โฮส 10 แห่ง ใน กทม.,2,unclear,unclear,generic_or_other
+4160,afnc,2025-05-04,2025,ภาษีสหรัฐฯ ทำข้าวไทยแพงกว่าเวียดนามถึง 60%,2,out_of_scope,out_of_scope,laos_vietnam
+4127,afnc,2025-05-08,2025,ใบขับขี่คนต่างชาติ ทำง่าย ได้จริง! ไม่ต้องสอบเอง ผ่านเพจ ยา มุกทาสี,2,resident_refugee_status,resident_refugee_status,generic_or_other
+4113,afnc,2025-05-09,2025,ผู้รับจ้างขายงานอาคารสำนักงานเขตลาดกระบังแห่งใหม่ ที่ยังสร้างไม่เสร็จให้ทุนจีน,2,out_of_scope,out_of_scope,china
+16998,afp,2025-05-20,2025,วิดีโอนักบินชาวอินเดียโดดร่มชูชีพลงในดินแดนปากีสถาน,2,out_of_scope,out_of_scope,generic_or_other
+3959,afnc,2025-05-26,2025,พบทุเรียนแกะเนื้อจากเวียดนามถูกนำเข้าไทยและส่งต่อไปยังจีน,2,out_of_scope,out_of_scope,china
+28106,cofact,2025-06-06,2025,ทหารกัมพูชาฝึกซ้อมห่อศพและเคลื่อนย้ายร่างทหาร หลังแชร์คลิปวิดีโอที่ถูกตัดตอนจากคลิปอบรมปฐมพยาบาล,2,out_of_scope,out_of_scope,cambodia
+3690,afnc,2025-06-24,2025,กรมการขนส่งทางบก เปิดให้บริการทำใบขับขี่สำหรับคนจีน ผ่านเพจ Thai Driver's License,2,resident_refugee_status,resident_refugee_status,china
+3633,afnc,2025-06-30,2025,ด่านคลองลึกเปิดให้นักเรียนกัมพูชาข้ามแดน โดยไม่ใช้เอกสารผ่านแดน,2,crossborder_people_services,crossborder_people_services,cambodia
+3614,afnc,2025-07-02,2025,ตำรวจอนุญาตให้ชาวจีนพกใบขับขี่สากลปลอมได้,2,resident_refugee_status,resident_refugee_status,china
+17162,afp,2025-07-03,2025,วิดีโอชาวยิวอพยพออกจากอิสราเอล,2,out_of_scope,out_of_scope,israel_jewish
+3537,afnc,2025-07-10,2025,เปิดบริการรับทำใบขับขี่ไทยให้ชาวจีน ผ่าน TikTok ชื่อ qkooytuiw7d,2,resident_refugee_status,resident_refugee_status,china
+3445,afnc,2025-07-20,2025,ชาวจีนสามารถเปิดร้านค้าในไทยได้โดยไม่ต้องมีวีซ่า,2,resident_refugee_status,resident_refugee_status,china
+3412,afnc,2025-07-23,2025,กระทรวงกลาโหม จัดประชุม GBC เซ็นสัญญายอมให้ทหารกัมพูชาเข้ามาประจำการที่ปราสาทตาเมือนธม,2,out_of_scope,out_of_scope,cambodia
+28109,cofact,2025-07-25,2025,หยุดคลั่งชาติและหัดดูกัมพูชาเป็นตัวอย่างที่ดี ศ.พวงทองชี้กัมพูชาเคารพกฎหมายระหว่างประเทศ ขณะที่ชาวโลกมองไทยเป็น ‘เด็กเจ้าปัญหา’,2,out_of_scope,out_of_scope,cambodia
+3393,afnc,2025-07-25,2025,บริเวณภูเขาผี ทหารไทยยังคงยิงปะทะเข้ามาในพื้นที่กัมพูชาอย่างต่อเนื่อง ส่วนปราสาทตาเมือนธม ปราสาทตาควาย และบริเวณมุมเบย กัมพูชาควบคุมได้เต็ม 100% แล้ว,2,out_of_scope,out_of_scope,cambodia
+27636,cofact,2025-07-25,2025,องค์กร-หน่วยงานในไทยปลดธงชาติกัมพูชาจากกลุ่มธงประเทศอาเซียน,2,out_of_scope,out_of_scope,cambodia
+27810,cofact,2025-07-25,2025,คลิปชาวกรุงบรัสเซลล์บรรเลงเพลงชาติไทย ให้กำลังใจคนไทยในความขัดแย้งไทย-กัมพูชา,2,out_of_scope,out_of_scope,cambodia
+27881,cofact,2025-07-26,2025,ด่วน! F-16 ทิ้งบอมบ์ 2 กองบัญชาการกัมพูชา กระเจิง หลังยิงปืนใหญ่ใส่บ้านเรือนคนไทย…,2,out_of_scope,out_of_scope,cambodia
+26990,thaipbs,2025-07-28,2025,รวมแล้วตั้งแต่ตี 2 ถึงเช้าตรู่เสียชีวิตเกือบ 140 คน ใกล้วัดพระวิหาร ขอให้พาผีกลับบ้านกันให้หมด เพราะอยากได้แผ่นดินเขมรมากเกินไป,2,out_of_scope,out_of_scope,cambodia
+26987,thaipbs,2025-07-29,2025,เครื่องบินของไทยปล่อยควันพิษในพื้นที่พิพาทเมื่อวันที่ 27 ก.ค. ตามรายงานของกระทรวงกลาโหมกัมพูชา,2,out_of_scope,out_of_scope,cambodia
+27245,cofact,2025-07-30,2025,มีเพจที่อ้างว่าเป็นของตำรวจให้ประชาชนลงทะเบียนเพื่อรับเงินเยียวยาจากการถูกมิจฉาชีพหลอก,2,out_of_scope,out_of_scope,cambodia
+3327,afnc,2025-07-30,2025,รมช.กลาโหม ให้สัมภาษณ์ งดให้ความช่วยเหลือผู้ป่วยกัมพูชา,2,crossborder_people_services,crossborder_people_services,cambodia
+26983,thaipbs,2025-07-31,2025,จีน!!! ขนของใหญ่ไปที่เขมร #ไทยนี่รักสงบแต่ถึงรบไม่ขลาด #คนไทยรู้ทัน #missile,2,out_of_scope,out_of_scope,china
+3322,afnc,2025-07-31,2025,ทหารไทย ลักพาตัวทหารกัมพูชา 20 คน ขณะเข้าไปจับมือหลังมีข้อตกลงหยุดยิง,2,out_of_scope,out_of_scope,cambodia
+3318,afnc,2025-07-31,2025,กองทัพอากาศไทยทิ้งระเบิด MK-84 หนัก 1 ตัน ลงหมู่บ้านในกัมพูชา,2,out_of_scope,out_of_scope,cambodia
+28675,cofact,2025-08-01,2025,กองทัพอากาศไทยทิ้งระเบิด MK-84 หนัก 1 ตัน ใส่หมู่บ้านในกัมพูชา,2,out_of_scope,out_of_scope,cambodia
+3299,afnc,2025-08-02,2025,ทหารกัมพูชาเสียชีวิตที่โรงพยาบาล เนื่องจากได้รับควันพิษจากการโจมตีทางอากาศของไทย,2,out_of_scope,out_of_scope,cambodia
+27677,cofact,2025-08-06,2025,พลทหารกัมพูชาวัย 87 ปีกำลังรอเพื่อลาลูกสาว (ลูกสาวเป็นเภสัชชุมชน) เพื่อไปเสริมกำลังที่แนวหน้าชายแดน,2,out_of_scope,out_of_scope,cambodia
+3209,afnc,2025-08-11,2025,"ทหารเขมรมากกว่า 40,000 คน รวมตัวกันที่ช่องอานม้า",2,out_of_scope,out_of_scope,cambodia
+3204,afnc,2025-08-11,2025,กองทัพไทยทิ้งระเบิด MK-84 และยิงถล่มใส่บ้านเรือน โรงเรียน และสถานีอนามัยของกัมพูชา,2,out_of_scope,out_of_scope,cambodia
+17298,afp,2025-08-12,2025,ภาพลูกสาวทหารกล้าที่รักษาดินแดน,2,out_of_scope,out_of_scope,cambodia
+3140,afnc,2025-08-17,2025,ผู้สื่อข่าวประจำทำเนียบขาวของสหรัฐอเมริกา รายงานกองกำลังทหารไทยได้รุกล้ำดินแดนกัมพูชา,2,out_of_scope,out_of_scope,cambodia
+26969,thaipbs,2025-08-26,2025,ไทยใช้กระสุนฟอสฟอรัสขาวโจมตีทุ่งนาของประชาชนในพื้นที่อำเภอบันเตียอำปึล จังหวัดอุดรมีชัย กัมพูชา พร้อมแนบรูปเหตุการณ์จากหมู่บ้านอัล-บุสตาน ประเทศเลบานอน,2,out_of_scope,out_of_scope,cambodia
+27481,cofact,2025-09-15,2025,อ.เฉลิมชัย โฆษิตพิพัฒน์ ด่าคนเสนอเปิดด่านไทย-กัมพูชา “เป็นพวกขายชาติ”,2,out_of_scope,out_of_scope,cambodia
+26957,thaipbs,2025-09-16,2025,คลิปอ้างว่าเป็นการไว้อาลัยชาร์ลี เคิร์ก,2,out_of_scope,out_of_scope,generic_or_other
+2802,afnc,2025-09-22,2025,เจ้าหน้าที่ไทยบังคับคนต่างชาติไปทำงานแก๊งคอลเซ็นเตอร์ที่เมียนมา,2,crossborder_people_services,crossborder_people_services,myanmar
+2730,afnc,2025-09-30,2025,พบหลุมขนาดใหญ่ในพื้นที่หมู่บ้านทะมาดา ฝั่งกัมพูชา ที่เกิดจากระเบิดและกระสุนปืนใหญ่ของฝ่ายไทย,2,out_of_scope,out_of_scope,cambodia
+26941,thaipbs,2025-10-03,2025,ทหารกัมพูชาตกใจเสียง F-16 วันที่ 29 ก.ย. 68 กองบิน 1 โคราช ขึ้นฝึกบินตามวงรอบ ทำทหารเขมรสติแตกหนีตายกันจ้าละหวั่น,2,out_of_scope,out_of_scope,cambodia
+27865,cofact,2025-10-05,2025,คลิปภาพมุมสูงน้ำท่วมในไทยวันที่ 4 ต.ค. 2568,2,out_of_scope,out_of_scope,cambodia
+2680,afnc,2025-10-05,2025,ทหารกัมพูชาตรึงกำลังตั้งฐานที่ปราสาทคนา,2,out_of_scope,out_of_scope,cambodia
+27691,cofact,2025-10-09,2025,ไล่ฮุนเซน 5/10/68 แชร์ไปให้โลกรู้ว่าเขมรพัง หมดแล้ว,2,out_of_scope,out_of_scope,cambodia
+26934,thaipbs,2025-10-11,2025,อุบัติเหตุครั้งใหญ่! สะพานกรุงเทพพังถล่ม คร่าชีวิต 76 ราย!!,2,out_of_scope,out_of_scope,cambodia
+2603,afnc,2025-10-14,2025,ทหารกัมพูชา ลักลอบตัดลวดหนามของไทย ยาวกว่า 3 กิโลเมตร,2,out_of_scope,out_of_scope,cambodia
+27873,cofact,2025-10-21,2025,คลิป “แก๊งจีนเทา” ในกัมพูชาวิ่งหนีการกวาดล้างของเจ้าหน้าที่,2,out_of_scope,out_of_scope,china
+17006,afp,2025-10-30,2025,ตัวประกันชาวอิสราเอลแถลงเปิดใจหลังได้รับการปล่อยตัวในเดือน ต.ค. 2568,2,out_of_scope,out_of_scope,israel_jewish
+2382,afnc,2025-11-07,2025,ชาวอิสราเอลหลายพันคน ย้ายเข้ามาตั้งถิ่นฐานที่เกาะพะงัน,2,resident_refugee_status,resident_refugee_status,israel_jewish
+2379,afnc,2025-11-07,2025,ชาวยิวในประเทศไทยเป็นทหารรับจ้างฆ่าเด็กและสตรี,2,resident_refugee_status,resident_refugee_status,israel_jewish
+27394,cofact,2025-11-08,2025,อังคณาออกมาตำหนิเรื่องที่ฝั่งไทยเปิดเสียงโหยหวนผ่านลำโพงให้ฝั่งเขมรฟัง และโจมตีการกระทำดังกล่าวว่าเป็นการละเมิดสิทธิมนุษยชน,2,out_of_scope,out_of_scope,cambodia
+2154,afnc,2025-12-01,2025,กัมพูชายึดผาอินทรีย์ สายตรี 6 บ้านกรวด ห้ามชาวบ้านกรีดยาง,2,out_of_scope,out_of_scope,cambodia
+26870,thaipbs,2025-12-14,2025,กัมพูชายิงจรวด BM-21 ลงใส่ชุมชนบ้านเสาธงชัย อ.กันทรลักษ์ จ.ศรีสะเกษ ทำให้มีประชาชนบาดเจ็บ 10 คน รวมถึงผู้บาดเจ็บสาหัส 1 คน,2,out_of_scope,out_of_scope,cambodia
+2027,afnc,2025-12-14,2025,เครื่องบิน F-16 ของไทย ทิ้งระเบิดลงในพื้นที่โรงเรียน จังหวัดพระวิหาร กัมพูชา,2,out_of_scope,out_of_scope,cambodia
+27495,cofact,2025-12-16,2025,พระสงฆ์และลูกศิษย์เป็นชาวต่างชาติที่เขมรจ้างมาก่อเหตุ,2,unclear,unclear,cambodia
+1955,afnc,2025-12-21,2025,ไทยโจมตีโรงเรียนประถมศึกษาในเขตเศรษฐกิจพิเศษทมอดา ประเทศกัมพูชา,2,out_of_scope,out_of_scope,cambodia
+27454,cofact,2025-12-22,2025,ภาพทหารหญิงกัมพูชาเข้าแถวเตรียมถูกส่งไปรบที่ชายแดนไทย-กัมพูชา,2,out_of_scope,out_of_scope,cambodia
+17201,afp,2025-12-26,2025,"ภาพโปรไฟล์เฟซบุ๊กของผู้ก่อเหตุกราดยิงที่หาดบอนดีชื่อ ""เดวิด โคเฮน""",2,out_of_scope,out_of_scope,israel_jewish
+28016,cofact,2026-01-06,2026,เขื่อนแตก ทำให้เกิดน้ำท่วมรุนแรงในประเทศไทย,2,out_of_scope,out_of_scope,cambodia
+1599,afnc,2026-01-28,2026,รถบรรทุกจากไทยลักลอบนำเข้ามันสำปะหลังของเขมร ที่ผ่านทางด่านเขมร-ลาว ทำให้ราคามันสำปะหลังในประเทศปรับลดลง,2,out_of_scope,out_of_scope,cambodia
+1595,afnc,2026-01-28,2026,พบชาวอินเดีย 7 คน ติดเชื้อไวรัสนิปาห์ กักตัวที่โรงพยาบาลสิริโรจน์,2,unclear,out_of_scope,generic_or_other
+1482,afnc,2026-02-09,2026,ผัดไทย มีรากเหง้ามาจากอาหารชาววังดั้งเดิมของกัมพูชา,2,out_of_scope,out_of_scope,cambodia
+17294,afp,2026-02-10,2026,ภาพอนุทิน ชาญวีรกูลกับนักธุรกิจชาวต่างชาติ เบนจามิน เมาเออร์เบอร์เกอร์,2,out_of_scope,out_of_scope,generic_or_other
+27924,cofact,2026-02-18,2026,นายกฯ ญี่ปุ่นจ่อเนรเทศชาวต่างชาติที่ปรับตัวกับวัฒนธรรมไม่ได้ หลังมุสลิมแห่ละหมาดกลางปราสาทฮิเมจิ,2,out_of_scope,out_of_scope,generic_or_other
+26807,thaipbs,2026-02-24,2026,กัมพูชาทวงสัญญา MOU 7 ฉบับ ขอรักษาฟรี-ทุนเรียน 800 ล้านบาท จี้รัฐบาลทบทวนหวั่นไทยเสียเปรียบ,2,crossborder_people_services,crossborder_people_services,cambodia
+26809,thaipbs,2026-02-24,2026,“อันวาร์” นายกมาเลเซีย ออกมาเรียกร้องให้ไทยหยุดเล่นสงกรานต์ เพราะสงกรานต์เกิดขึ้นที่กัมพูชาเป็นที่แรกของโลก ไทยจึงไม่มีสิทธิ์เล่นสงกรานต์ ถ้าเขมรไม่อนุญาต,2,out_of_scope,out_of_scope,cambodia
+1308,afnc,2026-02-27,2026,ไฟป่าที่ลุกลามในกัมพูชา มีต้นตอมาจากการกระทำของทหารไทยที่ลักลอบจุดไฟเผาป่า,2,out_of_scope,out_of_scope,cambodia
+27505,cofact,2026-03-01,2026,นฤมล ภิญโญสินวัฒน์ รมว. ศึกษาธิการ ระบุสะเทือนใจมากที่นักเรียนเขมรถูกส่งกลับ สงสารที่ถูกปิดโอกาสในการเรียน,2,crossborder_people_services,crossborder_people_services,cambodia
+1266,afnc,2026-03-03,2026,ชาวต่างชาติสามารถต่อวีซ่าเข้าไทยแบบออนไลน์ ได้ที่บัญชี X : @JustMikeMcKay รับรองโดย ตม.,2,resident_refugee_status,resident_refugee_status,generic_or_other
+27414,cofact,2026-03-04,2026,ไม่มีรัฐบาลของประเทศไหนใช้งบประมาณช่วยเหลือชาวต่างชาติที่ตกค้างจากสถานการณ์ในตะวันออกกลาง ยกเว้นรัฐบาลไทย,2,unclear,out_of_scope,generic_or_other
+16735,afp,2026-03-10,2026,นายกฯ ญี่ปุ่นจ่อเนรเทศต่างชาติที่ปรับตัวเข้ากับวัฒนธรรมไม่ได้,2,out_of_scope,out_of_scope,generic_or_other
+16740,afp,2026-03-10,2026,คลิปชาวอิสราเอลวิ่งหนีหาที่หลบภัยหลังอิหร่านโจมตีอิสราเอล,2,out_of_scope,out_of_scope,israel_jewish
+1126,afnc,2026-03-17,2026,นักท่องเที่ยวชาวอิสราเอลถูกทำร้ายร่างกาย โดยนักท่องเที่ยวชาวไทยที่เกาะพะงัน,2,unclear,out_of_scope,israel_jewish
+1117,afnc,2026-03-18,2026,ไทยเตรียมรับผู้อพยพชาวยิว เนื่องจากระบบป้องกันภัยอิสราเอลใกล้หมด,2,crossborder_people_services,crossborder_people_services,israel_jewish
+16731,afp,2026-03-18,2026,วิดีโอชาวอิสราเอลอพยพข้ามภูเขา 08/03/69,2,out_of_scope,out_of_scope,israel_jewish
+26771,thaipbs,2026-03-19,2026,อนุทินยังส่งน้ำมันไป สปป.ลาว แจ้งพอใช้ แต่จำกัดการซื้อของคนไทย,2,out_of_scope,out_of_scope,laos_vietnam
+26772,thaipbs,2026-03-19,2026,รัฐบาลญี่ปุ่นได้ประกาศห้ามนักท่องเที่ยวชาวอิสราเอลทั้งหมดอย่างเป็นทางการ ซึ่งเป็นมาตรการสำคัญของนายกรัฐมนตรีซานาเอะ ทาคาอิจิ เพื่อให้กรุงโตเกียววางตัวห่างจากสงครามในภูมิภาค,2,out_of_scope,out_of_scope,israel_jewish
+1108,afnc,2026-03-19,2026,รัฐบาลจัดสรรพื้นที่ให้กับชาวยิวที่อพยพมาอยู่ในไทยเพิ่มเติม,2,resident_refugee_status,resident_refugee_status,israel_jewish
+1099,afnc,2026-03-20,2026,ชาวยิวและอิสราเอล มาตั้งหลักปักฐาน อยู่ตามสถานที่ท่องเที่ยวของไทย,2,resident_refugee_status,resident_refugee_status,israel_jewish
+16725,afp,2026-03-25,2026,คลิปแสดงภาพชาวยิวในอิสราเอลพยายามเดินทางออกจากสนามบิน,2,out_of_scope,out_of_scope,israel_jewish
+1022,afnc,2026-03-28,2026,"ชาวอิสราเอล 425,000 คน เตรียมอพยพเดินทางเข้าไทย",2,crossborder_people_services,crossborder_people_services,israel_jewish
+16722,afp,2026-03-31,2026,"ชาวอิสราเอล 425,000 คนอพยพมาประเทศไทย",2,crossborder_people_services,crossborder_people_services,israel_jewish
+940,afnc,2026-04-06,2026,"นายกฯ มาเลเซีย เรียกร้องให้ไทยจ่ายค่ารักษาพยาบาลตามที่กัมพูชาร้องขอ 5,000 ล้านบาท",2,unclear,unclear,cambodia
+783,afnc,2026-04-21,2026,พบหมู่บ้านปริศนาเกือบ 400 หลัง ใน จ.สระแก้ว ยังถูกรุกล้ำอธิปไตย บ้านป่าไร่ ถูกกัมพูชาย้ายหลักเขต,2,unclear,unclear,cambodia
+726,afnc,2026-04-27,2026,ไทยไม่มีสิทธิซ่อมแซมปราสาทตาควาย หากจะซ่อมแซมต้องขออนุญาตกัมพูชาก่อน,2,out_of_scope,out_of_scope,cambodia
+723,afnc,2026-04-27,2026,นายกฯ วอนคนไทยอย่าใช้คำแรงกับกัมพูชา,2,out_of_scope,out_of_scope,cambodia
+28041,cofact,2026-04-28,2026,คลิป 3 นักปกป้องสิทธิมนุษยชน อังคณา-อัญชนา-พรเพ็ญ พูดปกป้องเขมรและกลุ่มบีอาร์เอ็น,2,out_of_scope,out_of_scope,cambodia
+26726,thaipbs,2026-04-29,2026,นายกฯ วอนคนไทย ขอเคารพเพื่อนบ้าน อย่าใช้คำรุนแรงกับชาวเขมร,2,out_of_scope,out_of_scope,cambodia
+26721,thaipbs,2026-05-05,2026,โครงการเชื่อมอ่าวไทย- อันดามัน (แลนด์บริดจ์) ต้องให้นักลงทุนชาวต่างชาติเช่าที่ดินระยะยาว (50-99 ปี) ให้คุ้มกับการลงทุนแสนล้าน ใจแม่งมีจะให้เช่า,2,unclear,unclear,generic_or_other
+637,afnc,2026-05-06,2026,มีการลักลอบซื้อทุเรียนไทย ไปขายในกัมพูชา วันละ 1 ตัน,2,out_of_scope,out_of_scope,cambodia
+629,afnc,2026-05-07,2026,พบชาวอิสราเอล ในภูเก็ต ถือโบชัวร์เดินขายทัวร์ ทั่วป่าตอง ลักษณะทำเป็นธุรกิจท่องเที่ยวนอมินี,2,resident_refugee_status,resident_refugee_status,israel_jewish
+618,afnc,2026-05-08,2026,(8 พ.ค.69) กองทัพไทยยิงขู่ ทหารกัมพูชาขยับเข้ามาประชิดห่างเพียง 20 เมตร ที่ตาเมือนธม,2,out_of_scope,out_of_scope,cambodia
+582,afnc,2026-05-12,2026,ทหารกัมพูชาพร้อมอาวุธสงคราม เข้ามาในพื้นที่ไทยบริเวณช่องดาระกา ใกล้กับช่องสะงำ อ.บัวเชด จ.สุรินทร์,2,out_of_scope,out_of_scope,cambodia
+544,afnc,2026-05-16,2026,4 เดือนที่ผ่านมา พบชาวอิสราเอลแห่เข้าไทยพุ่งเป็นอันดับ 3 รองจากรัสเซีย - อินเดีย,2,crossborder_people_services,crossborder_people_services,israel_jewish
+542,afnc,2026-05-16,2026,คนไทยอีกกว่า 40 คน ยังติดคุกอยู่ที่กัมพูชา,2,out_of_scope,out_of_scope,cambodia
+533,afnc,2026-05-17,2026,กระทรวงวัฒนธรรมของกัมพูชา อ้างปราสาทคนาอยู่ในอธิปไตยของกัมพูชา,2,out_of_scope,out_of_scope,cambodia
+513,afnc,2026-05-19,2026,ชาวอิสราเอลติดธงชาติประเทศตนเองบนเกาะพะงัน,2,resident_refugee_status,resident_refugee_status,israel_jewish
+508,afnc,2026-05-20,2026,ไทยต้องงดใช้พื้นที่เกษตรเหมือนกัมพูชา ในพื้นที่อ้างสิทธิและพื้นที่นอกเส้นแดงอธิปไตยไทย,2,out_of_scope,out_of_scope,cambodia
+505,afnc,2026-05-20,2026,ชาวอิสราเอลในไทย สามารถรับทำวีซ่า เอกสาร ให้ชาวอิสราเอลย้ายมาอยู่ถาวรในไทยได้,2,resident_refugee_status,resident_refugee_status,israel_jewish
+501,afnc,2026-05-21,2026,ทหารไทย​ได้​ลักลอบ​ปัก​เสา​เขต​ใหม่ รุก​ล้ำ​เข้า​ไป​ใน​อธิปไตย​ของ​กัมพูชา,2,out_of_scope,out_of_scope,cambodia
+480,afnc,2026-05-23,2026,ชาวอิสราเอล อพยพเข้าไทยปีละ 5 หมื่นคน ยึดปาย พะงัน และนราธิวาส ผ่านนอมินี ยึดที่ดินทำศาสนสถาน,2,resident_refugee_status,resident_refugee_status,israel_jewish
+478,afnc,2026-05-23,2026,ทหารไทยตกลงกับทหารกัมพูชา สั่งให้ชาวไทยหยุดทำนาในพื้นที่บ้านหนองจาน เพื่อรอการประชุม JBC,2,out_of_scope,out_of_scope,cambodia
+462,afnc,2026-05-25,2026,แม่ทัพภาคที่ 2 นำกำลังบุกป่าตัดถนน เพื่อชิงปักธงนารายณ์พันปี ก่อนกัมพูชาจะอ้างสิทธิ์,2,out_of_scope,out_of_scope,cambodia
+27541,cofact,2026-05-26,2026,อาวุธปืนสงครามที่ยึดได้จากชายชาวจีนในคดี “หมิง ซีโฟร์” เป็นปืนปลอม,2,unclear,unclear,china
+27503,cofact,2026-05-26,2026,กองทัพเรือเปิดด่านชายแดนไทย-กัมพูชาที่ จ.จันทบุรี มีประชาชนและรถบรรทุกสินค้ารอข้ามแดนจำนวนมาก,2,crossborder_people_services,crossborder_people_services,cambodia
+392,afnc,2026-06-01,2026,ทางการไทยและกัมพูชามีมาตรการผ่อนปรนให้เปิดด่านพรมแดนบ้านคลองลึก ให้เด็กมาเรียน,2,crossborder_people_services,crossborder_people_services,cambodia
+391,afnc,2026-06-01,2026,รัฐมนตรีว่าการกระทรวงศึกษาธิการ แจ้งให้ทุนการศึกษาเด็กกัมพูชา 800 ล้านบาท,2,resident_refugee_status,resident_refugee_status,cambodia
+26689,thaipbs,2026-06-02,2026,ภาพกู้ภัยไทยช่วยชาว สปป.ลาว ติดถ้ำ พร้อมถ่ายภาพร่วมผู้ประสบภัย,2,out_of_scope,out_of_scope,laos_vietnam
+26687,thaipbs,2026-06-03,2026,สระแก้วเปิดด่านให้เด็กกัมพูชาข้ามมาเรียนได้แล้ว พร้อมรัฐมนตรีว่าการกระทรวงศึกษาธิการสั่งแจกทุนนักเรียนกัมพูชา 800 ล้านบาท,2,crossborder_people_services,crossborder_people_services,cambodia
+334,afnc,2026-06-07,2026,กระทรวงแรงงาน เปิดรับแรงงานไปทำงานเกษตรที่ประเทศออสเตรเลีย ผ่านเฟซบุ๊ก ศุภลักษณ์ ลาวเครือ,2,out_of_scope,out_of_scope,laos_vietnam
+318,afnc,2026-06-09,2026,"วันที่ 5 มิ.ย. 69 ทหารไทยจุดไฟเผาบันไดไม้ทางขึ้นสู่ปราสาทคนาของกัมพูชากว่า 1,000 ขั้น",2,out_of_scope,out_of_scope,cambodia
+315,afnc,2026-06-09,2026,ชาวต่างชาติ เกาะพะงัน ข่มขู่ สั่งปิด-แจ้งจับคนไทยจัดงานบุญเสียงดัง,2,resident_refugee_status,resident_refugee_status,generic_or_other
+27293,cofact,2026-06-09,2026,เด็กเขมรเรียนฟรีแต่เด็กไทยต้องกู้ กยศ,2,resident_refugee_status,resident_refugee_status,cambodia
+308,afnc,2026-06-10,2026,ทหารกัมพูชา นำกำลังพลเจาะทางขึ้น ปราสาทคนา,2,out_of_scope,out_of_scope,cambodia
+292,afnc,2026-06-12,2026,ด่านชายแดนจังหวัดตราด เปิดให้นักเรียนกัมพูชา เข้ามาเรียนได้,2,crossborder_people_services,crossborder_people_services,cambodia
+26667,thaipbs,2026-06-23,2026,นี่คือสภาพของระบบรถไฟฟ้าใต้ดินของประเทศจีน เวลาฝนตก ทั้งที่ชาวจีนอ้างว่าประเทศของตนมีเทคโนโลยีก้าวหน้ากว่าโลกถึง 30 ปี,2,out_of_scope,out_of_scope,china
+174,afnc,2026-06-24,2026,จีนใช้นโยบายโจมตีผ่านสื่อ เพื่อไม่ให้ชาวจีนเดินทางมาประเทศไทย,2,out_of_scope,out_of_scope,china
+98,afnc,2026-07-02,2026,พบแก๊งชาวอิสราเอลครอบครองอาวุธสงครามและวัตถุระเบิดบนเกาะสมุย ถูกตำรวจสากลตามจับ หลังหลบหนีมาอยู่ในไทย,2,resident_refugee_status,resident_refugee_status,israel_jewish
+26655,thaipbs,2026-07-05,2026,เพจเวียดนามปลอมชื่อสวนไทย ยิงโฆษณา AI ขายพันธุ์เงาะโรงเรียนนาสาร ต้นละ 59 บาท คนหลงเชื่อสนใจนับพันคน,2,out_of_scope,out_of_scope,laos_vietnam
+19,cofact,2026-07-10,2026,ทหารบ้านเขมร พร้อม BHQ ฝึกให้ชาวเขมรชายแดนแถวศรีโสภณ ตรงข้ามสระแก้ว,2,out_of_scope,out_of_scope,cambodia
+17,cofact,2026-07-10,2026,รัฐมนตรีต่างประเทศ “สีหศักดิ์ พวงเกตุแก้ว” ระบุ “ไม่เห็นด้วย เอาเงินภาษีคนไทยไปให้เด็กเขมร”,2,resident_refugee_status,resident_refugee_status,cambodia
+14,afnc,2026-07-10,2026,รมว. กระทรวงการต่างประเทศ ไม่เห็นด้วยกรณีนำเงินภาษีคนไทยให้เด็กเขมร,2,resident_refugee_status,resident_refugee_status,cambodia
+28736,thaipbs,2026-08-18,2026,“จีนเทา” ช่วย “กัมพูชา” ใช้แอนตี้โดรนโจมตีฝ่ายไทย,2,out_of_scope,out_of_scope,china

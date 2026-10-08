@@ -1,0 +1,9 @@
+﻿method,min_cluster_size,topics,noise_pct
+eom,5,7,6.1
+eom,8,6,9.1
+eom,12,5,4.8
+eom,20,4,14.5
+leaf,5,13,30.9
+leaf,8,9,17.0
+leaf,12,6,8.5
+leaf,20,4,14.5

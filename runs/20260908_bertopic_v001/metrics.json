@@ -1,0 +1,52 @@
+{
+  "noise_records": 2324,
+  "noise_share_pct": 16.106452283595537,
+  "discovered_topics": 64,
+  "source_test_blocks": [
+    {
+      "source": "afnc",
+      "early_n": 1911,
+      "late_n": 3742
+    },
+    {
+      "source": "afp",
+      "early_n": 193,
+      "late_n": 247
+    },
+    {
+      "source": "sure_share",
+      "early_n": 359,
+      "late_n": 625
+    }
+  ],
+  "migrant_review_records": 332,
+  "migrant_semantic_extra_unique": 200,
+  "migrant_subtopics": 2,
+  "scope_note": "retrieval expansion only; not validated migrant corpus or narrative prevalence",
+  "embedding_sha256": "7e208dfe3d7b63c013077c6cbce0f2a031a0d0c2983cf70e09d9cae2fda75e86",
+  "script_sha256": "2d42b0b89b04e45ed3cd8bd25b414b7af1239f478f97ade900217d346f36b877",
+  "files_sha256": {
+    "keyword_reconciliation.csv": "4ea8422caff6e535a55996e881875049f6b6e08546a5458b39692a23cfa79932",
+    "migrant_screened_sensitivity.csv": "97ce5cbb39d29a8012d6b2b074e063439a3f10796c971f7d2ad2c37e07cad5c8",
+    "source_balanced_tests.csv": "fc5a19b5263bbfade5613cea8ddea7a8287555c1007524fabf9664d01060b4cb",
+    "recurring_text_families.csv": "a408c00a16d1b7a00a7f91ec84ea28f71f6d1bfed916add8efca5a51e0ddbf63",
+    "migrant_screened_timeline.csv": "1ecbea1b38e4312faf97913d9bbb485e8f8e6bf21eb0bbd1c7167e352899cb15",
+    "migrant_scope_decisions.csv": "76d45fd4e0ae24ec0dfbde32552d17094a0acf6f0b78967358ef195f3df1564a",
+    "migrant_words_over_time.csv": "5b207012d5208556a5cffc0d66c2027a2cbeb344ef92b2f4d7b7bdc292564608",
+    "migrant_screened_assignments.csv": "29833b7cd2e967efa520fcc6ee1887543f0f283690634f55453316c75d56f81a",
+    "migrant_screened_words_over_time.csv": "203a6af07a7c487620d24cfaf097c9bca783d8d01b350f40288869b3b9c01727",
+    "migrant_subtopics.csv": "4ec4c3fd5443d553e0822f127481cfe73d0ac9634fa6b4d22410e3278f21b2ae",
+    "adjacent_year_shifts.csv": "34241a8e381d68bd8b67f1a41efab91552c5c69382f794b3f76cb4bf752e0aa5",
+    "topics.csv": "a655caf12f925556ad88daa624941d4be7a53d54318c0c4ce764bc7609fb6a06",
+    "topic_exemplars.csv": "e0a4c781ed74d5195e7f7aa39ae715b612a8c2647316402b0c66625c620ed354",
+    "assignments.csv": "4189e38be930f0f7ef23af0fd202811c484631ee882ccb875a66dd3bd38f7fce",
+    "migrant_subtopic_assignments.csv": "e5f0fcfec7cff9f2f5ecd1f6211dd191284cba8d56f3242ecbb33428bb37ad0d",
+    "topic_timeline.csv": "7c67d8615d0f73e54dfea94f95a883461670d0cf6e015be2400287bb1d6e80ea",
+    "topic_words_over_time.csv": "2edc6e649a9475cb61a02736da8fbc8e9f1164c9886dd55e1560e3c028463e5a",
+    "migrant_subtopic_timeline.csv": "203ae3949a5010b6411fa9828923f1766e8cafedfc87606e3cc1f5107dcbb855",
+    "migrant_screened_topics.csv": "25dbf544490e3ad65c3356122fb00b9a171bce50c634114f9df7a3f9d68ed057",
+    "migrant_screened_exemplars.csv": "919452947cdb1954430753bfc1ba703bc2b1752a09a0268b50bf356aab671d89",
+    "sensitivity.csv": "a5c6d19f76927b64784e8a88a410b961bb73314a2a337e7157ced30ce011945f",
+    "migrant_semantic_review.csv": "b9d7b81c510e181f9457756cd6092f58238cd19ddc50894308b0206d936d64a2"
+  }
+}

@@ -1,0 +1,30 @@
+{
+ "run": "20261004_audit_v001",
+ "what": "end-to-end audit of data, method, insights and both story drafts; read-only on all inputs",
+ "script": "scripts/audit_end_to_end.py",
+ "script_sha256": "77400bb42e1d108b8b448a967543aa2040e7c42b2a1b7b58e76ebfc898011c9b",
+ "inputs_sha256": {
+  "runs/20260908_bertopic_v001/assignments.csv": "4189e38be930f0f7ef23af0fd202811c484631ee882ccb875a66dd3bd38f7fce",
+  "runs/20260908_bertopic_v001/unique_embeddings.npy": "7e208dfe3d7b63c013077c6cbce0f2a031a0d0c2983cf70e09d9cae2fda75e86",
+  "runs/20260908_bertopic_v001/migrant_scope_decisions.csv": "76d45fd4e0ae24ec0dfbde32552d17094a0acf6f0b78967358ef195f3df1564a",
+  "runs/20260908_bertopic_v001/story_1_draft_th.md": "85daf93978517e4200352ad64651247507b98a38ff00b826c0ae75976c1100d4",
+  "runs/20260908_bertopic_v001/story_2_draft_th.md": "c638e1f0f942fc8658bf1512a323b831e3bf8e640105647b641907488c480dce",
+  "data/reports/journalist_handoff_2026-09-08/02_false_misleading_altered_records.csv": "12053ef4652e0cf42feca1b38a003dad7cd64e7214da6100f80588357c11cf93"
+ },
+ "db": "data/th_verify.db opened immutable; 29,001 rows; snapshot cut 2026-09-02",
+ "outputs": [
+  "01_data_layer.json",
+  "01_data_layer.txt",
+  "02_label_reliability.txt",
+  "03_method_layer.txt",
+  "04_near_duplicates.txt",
+  "05_drafts_numbers.txt",
+  "06_story2_recall_probe.txt",
+  "07_extra.txt",
+  "AUDIT.md",
+  "audit_metrics.json",
+  "near_dup_groups_cos095.npy"
+ ],
+ "status": "assistant audit; not human-validated",
+ "live_source_spot_check": "7 of 8 pages matched on 2026-10-04; AFP returned 403 to scripted access"
+}

@@ -1,0 +1,8 @@
+﻿year,year_be,partial_year,all_records,in_scope,share_pct,in_scope_excl_cambodia,share_excl_cambodia_pct,resident,crossborder,group_myanmar,group_cambodia,group_laos_vietnam,group_china,group_israel_jewish,group_generic_or_other,src_afnc,src_cofact,src_thaipbs,src_afp
+2020,2563,False,1166,6,0.51,6,0.51,5,1,3,0,0,1,0,2,5,0,0,1
+2021,2564,False,1299,5,0.38,5,0.38,4,1,0,0,0,0,0,5,5,0,0,0
+2022,2565,False,1899,6,0.32,6,0.32,6,0,1,0,0,0,0,5,6,0,0,0
+2023,2566,False,2635,4,0.15,4,0.15,4,0,0,0,0,0,0,4,4,0,0,0
+2024,2567,False,2408,20,0.83,18,0.75,20,0,7,2,0,1,0,10,18,1,1,0
+2025,2568,False,2428,52,2.14,36,1.48,43,9,11,16,0,6,8,11,38,5,4,5
+2026,2569,True,1407,74,5.26,34,2.42,51,23,4,40,0,0,11,19,52,16,5,1

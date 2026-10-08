@@ -1,0 +1,12 @@
+﻿from_year,to_year,js_distance,largest_gain_topic,gain_pp,largest_loss_topic,loss_pp,status
+2019,2020,0.49032116627134664,7,10.806174957118353,0,-35.44118490036907,descriptive adjacent-year distance; not confirmed change point
+2024,2025,0.37022258388160006,-1,8.003866846918836,0,-12.043326199871926,descriptive adjacent-year distance; not confirmed change point
+2020,2021,0.31306998225608446,-1,3.8945382184739,0,-8.728445287772491,descriptive adjacent-year distance; not confirmed change point
+2023,2024,0.30735807974915574,-1,2.9320828106186205,0,-11.317808443707566,descriptive adjacent-year distance; not confirmed change point
+2022,2023,0.3066264934979094,1,5.734707071433781,14,-2.7273917261956506,descriptive adjacent-year distance; not confirmed change point
+2021,2022,0.3031869321470465,0,13.509602112209295,-1,-9.556993044838233,descriptive adjacent-year distance; not confirmed change point
+2025,2026,0.29926479963724806,-1,6.384118475637815,0,-5.801833384267177,descriptive adjacent-year distance; not confirmed change point
+2018,2019,0.27034960938940344,-1,5.860230410358945,0,-14.791964200704555,descriptive adjacent-year distance; not confirmed change point
+2015,2016,0.26516227074811366,-1,7.5205377147124715,0,-10.261389096340556,descriptive adjacent-year distance; not confirmed change point
+2016,2017,0.2316975940357549,0,12.787578859884396,-1,-6.688451512976465,descriptive adjacent-year distance; not confirmed change point
+2017,2018,0.18937586046042756,0,4.767257529903446,-1,-3.5956189652687707,descriptive adjacent-year distance; not confirmed change point

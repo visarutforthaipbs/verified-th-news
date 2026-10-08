@@ -1,0 +1,24 @@
+{
+  "coded_by": "assistant (AI), unvalidated",
+  "in_scope": 156,
+  "in_2025_2026": 117,
+  "by_source": {
+    "afnc": 120,
+    "cofact": 21,
+    "afp": 7,
+    "thaipbs": 8
+  },
+  "verdict": {
+    "false": 103,
+    "misleading": 52,
+    "altered_media": 1
+  },
+  "from_expanded_queue": 41,
+  "cambodia_2025_26": 51,
+  "israel": {
+    "2026": 9,
+    "2025": 8
+  },
+  "china": 7,
+  "llm_claim_text": 0
+}

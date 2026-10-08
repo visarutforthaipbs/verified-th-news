@@ -1,0 +1,61 @@
+{
+ "run": "20261004_story2_queue_v002",
+ "script": "scripts/story2_extend_queue.py",
+ "script_sha256": "d013e26326fcfca7e1b9e2b626b26b4658923fcc95b6ad99c9fd55ca2fd744cf",
+ "inputs_sha256": {
+  "assignments.csv": "4189e38be930f0f7ef23af0fd202811c484631ee882ccb875a66dd3bd38f7fce",
+  "migrant_scope_decisions.csv": "76d45fd4e0ae24ec0dfbde32552d17094a0acf6f0b78967358ef195f3df1564a"
+ },
+ "rules": {
+  "A_people_terms": "ต่างด้าว|แรงงานข้ามชาติ|คนข้ามชาติ|ชาวต่างชาติ|คนต่างชาติ|แรงงานต่างชาติ|เด็กต่างชาติ|ผู้ลี้ภัย|ลี้ภัย|ผู้อพยพ|ผู้หนีภัย|ผู้พลัดถิ่น|ไร้สัญชาติ|ไร้รัฐ|ไม่มีสัญชาติ|สัญชาติ|หลบหนีเข้าเมือง|ลักลอบเข้าเมือง|เข้าเมืองผิดกฎหมาย|แรงงานเถื่อน|แรงงานผิดกฎหมาย|ใบอนุญาตทำงาน|work permit|บัตรสีชมพู|บัตรชมพู|บัตรหัวศูนย์|ส่งกลับประเทศ|ผลักดันกลับ|โรฮิง|โรฮีน|กะเหรี่ยง|ไทใหญ่|ชาวเขา|ชนกลุ่มน้อย|ชาติพันธุ์|คนจีน|ชาวจีน|จีนเทา|ทุนจีน|นอมินี|ชาวกัมพูชา|คนกัมพูชา|ชาวเขมร|คนเขมร|แรงงานกัมพูชา|แรงงานเขมร|ชาวลาว|คนลาว|แรงงานลาว|ชาวเวียดนาม|คนเวียดนาม|ชาวเมียนมา|คนเมียนมา|ชาวพม่า|คนพม่า|แรงงานเมียนมา|แรงงานพม่า|ชาวอินเดีย|ชาวรัสเซีย|คนรัสเซีย|ชาวอิสราเอล|คนอิสราเอล|ชาวยิว",
+  "B_bare_nationality": "พม่า|เมียนมา|เขมร|กัมพูชา|ลาว|เวียดนาม",
+  "B_requires_one_of": "คน|ชาว|แรงงาน|เด็ก|นักเรียน|ผู้ป่วย|รักษา|โรงพยาบาล|สิทธิ|บัตร|งาน|อาชีพ|ค่าแรง|เข้ามา|ทะลัก|ลักลอบ|ขอทาน|โรงเรียน|เรียน|คลอด|ประชากร|ภาษี|สวัสดิการ|บัตรทอง|เลือด|เงินช่วย|เยียวยา|หมู่บ้าน|ชุมชน|เช่า|ซื้อที่ดิน|ซื้อบ้าน",
+  "excluded_substrings": "ผักชีลาว|ศิลาว|เวลาว",
+  "searched_fields": "title + claim_text",
+  "rejected": "second semantic expansion (dominated by driving-licence template)"
+ },
+ "metrics": {
+  "queue_rows": 513,
+  "round1_rows": 332,
+  "round2_new_rows": 181,
+  "round2_by_route": {
+   "keyword_v2_nationality": 89,
+   "keyword_v2_people": 92
+  },
+  "assistant_scope_all": {
+   "out_of_scope": 318,
+   "resident_refugee_status": 133,
+   "unclear": 28,
+   "crossborder_people_services": 34
+  },
+  "assistant_scope_round2": {
+   "out_of_scope": 111,
+   "unclear": 21,
+   "resident_refugee_status": 34,
+   "crossborder_people_services": 15
+  },
+  "assistant_in_scope_v2": 167,
+  "assistant_in_scope_round1": 118,
+  "in_scope_by_source": {
+   "afnc": 128,
+   "cofact": 22,
+   "afp": 7,
+   "thaipbs": 10
+  },
+  "in_scope_by_group_marker": {
+   "generic_or_other": 56,
+   "myanmar": 26,
+   "cambodia": 58,
+   "china": 8,
+   "israel_jewish": 19
+  },
+  "in_scope_round2_by_group_marker": {
+   "china": 7,
+   "myanmar": 6,
+   "generic_or_other": 5,
+   "israel_jewish": 19,
+   "cambodia": 12
+  },
+  "status": "assistant-screened from title + claim; no human review; group marker is string matching, not coding"
+ }
+}

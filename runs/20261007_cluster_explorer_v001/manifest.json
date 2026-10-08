@@ -1,0 +1,13 @@
+{
+  "inputs": {
+    "records": "data/reports/journalist_handoff_2026-09-08/02_false_misleading_altered_records.csv",
+    "assignments": "runs/20260908_bertopic_v001/assignments.csv",
+    "topics": "runs/20260908_bertopic_v001/topics.csv",
+    "umap2d": "runs/20261004_viz_v001/umap2d.npy",
+    "umap2d_sha256": "9d7a3eeaf1fab56660be1ab09156eee848d9a6f6ff03a85dbf73c96d64c8cc2b"
+  },
+  "points": 13377,
+  "records": 14429,
+  "topics_incl_noise": 65,
+  "note": "positions are display-only 2-D UMAP (seed 42); clustering was done on 10-D UMAP; names are machine keywords; draft names and purity read apply to 8 topics only"
+}

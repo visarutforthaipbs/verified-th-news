@@ -1,0 +1,47 @@
+== what is inside the biggest near-duplicate group of each rising topic? (random 6 texts) ==
+
+ T2 driving licence: largest group = 282 texts
+    - กรมการขนส่งเปิดรับทำใบขับขี่ออนไลน์ ผ่านเพจ Real facts
+    - ทำใบขับขี่ออนไลน์ได้แล้ว ผ่านเพจ ครูรุจ ทำใบขับขี่ออนไลน์ สอนขับรถ ทุกชนิด
+    - กรมขนส่งทางบกรับทำใบขับขี่และต่ออายุออนไลน์ทางเพจ Department of Transport4
+    - รับทำใบขับขี่ออนไลน์ ถูกต้องตามกฎหมาย ติดต่อได้ที่เพจ จุฬาลักษณ์
+    - กรมการขนส่งทางบก เปิดรับทำใบขับขี่ ผ่าน TikTok "@supat.suanchan50"
+    - กรมการขนส่งฯ เปิดต่อใบขับขี่นอกเวลาราชการ ผ่านเพจรับสอนขับและทำใบ แบบเร่งด่วน จัดส่งทั่วประเทศ
+
+ T11 victim refund: largest group = 138 texts
+    - ปฏิบัติการทลายแก๊งคอลฯ ข้ามชาติ เปิดให้เหยื่อเฉลี่ยทรัพย์คืนผ่านเฟซบุ๊ก
+    - ปปง. เปิดให้ผู้เสียหายจากแก๊งคอลเซ็นเตอร์แจ้งลงทะเบียนขอรับเงินคืนได้ ผ่านเพจ Crime Suppression Division
+    - ปปง. เร่งคืนทรัพย์ให้ผู้เสียหาย ติดต่อส่งหลักฐานลงทะเบียนได้ที่ เพจ Online Crime Assistance Office Th
+    - ปปง. เปิดให้เหยื่อแก๊งคอลเซนเตอร์ลงทะเบียนรับเงินคืน ผ่านเพจ Crime Victims Dissemination Center
+    - ปปง. เปิดให้ผู้เสียหายจากแก๊งคอลเซ็นเตอร์ลงทะเบียนคุ้มครองสิทธิคืนเงิน
+    - สำนักงาน ปปง. ให้ประชาชนที่เสียหายจากคดีออนไลน์ ติดต่อรับทรัพย์สินคืนผ่านเพจ News Social - ข่าว โซลเชียล
+
+ T1 invest-dividend: largest group = 218 texts
+    - ตลาดหลักทรัพย์ฯ ชวนลงทุนกองทุนรวมหุ้น ทั้งไทยและต่างประเทศ เริ่ม 1,000 บาท
+    - ก.ล.ต. ร่วมกับ CPALL เปิดซื้อขายกองทุนรายวัน เริ่ม  1,289 บาท ปันผลกำไร 10-15% ผ่านเพจ Stock trading
+    - ตลาดหลักทรัพย์ฯ ร่วมกับ CPALL เปิดกองทุนระยะยาว เริ่ม 20,000 บาท ปันผลกำไร 5-7% ต่อสัปดาห์
+    - บริษัทเอกชนเปิดให้ลงทุนด้วยเงิน 1,000 บาท ผ่านการรับรองจากก.ล.ต.
+    - ตลาดหลักทรัพย์ฯ เปิดโอกาสให้ลงทุนอสังหาริมทรัพย์ก่อสร้าง เริ่มต้น 1,299 บาท
+    - เปิดลงทุนกองทุนระยะสั้น (Day Trade) 1,259 บาท ปันผลกำไร 12-30% ต่อวัน ผ่านเพจ Investing to make a profit
+
+== sensitivity of 'one claim' to the similarity threshold ==
+  T2: cos>=0.93: 13 groups, largest 308/321 | cos>=0.95: 39 groups, largest 282/321 | cos>=0.97: 183 groups, largest 121/321
+  T11: cos>=0.93: 5 groups, largest 179/183 | cos>=0.95: 45 groups, largest 138/183 | cos>=0.97: 151 groups, largest 30/183
+  T1: cos>=0.93: 17 groups, largest 367/384 | cos>=0.95: 151 groups, largest 218/384 | cos>=0.97: 344 groups, largest 9/384
+
+== headline shares if each near-duplicate claim is counted once per publisher per year (cos>=0.95) ==
+  records 14429 -> 9812 distinct claim-publisher-years (32.0% removed)
+  denominators: 2020-21 1923 (was 2465), 2024-25 2972 (was 4836)
+  T4  virus cures       raw  7.83% ->  0.19%   | deduped 103/1923 ( 5.36%) -> 7/2972 ( 0.24%)
+  T7  infection reports raw  6.86% ->  0.29%   | deduped 150/1923 ( 7.80%) -> 13/2972 ( 0.44%)
+  T1  invest-dividend   raw  0.12% ->  2.67%   | deduped 0/1923 ( 0.00%) -> 68/2972 ( 2.29%)
+  T2  driving licence   raw  0.04% ->  4.22%   | deduped 0/1923 ( 0.00%) -> 15/2972 ( 0.50%)
+  T11 victim refund     raw  0.00% ->  3.33%   | deduped 0/1923 ( 0.00%) -> 33/2972 ( 1.11%)
+  T6  Cambodia border   raw  0.12% ->  3.23%   | deduped 3/1923 ( 0.16%) -> 119/2972 ( 4.00%)
+
+  per-year, driving licence + victim refund + invest-dividend, raw vs deduped count:
+    2022 {'licence': (21, 3), 'refund': (2, 1), 'invest': (41, 6)}
+    2023 {'licence': (49, 9), 'refund': (1, 0), 'invest': (208, 77)}
+    2024 {'licence': (87, 9), 'refund': (71, 18), 'invest': (99, 48)}
+    2025 {'licence': (117, 6), 'refund': (90, 15), 'invest': (30, 20)}
+    2026 {'licence': (46, 10), 'refund': (20, 10), 'invest': (4, 2)}

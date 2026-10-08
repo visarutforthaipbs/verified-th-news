@@ -1,0 +1,11 @@
+{
+  "excluded_records": 82,
+  "remaining_records": 14347,
+  "fit_unique_texts": 13295,
+  "refit_clusters": 56,
+  "noise_unique_pct": 13.155321549454682,
+  "adjusted_rand_index_including_noise": 0.8475477687731988,
+  "method": "refit same UMAP/HDBSCAN settings after removing warning-keyword matches; compare by maximum Jaccard",
+  "caveat": "warning matches may include legitimate claim wording; sensitivity, not an adjudicated exclusion rule",
+  "script_sha256": "985d77a82b8043bca13659b9fa9530146068d59a858f637819edf7a9f7924ddb"
+}

@@ -1,0 +1,41 @@
+{
+ "run": "20261004_story1_by_publisher_v001",
+ "what": "Story 1 tables per publisher; no blended trend line across the 2019/2020 publisher switch",
+ "script": "scripts/story1_by_publisher.py",
+ "script_sha256": "8ff36e241fc5ca0d86dc30e3a6ca68265b1f2e1ea12832492bbf12006550e872",
+ "inputs_sha256": {
+  "assignments.csv": "4189e38be930f0f7ef23af0fd202811c484631ee882ccb875a66dd3bd38f7fce",
+  "near_dup_groups_cos095.npy": "df4a779d4810c4499bdee0c76511209582b97831418f7b780d8d6fdbc48177e7"
+ },
+ "topic_groups": {
+  "health_food_T0": [
+   0
+  ],
+  "virus_T4_T7_T18": [
+   4,
+   7,
+   18
+  ],
+  "agency_impersonation_T1_T2_T11": [
+   1,
+   2,
+   11
+  ],
+  "cambodia_border_T6": [
+   6
+  ],
+  "unclustered": [
+   -1
+  ]
+ },
+ "topic_groups_are": "analyst grouping of model topics, not model output",
+ "blended_vs_within_publisher": {
+  "health_food_all_2019": 75.6,
+  "health_food_all_2020": 40.1,
+  "health_food_sure_share_2019": 88.7,
+  "health_food_sure_share_2020": 75.6,
+  "afnc_share_2019": 18.0,
+  "afnc_share_2020": 74.2
+ },
+ "status": "derived from the canonical run; topic names not human-validated"
+}

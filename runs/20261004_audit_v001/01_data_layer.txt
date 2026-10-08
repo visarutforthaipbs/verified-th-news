@@ -1,0 +1,47 @@
+== 1. corpus file vs assignments ==
+ corpus rows 14429 | assignments rows 14429 | same id set: True
+ cols: ['id', 'source', 'date', 'year', 'verdict', 'verdict_origin', 'claim_text', 'claim_text_basis', 'title', 'url', 'topic_flags', 'migrant_match', 'border_match', 'frame_flags', 'text_family']
+ db rows 29001
+
+== 2. independent membership rebuild from the DB (same documented criteria, minus text-length/date/digest rules) ==
+ my set 14491 | corpus 14429 | in corpus but not mine: 0 | mine but not corpus: 62
+ reasons the pipeline gave for 'mine but not corpus': [('short_text', 62)]
+ corpus ids missing from DB: 0
+ corpus records whose DB verdict now differs from the frozen verdict: 0
+
+== 3. what the labels rest on ==
+ verdict: {'false': 11899, 'misleading': 2465, 'altered_media': 65}
+ verdict_origin x source:
+   afnc        source= 10353 human=    3  total=10356
+   sure_share  source=     0 human= 2861  total=2861
+   afp         source=   686 human=    4  total=690
+   cofact      source=     0 human=  284  total=284
+   thaipbs     source=   228 human=   10  total=238
+ human-labelled records in corpus: 3162 (21.9%)
+   by reviewer: {'visarut': 1836, 'best': 1326}
+   evidence visible to the reviewer: {'explanation': 2270, 'TITLE_ONLY': 877, 'transcript_only': 2, 'asr_quote': 13}
+   title-only human verdicts: 877 (6.1% of corpus); of which question-form titles: 794
+   title-only by reviewer: {'best': 727, 'visarut': 150} | by year: {'2019': 4, '2020': 2, '2021': 2, '2022': 44, '2023': 392, '2024': 249, '2025': 172, '2026': 12}
+
+== 4. claim text ==
+ claim_text_basis: {'cleaned_title': 11708, 'llm': 1937, 'human': 94, 'source': 690}
+ claim_text_basis x source (llm): {'sure_share': 1461, 'afnc': 94, 'cofact': 189, 'thaipbs': 193}
+
+== 5. publisher coverage by year (the window the story looks through) ==
+  year         afnc sure_share        afp     cofact    thaipbs   total  afnc%
+  2015            0         65          0          0          0      65    0.0
+  2016            0        206          0          0          0     206    0.0
+  2017            3        254          0          0          0     257    1.2
+  2018            5        265          0          0          0     270    1.9
+  2019           70        319          0          0          0     389   18.0
+  2020          865        193        106          2          0    1166   74.2
+  2021         1046        166         87          0          0    1299   80.5
+  2022         1615        202         81          1          0    1899   85.0
+  2023         2031        506         78         20          0    2635   77.1
+  2024         1889        383        109          8         19    2408   78.4
+  2025         1853        242        138        110         85    2428   76.3
+  2026          979         60         91        143        134    1407   69.6
+  first record per publisher: {'afnc': '2017-03-23', 'sure_share': '2015-05-30', 'afp': '2020-01-29', 'cofact': '2020-06-17', 'thaipbs': '2024-10-07'}
+
+== 6. dates ==
+ range 2015-05-30 -> 2026-09-01 | after snapshot cut: 0

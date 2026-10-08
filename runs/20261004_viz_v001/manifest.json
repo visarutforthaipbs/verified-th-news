@@ -1,0 +1,42 @@
+{
+  "inputs": {
+    "runs/20260908_bertopic_v001/unique_embeddings.npy": "7e208dfe3d7b63c013077c6cbce0f2a031a0d0c2983cf70e09d9cae2fda75e86",
+    "runs/20260908_bertopic_v001/assignments.csv": "4189e38be930f0f7ef23af0fd202811c484631ee882ccb875a66dd3bd38f7fce",
+    "runs/20260908_bertopic_v001/topics.csv": "a655caf12f925556ad88daa624941d4be7a53d54318c0c4ce764bc7609fb6a06",
+    "runs/20260908_bertopic_v001/migrant_screened_assignments.csv": "29833b7cd2e967efa520fcc6ee1887543f0f283690634f55453316c75d56f81a",
+    "runs/20260908_bertopic_v001/migrant_screened_topics.csv": "25dbf544490e3ad65c3356122fb00b9a171bce50c634114f9df7a3f9d68ed057"
+  },
+  "umap2d": {
+    "n_neighbors": 15,
+    "min_dist": 0.1,
+    "metric": "cosine",
+    "random_state": 42,
+    "display_only": true
+  },
+  "story1": {
+    "records": 14429,
+    "unique_texts": 13377,
+    "clusters_incl_noise": 65,
+    "labelled": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      8,
+      7,
+      9,
+      10,
+      11,
+      13
+    ]
+  },
+  "story2": {
+    "candidates": 118,
+    "placed": 118,
+    "unplaced": 0,
+    "subtopics": 7
+  },
+  "note": "machine keywords only; human labels pending; layout not quantitative"
+}

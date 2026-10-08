@@ -1,0 +1,115 @@
+{
+  "status": "assistant-reference audit; no human gold labels",
+  "records": 24,
+  "model_versions": [
+    "jev-1.13.0"
+  ],
+  "question_set_versions": [
+    "2026-09-21.v1"
+  ],
+  "exact_scope_agreement": 15,
+  "exact_scope_agreement_pct": 62.5,
+  "binary_in_scope_agreement": 18,
+  "binary_in_scope_agreement_pct": 75.0,
+  "binary_reference_counts": {
+    "tp": 11,
+    "tn": 7,
+    "fp": 5,
+    "fn": 1
+  },
+  "binary_reference_precision": 0.6875,
+  "binary_reference_recall": 0.9167,
+  "binary_reference_f1": 0.7857,
+  "mean_scope_confidence_on_agreement": 0.9027,
+  "mean_scope_confidence_on_disagreement": 0.6622,
+  "confusion_assistant_rows_typesafe_columns": {
+    "resident_refugee_status": {
+      "resident_refugee_status": 6,
+      "crossborder_people_services": 0,
+      "out_of_scope": 0,
+      "unclear": 0
+    },
+    "crossborder_people_services": {
+      "resident_refugee_status": 1,
+      "crossborder_people_services": 4,
+      "out_of_scope": 1,
+      "unclear": 0
+    },
+    "out_of_scope": {
+      "resident_refugee_status": 0,
+      "crossborder_people_services": 1,
+      "out_of_scope": 5,
+      "unclear": 0
+    },
+    "unclear": {
+      "resident_refugee_status": 2,
+      "crossborder_people_services": 2,
+      "out_of_scope": 2,
+      "unclear": 0
+    }
+  },
+  "typesafe_scope_counts": {
+    "resident_refugee_status": 9,
+    "crossborder_people_services": 7,
+    "out_of_scope": 8
+  },
+  "review_priority_counts": {
+    "high": 14,
+    "normal": 10
+  },
+  "review_reasons": {
+    "ambiguous_frame_security_threat_probability": 1,
+    "ambiguous_frame_criminality_probability": 1,
+    "low_scope_choice_confidence": 6,
+    "assistant_typesafe_scope_disagreement": 9,
+    "ambiguous_in_scope_probability": 3,
+    "internal_scope_signal_disagreement": 1,
+    "ambiguous_frame_job_competition_probability": 1,
+    "ambiguous_frame_undeserved_benefits_probability": 1,
+    "ambiguous_frame_victim_exploitation_probability": 1
+  },
+  "evidence_clarity_counts": {
+    "explicit": 24
+  },
+  "primary_issue_counts": {
+    "crime_irregular_entry": 3,
+    "public_services_education": 3,
+    "border_security": 9,
+    "citizenship_legal_status": 4,
+    "scam_impersonation": 2,
+    "other_unclear": 2,
+    "work_economic_competition": 1
+  },
+  "usage": {
+    "input_tokens": 34313,
+    "output_tokens": 8416
+  },
+  "duplicate_text_checks": [
+    {
+      "claim_text": "ข้าราชการไทยออกบัตรประชาชนให้มุสลิม โดยไม่ทำตามกฎหมาย",
+      "ids": [
+        "11489",
+        "13339"
+      ],
+      "typesafe_scopes": [
+        "out_of_scope",
+        "resident_refugee_status"
+      ],
+      "scope_confidences": [
+        0.33,
+        0.3
+      ],
+      "in_scope_probabilities": [
+        0.17,
+        0.15
+      ]
+    }
+  ],
+  "limitations": [
+    "assistant_scope is a prior machine-assisted screen, not ground truth",
+    "n=24 is too small for stable performance estimates",
+    "the sample is stratified and is not prevalence-representative",
+    "Jev documentation says English is its strongest language; this state is Thai",
+    "narrative frames have no human gold labels in this pilot"
+  ]
+}

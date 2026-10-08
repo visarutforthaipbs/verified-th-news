@@ -1,0 +1,46 @@
+{
+  "input_sha256": "12053ef4652e0cf42feca1b38a003dad7cd64e7214da6100f80588357c11cf93",
+  "snapshot_cutoff": "2026-09-02",
+  "analysis_asof": "2026-09-08",
+  "not_live_snapshot": true,
+  "model": "intfloat/multilingual-e5-small",
+  "prefix": "passage: ",
+  "normalize": true,
+  "records": 14429,
+  "fit_unique_exact_texts": 13377,
+  "umap": {
+    "n_neighbors": 15,
+    "n_components": 10,
+    "min_dist": 0.0,
+    "metric": "cosine",
+    "random_state": 42
+  },
+  "hdbscan": {
+    "min_cluster_size": 30,
+    "min_samples": 5,
+    "metric": "euclidean",
+    "cluster_selection_method": "eom"
+  },
+  "sweep": [
+    15,
+    30,
+    50,
+    80
+  ],
+  "selection": "30 prespecified; other sizes sensitivity, not significance optimization",
+  "time": "calendar year; 2015 and 2026 partial; denominator includes outliers",
+  "topic_representation": "Thai newmm word tokens; c-TF-IDF; no global/evolution smoothing",
+  "bertopic_language": "multilingual (preserve Thai in preprocessing)",
+  "embedding_reuse_config_sha256": "21ce2c8e55baff70882f514db1cedeb158b27f88999cd6f09be3fb95f79b8539",
+  "embedding_reuse_vectors_sha256": "8c07b959a7f8f6e2424590f1c8190b91bdad3c61460729fa02287896f5aa482f",
+  "labels": "machine keywords only; human labels blank pending review",
+  "packages": {
+    "bertopic": "0.17.4",
+    "sentence-transformers": "5.6.1",
+    "umap-learn": "0.5.12",
+    "hdbscan": "0.8.44",
+    "numpy": "2.4.6",
+    "pythainlp": "5.3.7",
+    "scikit-learn": "1.9.0"
+  }
+}

@@ -1,0 +1,45 @@
+== (a) seconds between consecutive labels, real verdicts only (whole DB, per reviewer) ==
+  best     title_only in-corpus n=  726  median= 13.9s  p25=  7.6s  p75= 24.0s  under 20s:   68%  under 45s:   92%
+  best     evidence   in-corpus n=  592  median= 25.1s  p25= 12.0s  p75= 46.4s  under 20s:   43%  under 45s:   74%
+  visarut  title_only in-corpus n=  149  median= 12.3s  p25=  9.6s  p75= 18.9s  under 20s:   76%  under 45s:   93%
+  visarut  evidence   in-corpus n= 1621  median= 14.1s  p25=  4.7s  p75= 41.2s  under 20s:   57%  under 45s:   77%
+  (a Sure&Share short runs ~37-59s; a verdict logged in under 20s cannot rest on watching it)
+
+== (b) same claim labelled twice: title-only verdict vs evidence-based verdict (Sure&Share, all human labels in DB) ==
+  pairs: 237 | exact agreement 187 (79%) | agree on 'not true' vs 'true' 209 (88%)
+  (title-only verdict, evidence verdict): {('true', 'true'): 45, ('false', 'false'): 118, ('misleading', 'misleading'): 24, ('true', 'misleading'): 20, ('false', 'misleading'): 11, ('true', 'false'): 6, ('misleading', 'false'): 11, ('misleading', 'true'): 2}
+  polarity reversals (one says true, other says false/misleading): 28
+     title-only=true       evidence=misleading | อันตรายจากเชื้อราใต้ขวดแชมพู  (ids 18042,19768; in corpus: False,True)
+     title-only=true       evidence=misleading | อันตรายจากเชื้อราใต้ขวดแชมพู  (ids 19713,19768; in corpus: False,True)
+     title-only=true       evidence=misleading | ดื่มน้ำน้อย-น้ำเย็นเสี่ยงเป็นนิ่วในไต  (ids 18465,25956; in corpus: False,True)
+     title-only=true       evidence=false      | ขิงแก่ต้มน้ำดื่มต่อเนื่องแก้นิ้วล็อกได้  (ids 18598,26125; in corpus: False,True)
+     title-only=true       evidence=misleading | เตือนภัยขนมผสมควันเสี่ยง  (ids 18621,26353; in corpus: False,True)
+     title-only=true       evidence=misleading | ไขมันในเลือดสูงให้กินกระเทียมสดและหอมหัวใหญ่  (ids 18704,23880; in corpus: False,True)
+
+== (c) Sure&Share records in corpus that are #shorts re-cuts, by year ==
+  2015: sure_share   65  shorts    0 (  0%)
+  2016: sure_share  206  shorts    0 (  0%)
+  2017: sure_share  254  shorts    0 (  0%)
+  2018: sure_share  265  shorts    0 (  0%)
+  2019: sure_share  319  shorts    0 (  0%)
+  2020: sure_share  193  shorts    0 (  0%)
+  2021: sure_share  166  shorts    0 (  0%)
+  2022: sure_share  202  shorts   43 ( 21%)
+  2023: sure_share  506  shorts  391 ( 77%)
+  2024: sure_share  383  shorts  250 ( 65%)
+  2025: sure_share  242  shorts  172 ( 71%)
+  2026: sure_share   60  shorts   17 ( 28%)
+  busiest publication dates: [('2015-12-26', 11), ('2024-06-29', 10), ('2019-03-28', 9), ('2020-03-25', 8), ('2024-05-21', 7)]
+
+== (d) AFNC records dated before 2019-11-01: 48 ==
+   2017-03-23 16678 อย่าหลงเชื่อ ข่าวปลอม ยาพาราเซตามอลปนเปื้อนเชื้อไวรัส https://www.antifakenewscenter.com/?p=6
+   2017-12-10 16677 ข่าวปลอม “บิ๊กตู่” เรียกเก็บเงินภาษี 7 % "ก้าวคนละก้าว" https://www.antifakenewscenter.com/?p=247
+   2017-12-27 16676 เว็บคลิกเบทผุดข่าวปลอม เสี่ยตัน ไม่ช่วย พี่ตูน ชาวเน็ตด่าขรม https://www.antifakenewscenter.com/?p=164
+   2018-01-16 16675 สธ.เตือน "อย่าเชื่อ-อย่าแชร์" ข่าวปลอมอ้างมีคนตายจากฝุ่นPM2. https://www.antifakenewscenter.com/?p=54
+   2018-07-06 16674 อย.เตือนอย่าหลงเชื่อคำโฆษณา แผ่นแปะสะดือเผาผลาญไขมัน https://www.antifakenewscenter.com/?p=260
+   2018-07-23 16673 แค่ข่าวลือ! วอนหยุดแชร์ภาพเก่าดินสไลด์ ปิดช่องทางเพชรบูรณ์ https://www.antifakenewscenter.com/?p=168
+
+== (e) raw publisher verdict strings behind corpus records ==
+  afnc [('ข่าวปลอม', 9103), ('ข่าวบิดเบือน', 1250), ('false', 3)]
+  afp [('ปลอม', 283), ('False', 252), ('Misleading', 100), ('false', 9), ('เข้าใจผิด', 8), ('Missing Context', 8), ('Partly False', 6), ('ดัดแปลงภาพ', 5)]
+  thaipbs [('ข่าวปลอม', 138), ('ข่าวบิดเบือน', 66), ('ภาพปลอม', 24), ('false', 4), ('misleading', 4), ('altered_media', 2)]

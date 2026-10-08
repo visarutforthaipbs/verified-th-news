@@ -1,0 +1,61 @@
+﻿subtopic_id,rank,id,source,date,verdict,claim_text,claim_text_basis,url,queue_round
+-1,1,14882,afnc,2021-07-16,misleading,กรมการจัดหางาน ยกเลิกโครงการช่วยเหลือคนต่างด้าวด้านสาธารณสุข,cleaned_title,https://www.antifakenewscenter.com/?p=11374,1
+-1,2,5366,afnc,2024-12-25,false,คนไทยถูกหักเงินประกันสังคม 750 บาท เพื่อเอื้อประโยชน์ให้แรงงานต่างด้าว,cleaned_title,https://www.antifakenewscenter.com/?p=66111,1
+-1,3,6381,afnc,2024-09-06,false,ธุรกิจนายหน้า นำแรงงานพม่าเข้าประเทศไทย ไร้การควบคุม,cleaned_title,https://www.antifakenewscenter.com/?p=61670,1
+-1,4,7940,afnc,2024-03-21,false,กระทรวงแรงงานปลดล็อก 5 อาชีพ ให้แรงงานต่างชาติ,cleaned_title,https://www.antifakenewscenter.com/?p=54008,1
+-1,5,2802,afnc,2025-09-22,false,เจ้าหน้าที่ไทยบังคับคนต่างชาติไปทำงานแก๊งคอลเซ็นเตอร์ที่เมียนมา,cleaned_title,https://www.antifakenewscenter.com/?p=77341,2
+-1,6,13929,afnc,2022-01-29,false,กระทรวงแรงงาน ปลดล็อก 5 อาชีพ ให้สามารถจ้างแรงงานต่างชาติทำงานได้,cleaned_title,https://www.antifakenewscenter.com/?p=18343,1
+0,1,3233,afnc,2025-08-08,misleading,สั่งจับแรงงานกัมพูชาส่งกลับประเทศ ไม่ให้ประกอบอาชีพในไทย,cleaned_title,https://www.antifakenewscenter.com/?p=75450,1
+0,2,7946,afnc,2024-03-20,false,กัมพูชาตัดขาดไทย ดึงแรงงานกัมพูชากลับประเทศ,cleaned_title,https://www.antifakenewscenter.com/?p=53985,1
+0,3,1174,afnc,2026-03-12,false,แรงงานกัมพูชากว่า 7 แสนคน ไม่ยอมกลับประเทศ ยอมจ่ายเงินเพื่อให้ได้สัญชาติไทย,cleaned_title,https://www.antifakenewscenter.com/?p=84348,1
+0,4,1146,afnc,2026-03-15,false,แรงงานกัมพูชาเริ่มกลับมาลักลอบเข้า-ออก ไทยอีกครั้ง ผ่านช่องทางลับที่ชายแดน,cleaned_title,https://www.antifakenewscenter.com/?p=84477,1
+0,5,3176,afnc,2025-08-14,misleading,แรงงานกัมพูชาในไทยแห่กลับบ้านกว่า 8 แสนคน,cleaned_title,https://www.antifakenewscenter.com/?p=75714,1
+0,6,3650,afnc,2025-06-28,false,แรงงานลาวแห่ทะลักเข้าไทย หลังแรงงานกัมพูชาทยอยกลับ,cleaned_title,https://www.antifakenewscenter.com/?p=73547,1
+1,1,28026,cofact,2026-04-24,misleading,ไทยให้เด็กต่างชาติเรียนฟรีถึงปริญญาตรี,llm,https://blog.cofact.org/th/fact-check-education-24042026/,1
+1,2,27293,cofact,2026-06-09,false,เด็กเขมรเรียนฟรีแต่เด็กไทยต้องกู้ กยศ,llm,https://blog.cofact.org/th/fact-check-thai-cambodia-09062026/,2
+1,3,1215,afnc,2026-03-08,misleading,ยกเลิกประกาศของ ศธ. ให้เด็กต่างชาติเรียนฟรีถึงระดับปริญญาตรีในประเทศไทย,cleaned_title,https://www.antifakenewscenter.com/?p=84182,1
+1,4,655,afnc,2026-05-04,false,รมว.ต่างประเทศ เสนอให้ตัดทุนการศึกษาเด็กกัมพูชา,cleaned_title,https://www.antifakenewscenter.com/?p=86676,1
+1,5,27544,cofact,2026-02-26,misleading,นักสิทธิมนุษยชนแห่งชาติเสนอให้เด็กต่างด้าวในไทยเรียนฟรีถึงปริญญาตรี,llm,https://blog.cofact.org/th/fact-check-children-rights-26022026/,1
+1,6,292,afnc,2026-06-12,false,ด่านชายแดนจังหวัดตราด เปิดให้นักเรียนกัมพูชา เข้ามาเรียนได้,cleaned_title,https://www.antifakenewscenter.com/?p=88181,2
+2,1,286,afnc,2026-06-12,false,รัฐบาลให้สิทธิบัตรสวัสดิการแห่งรัฐกับคนพม่า,cleaned_title,https://www.antifakenewscenter.com/?p=88251,1
+2,2,16862,afp,2025-02-06,false,ภาพแรงงานพม่าเรียกร้องค่าแรงขั้นต่ำ 700 บาท,source,https://factcheckthailand.afp.com/doc.afp.com.36X87V2,1
+2,3,6542,afnc,2024-08-19,false,แรงงานชาวเมียนมาร์ เรียกร้องสิทธิเทียบเท่าคนไทย,cleaned_title,https://www.antifakenewscenter.com/?p=61035,1
+2,4,27802,cofact,2025-02-06,false,พม่าเรียกค่าแรง 600-700 บาท พร้อมโลโก้พรรคประชาชนในคลิป,llm,https://blog.cofact.org/th/myanmar-06022025/,1
+2,5,5170,afnc,2025-01-15,false,ออกบัตรประชาชนให้พม่าเป็นสัญชาติไทย โดยไม่ตรวจประวัติ,cleaned_title,https://www.antifakenewscenter.com/?p=66967,1
+2,6,17289,afp,2025-02-06,false,วิดีโอแรงงานเมียนมาประท้วงขอขึ้นค่าแรงเป็น 700 บาท,source,https://factcheckthailand.afp.com/doc.afp.com.36X84TJ,1
+3,1,2644,afnc,2025-10-09,false,ไทยขายใบนัดแพทย์ปลอม ให้คนกัมพูชาใช้ผ่านข้ามแดน,cleaned_title,https://www.antifakenewscenter.com/?p=78022,1
+3,2,28080,cofact,2026-01-28,false,กัมพูชานำคนป่วยมาทิ้งไว้ที่ชายแดนฝั่งไทย หวังให้โรงพยาบาลในไทยรับไปรักษาตัวโดยไม่ต้องเสียค่าใช้จ่าย,llm,https://blog.cofact.org/th/fact-check-thai-cambodia-28012026/,1
+3,3,3045,afnc,2025-08-27,false,ตม. ไทย เปิดด่านให้ชาวกัมพูชาเข้ามาใช้บริการโรงพยาบาลได้ตามปกติแล้ว,cleaned_title,https://www.antifakenewscenter.com/?p=76322,1
+3,4,1311,afnc,2026-02-27,false,ชาวกัมพูชาซื้อสัญชาติลาว เพื่อเดินทางเข้าไทย,cleaned_title,https://www.antifakenewscenter.com/?p=83705,1
+3,5,1166,afnc,2026-03-13,false,ชาวกัมพูชาพยายามแหกด่าน เพื่อมารักษาวัณโรคฟรีที่ไทย,cleaned_title,https://www.antifakenewscenter.com/?p=84387,1
+3,6,3034,afnc,2025-08-28,false,แม่ทัพภาค 1 และฝ่ายความมั่นคง เสนอมอบสัญชาติไทยให้ชาวกัมพูชา บ้านหนองจาน,cleaned_title,https://www.antifakenewscenter.com/?p=76384,1
+4,1,1022,afnc,2026-03-28,false,"ชาวอิสราเอล 425,000 คน เตรียมอพยพเดินทางเข้าไทย",cleaned_title,https://www.antifakenewscenter.com/?p=85013,2
+4,2,16722,afp,2026-03-31,false,"ชาวอิสราเอล 425,000 คนอพยพมาประเทศไทย",source,https://factcheckthailand.afp.com/doc.afp.com.A66D2T4,2
+4,3,4851,afnc,2025-02-19,misleading,"ชาวยิวอิสราเอลกว่า 30,000 คน มาตั้งถิ่นฐานใน อ.ปาย",cleaned_title,https://www.antifakenewscenter.com/?p=68331,2
+4,4,1117,afnc,2026-03-18,false,ไทยเตรียมรับผู้อพยพชาวยิว เนื่องจากระบบป้องกันภัยอิสราเอลใกล้หมด,cleaned_title,https://www.antifakenewscenter.com/?p=84600,2
+4,5,4706,afnc,2025-03-07,misleading,ชาวยิว อิสราเอล สร้างชาบัด 6 แห่ง ทั่วประเทศไทย,cleaned_title,https://www.antifakenewscenter.com/?p=68904,2
+4,6,17181,afp,2025-02-20,false,"ชาวอิสราเอลย้ายมา ""ตั้งถิ่นฐาน"" ในอ.ปายหลังอิสราเอล-ฮามาสหยุดยิง",source,https://factcheckthailand.afp.com/doc.afp.com.36Y43TK,2
+5,1,14480,afnc,2021-10-24,false,ผู้ว่าฯ จังหวัดภูเก็ต แอบลักลอบนำมุสลิมต่างด้าวเข้ามาในประเทศอย่างผิดกฎหมาย,cleaned_title,https://www.antifakenewscenter.com/?p=15331,1
+5,2,9740,afnc,2023-07-27,false,ลักลอบนำชาวต่างด้าวหลายคนเข้าภูเก็ตในเวลากลางคืนด้วยรถตู้,cleaned_title,https://www.antifakenewscenter.com/?p=39586,1
+5,3,4644,afnc,2025-03-13,false,แก๊งค้ามนุษย์-ขอทานต่างด้าวระบาดทั่วไทย ไร้การจัดการ,cleaned_title,https://www.antifakenewscenter.com/?p=69156,1
+5,4,13918,afnc,2022-01-31,false,มีการแอบลักลอบนำชาวมุสลิมต่างด้าวหลายคนเข้า จ.ภูเก็ต ในเวลากลางคืนด้วยรถตู้,cleaned_title,https://www.antifakenewscenter.com/?p=18404,1
+5,5,5062,afnc,2025-01-27,false,ไทยปล่อยต่างด้าวเข้าประเทศแบบไม่คัดกรอง จีนเทาฉวยโอกาส จับเด็กไปขอทาน,cleaned_title,https://www.antifakenewscenter.com/?p=67426,1
+5,6,13904,afnc,2022-02-02,false,ผู้นำซาอุฯ แต่งตั้งตำแหน่งให้นายกฯ นำคนอิสลามเข้าไทยแบบผิดกฎหมาย,cleaned_title,https://www.antifakenewscenter.com/?p=18511,1
+6,1,3548,afnc,2025-07-09,false,คนต่างด้าวทำบัตรประชาชนคนไทยได้แล้ว,cleaned_title,https://www.antifakenewscenter.com/?p=74026,1
+6,2,5600,afnc,2024-11-30,misleading,เปิดให้แรงงานต่างด้าวขึ้นทะเบียน หรือต่ออายุทำงาน และแรงงานเถื่อนก็สามารถขึ้นทะเบียนได้,cleaned_title,https://www.antifakenewscenter.com/?p=65110,1
+6,3,1623,afnc,2026-01-26,false,ต่างด้าวสามารถสวมสิทธิ์โครงการคนละครึ่งได้,cleaned_title,https://www.antifakenewscenter.com/?p=82319,1
+6,4,4787,afnc,2025-02-26,false,ต่างด้าวใน อ.ปาย มีบัตร ปชช. เป็นคนไทย,cleaned_title,https://www.antifakenewscenter.com/?p=68575,1
+6,5,3445,afnc,2025-07-20,false,ชาวจีนสามารถเปิดร้านค้าในไทยได้โดยไม่ต้องมีวีซ่า,cleaned_title,https://www.antifakenewscenter.com/?p=74460,2
+6,6,11134,afnc,2023-02-10,false,เริ่มเก็บค่าบริการสำหรับการต่อใบอนุญาตทำงานและวีซ่าของแรงงานต่างด้าว ตั้งแต่วันที่ 13 ก.พ. 66 ถึง 68,cleaned_title,https://www.antifakenewscenter.com/?p=32540,1
+7,1,3690,afnc,2025-06-24,false,กรมการขนส่งทางบก เปิดให้บริการทำใบขับขี่สำหรับคนจีน ผ่านเพจ Thai Driver's License,cleaned_title,https://www.antifakenewscenter.com/?p=73386,2
+7,2,7273,afnc,2024-06-01,false,รับทำใบขับขี่ สำหรับชาวต่างชาติ ผ่านเพจ DLT Smart Queue,cleaned_title,https://www.antifakenewscenter.com/?p=57501,1
+7,3,4750,afnc,2025-03-02,false,รับทำใบขับขี่ออนไลน์ทุกชนิดให้คนไทยและคนต่างชาติ ผ่านเพจ รับทำใบขับขี่ออนไลน์,cleaned_title,https://www.antifakenewscenter.com/?p=68730,1
+7,4,4127,afnc,2025-05-08,false,ใบขับขี่คนต่างชาติ ทำง่าย ได้จริง! ไม่ต้องสอบเอง ผ่านเพจ ยา มุกทาสี,cleaned_title,https://www.antifakenewscenter.com/?p=71558,2
+7,5,3537,afnc,2025-07-10,false,เปิดบริการรับทำใบขับขี่ไทยให้ชาวจีน ผ่าน TikTok ชื่อ qkooytuiw7d,cleaned_title,https://www.antifakenewscenter.com/?p=74067,2
+7,6,2232,afnc,2025-11-23,false,รับทำใบขับขี่ถูกกฎหมายแบบเร่งด่วนสำหรับคนต่างด้าว ผ่านเพจ รับทำใบขับขี่แบบถูกกฏหมาย100%,cleaned_title,https://www.antifakenewscenter.com/?p=79780,1
+8,1,28091,cofact,2025-12-26,misleading,กรมการปกครองเสนอแก้ไข พ.ร.บ.สัญชาติ เปิดช่องให้ลูกแรงงานต่างด้าวที่เกิดในไทยได้สัญชาติไทย,human,https://blog.cofact.org/th/fact-check-natioanality-act-26122025/,1
+8,2,1639,afnc,2026-01-24,misleading,เตรียมแก้ไข พ.ร.บ.สัญชาติฯ ให้บุตรของคนต่างด้าวที่เกิดในประเทศไทย ตามมาตรา 7 ทวิ วรรคสอง ได้สัญชาติไทยโดยการเกิด,cleaned_title,https://www.antifakenewscenter.com/?p=82246,1
+8,3,224,afnc,2026-06-19,false,คนต่างด้าว แม้เป็นแรงงานผิดกฎหมาย หากคลอดลูกในไทย จะได้สัญชาติไทยทันที,cleaned_title,https://www.antifakenewscenter.com/?p=88535,1
+8,4,5235,afnc,2025-01-08,misleading,ลูกแรงงานต่างด้าว มีสิทธิ์ขอสัญชาติไทย,cleaned_title,https://www.antifakenewscenter.com/?p=66678,1
+8,5,27675,cofact,2026-02-23,misleading,ปัจจุบันมีการเสนอแก้ไขมาตรา 7 ทวิวรรคสอง ของ พ.ร.บ.สัญชาติ เปิดช่องให้ลูกหลานแรงงานต่างด้าวที่เกิดในไทยได้สัญชาติไทยโดยการเกิด,llm,https://blog.cofact.org/th/fact-check-nationality-act-23022026/,1
+8,6,27187,cofact,2026-06-15,false,รัฐบาลกำลังร่างกฎหมายให้สัญชาติไทยและบัตรประชาชนแก่คนต่างด้าวรวมถึงคนต่างด้าวที่เข้ามาทำงานในไทยเป็นเวลานาน,human,https://blog.cofact.org/th/fact-check-nationality-law-15062026/,1

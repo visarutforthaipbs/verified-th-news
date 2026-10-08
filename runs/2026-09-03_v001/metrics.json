@@ -1,0 +1,316 @@
+{
+  "run_id": "2026-09-03_v001",
+  "timestamp": "2026-09-03T13:45:06.251192+00:00",
+  "total_clean_records": 27231,
+  "total_topics": 10,
+  "change_points_ranked": [
+    {
+      "transition": "2019 -> 2020",
+      "period_from": "2019",
+      "period_to": "2020",
+      "jsd_score": 0.4076,
+      "top_gainers": [
+        [
+          "T02",
+          27.4
+        ]
+      ],
+      "top_losers": [
+        [
+          "T99_other",
+          -31.8
+        ]
+      ]
+    },
+    {
+      "transition": "2024 -> 2025",
+      "period_from": "2024",
+      "period_to": "2025",
+      "jsd_score": 0.1828,
+      "top_gainers": [
+        [
+          "T06",
+          6.7
+        ]
+      ],
+      "top_losers": [
+        [
+          "T01",
+          -5.1
+        ],
+        [
+          "T99_other",
+          -5.0
+        ]
+      ]
+    },
+    {
+      "transition": "2022 -> 2023",
+      "period_from": "2022",
+      "period_to": "2023",
+      "jsd_score": 0.1794,
+      "top_gainers": [
+        [
+          "T99_other",
+          8.5
+        ],
+        [
+          "T04",
+          4.3
+        ]
+      ],
+      "top_losers": [
+        [
+          "T02",
+          -6.8
+        ],
+        [
+          "T01",
+          -3.5
+        ]
+      ]
+    },
+    {
+      "transition": "2016 -> 2017",
+      "period_from": "2016",
+      "period_to": "2017",
+      "jsd_score": 0.1779,
+      "top_gainers": [
+        [
+          "T01",
+          12.8
+        ]
+      ],
+      "top_losers": [
+        [
+          "T99_other",
+          -14.3
+        ]
+      ]
+    },
+    {
+      "transition": "2021 -> 2022",
+      "period_from": "2021",
+      "period_to": "2022",
+      "jsd_score": 0.1598,
+      "top_gainers": [
+        [
+          "T99_other",
+          4.6
+        ],
+        [
+          "T04",
+          2.3
+        ],
+        [
+          "T01",
+          2.1
+        ]
+      ],
+      "top_losers": [
+        [
+          "T02",
+          -10.7
+        ]
+      ]
+    },
+    {
+      "transition": "2020 -> 2021",
+      "period_from": "2020",
+      "period_to": "2021",
+      "jsd_score": 0.1523,
+      "top_gainers": [
+        [
+          "T03",
+          5.8
+        ],
+        [
+          "T99_other",
+          3.5
+        ]
+      ],
+      "top_losers": [
+        [
+          "T02",
+          -8.8
+        ],
+        [
+          "T01",
+          -2.5
+        ]
+      ]
+    },
+    {
+      "transition": "2015 -> 2016",
+      "period_from": "2015",
+      "period_to": "2016",
+      "jsd_score": 0.1513,
+      "top_gainers": [
+        [
+          "T99_other",
+          5.5
+        ]
+      ],
+      "top_losers": [
+        [
+          "T01",
+          -6.5
+        ]
+      ]
+    },
+    {
+      "transition": "2025 -> 2026",
+      "period_from": "2025",
+      "period_to": "2026",
+      "jsd_score": 0.1358,
+      "top_gainers": [
+        [
+          "T10",
+          3.7
+        ]
+      ],
+      "top_losers": [
+        [
+          "T04",
+          -3.4
+        ],
+        [
+          "T03",
+          -2.3
+        ],
+        [
+          "T08",
+          -2.1
+        ]
+      ]
+    },
+    {
+      "transition": "2017 -> 2018",
+      "period_from": "2017",
+      "period_to": "2018",
+      "jsd_score": 0.1156,
+      "top_gainers": [
+        [
+          "T99_other",
+          4.8
+        ]
+      ],
+      "top_losers": [
+        [
+          "T01",
+          -5.1
+        ]
+      ]
+    },
+    {
+      "transition": "2018 -> 2019",
+      "period_from": "2018",
+      "period_to": "2019",
+      "jsd_score": 0.1089,
+      "top_gainers": [],
+      "top_losers": [
+        [
+          "T01",
+          -3.6
+        ]
+      ]
+    },
+    {
+      "transition": "2023 -> 2024",
+      "period_from": "2023",
+      "period_to": "2024",
+      "jsd_score": 0.0773,
+      "top_gainers": [
+        [
+          "T99_other",
+          2.2
+        ]
+      ],
+      "top_losers": [
+        [
+          "T01",
+          -3.9
+        ]
+      ]
+    }
+  ],
+  "statistical_tests": [
+    {
+      "topic_id": "T01",
+      "topic_name": "สุขภาพ อาหาร และยารักษาโรค",
+      "share_2020_2021_pct": 24.35,
+      "share_2024_2025_pct": 15.19,
+      "abs_diff_percentage_points": -9.17,
+      "relative_change_pct": -37.6,
+      "raw_p_value": 0.0005,
+      "fdr_adjusted_p_value": 0.0006,
+      "statistically_significant": true
+    },
+    {
+      "topic_id": "T02",
+      "topic_name": "โรคระบาด โควิด-19 และวัคซีน",
+      "share_2020_2021_pct": 23.4,
+      "share_2024_2025_pct": 1.47,
+      "abs_diff_percentage_points": -21.92,
+      "relative_change_pct": -93.7,
+      "raw_p_value": 0.0005,
+      "fdr_adjusted_p_value": 0.0006,
+      "statistically_significant": true
+    },
+    {
+      "topic_id": "T03",
+      "topic_name": "การเงิน สินเชื่อปลอม และแก๊งคอลเซ็นเตอร์",
+      "share_2020_2021_pct": 4.85,
+      "share_2024_2025_pct": 8.51,
+      "abs_diff_percentage_points": 3.66,
+      "relative_change_pct": 75.4,
+      "raw_p_value": 0.0005,
+      "fdr_adjusted_p_value": 0.0006,
+      "statistically_significant": true
+    },
+    {
+      "topic_id": "T04",
+      "topic_name": "หลอกลงทุนหุ้น คริปโต และตลาดหลักทรัพย์",
+      "share_2020_2021_pct": 0.29,
+      "share_2024_2025_pct": 6.22,
+      "abs_diff_percentage_points": 5.92,
+      "relative_change_pct": 2030.6,
+      "raw_p_value": 0.0005,
+      "fdr_adjusted_p_value": 0.0006,
+      "statistically_significant": true
+    },
+    {
+      "topic_id": "T05",
+      "topic_name": "นโยบายรัฐบาล สวัสดิการ และเงินเยียวยา",
+      "share_2020_2021_pct": 2.23,
+      "share_2024_2025_pct": 1.84,
+      "abs_diff_percentage_points": -0.39,
+      "relative_change_pct": -17.4,
+      "raw_p_value": 0.141,
+      "fdr_adjusted_p_value": 0.141,
+      "statistically_significant": false
+    },
+    {
+      "topic_id": "T06",
+      "topic_name": "แรงงานต่างด้าว สัญชาติ และผู้ลี้ภัย",
+      "share_2020_2021_pct": 0.58,
+      "share_2024_2025_pct": 4.23,
+      "abs_diff_percentage_points": 3.64,
+      "relative_change_pct": 624.3,
+      "raw_p_value": 0.0005,
+      "fdr_adjusted_p_value": 0.0006,
+      "statistically_significant": true
+    },
+    {
+      "topic_id": "T07",
+      "topic_name": "AI ดีพเฟก ภาพตัดต่อ และสื่อสังเคราะห์",
+      "share_2020_2021_pct": 0.37,
+      "share_2024_2025_pct": 1.97,
+      "abs_diff_percentage_points": 1.6,
+      "relative_change_pct": 430.5,
+      "raw_p_value": 0.0005,
+      "fdr_adjusted_p_value": 0.0006,
+      "statistically_significant": true
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+﻿subtopic_id,machine_keywords,records,groups,sources,status,y2020,y2021,y2022,y2023,y2024,y2025,y2026
+-1,ต่างด้าว | แรงงาน | ไทย | โควิด | ปลดล็อก | กระทรวง | คนไทย | ด่าน,29,generic_or_other 16; myanmar 5; cambodia 5; china 3,afnc 24; cofact 3; thaipbs 2,assistant-screened scope; machine keywords; not a human-validated frame,3,3,3,1,5,3,11
+0,กัมพูชา | แรงงาน | ไทย | ประเทศ | คน | แสน | ลักลอบ | ทำงาน,29,cambodia 23; generic_or_other 3; myanmar 2; israel_jewish 1,afnc 25; cofact 2; afp 1; thaipbs 1,assistant-screened scope; machine keywords; not a human-validated frame,1,0,0,0,3,7,18
+1,เด็ก | เรียน | นักเรียน | ฟรี | เขมร | กัมพูชา | รัฐมนตรี | ปริญญาตรี,21,cambodia 13; generic_or_other 6; myanmar 2,afnc 12; cofact 7; thaipbs 2,assistant-screened scope; machine keywords; not a human-validated frame,0,0,0,0,2,2,17
+2,พม่า | บาท | สิทธิ | คนไทย | เรียกร้อง | อาชีพ | เมียนมา | ค่าแรง,17,myanmar 16; generic_or_other 1,afnc 10; afp 3; cofact 2; thaipbs 2,assistant-screened scope; machine keywords; not a human-validated frame,2,1,0,0,4,7,3
+3,กัมพูชา | จาน | หนอง | ไทย | บ้าน | ด่าน | จ. | ข้ามแดน,17,cambodia 17,afnc 11; thaipbs 3; cofact 3,assistant-screened scope; machine keywords; not a human-validated frame,0,0,0,0,0,10,7
+4,อิสราเอล | ยิว | ปาย | ตั้งถิ่นฐาน | อ. | อพยพ | พะ | งัน,16,israel_jewish 16,afnc 13; afp 3,assistant-screened scope; machine keywords; not a human-validated frame,0,0,0,0,0,8,8
+5,ภูเก็ต | ต่างด้าว | กลางคืน | ขอทาน | ลักลอบ | เวลา | รถตู้ | ขาย,11,generic_or_other 9; china 1; israel_jewish 1,afnc 11,assistant-screened scope; machine keywords; not a human-validated frame,0,1,3,1,1,2,3
+6,วีซ่า | ต่างด้าว | ขึ้นทะเบียน | วันที่ | บัตร | แรงงาน | ทำงาน | จัดเก็บ,10,generic_or_other 8; china 1; israel_jewish 1,afnc 10,assistant-screened scope; machine keywords; not a human-validated frame,0,0,0,1,2,4,3
+7,ใบขับขี่ | ทำ | เพจ | สำหรับ | สอบ | คนต่างชาติ | ออนไลน์ | จีน,9,generic_or_other 5; china 3; myanmar 1,afnc 9,assistant-screened scope; machine keywords; not a human-validated frame,0,0,0,1,2,6,0
+8,สัญชาติ | พ.ร.บ. | คนต่างด้าว | ที่ทำกิน | ที่เกิด | เปิดช่อง | ไทย | สอง,8,generic_or_other 8,cofact 5; afnc 3,assistant-screened scope; machine keywords; not a human-validated frame,0,0,0,0,1,3,4

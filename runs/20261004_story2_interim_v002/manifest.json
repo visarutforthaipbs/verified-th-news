@@ -1,0 +1,88 @@
+{
+ "run": "20261004_story2_interim_v002",
+ "script": "scripts/story2_interim_analysis.py",
+ "script_sha256": "e2c2289271b3d78bd99c2c2a7ed0a821f40aa6118a99bf60b716df2d8d7021b6",
+ "inputs_sha256": {
+  "review_queue_v2.csv": "5373d589cc26b60587e7be547fa1001235f23cdb6ba8e6329af85fff0ab59d63",
+  "assignments.csv": "4189e38be930f0f7ef23af0fd202811c484631ee882ccb875a66dd3bd38f7fce"
+ },
+ "subtopic_params": {
+  "umap": {
+   "n_neighbors": 10,
+   "n_components": 5,
+   "min_dist": 0,
+   "metric": "cosine",
+   "random_state": 42
+  },
+  "hdbscan": {
+   "min_cluster_size": 8,
+   "min_samples": 3,
+   "cluster_selection_method": "leaf"
+  }
+ },
+ "visitor_rows_moved_out": [
+  "1126",
+  "13656",
+  "14485",
+  "1595",
+  "16351",
+  "16444",
+  "16517",
+  "16531",
+  "16541",
+  "27414",
+  "27475"
+ ],
+ "group_marker": "string matching on title+claim; not coding",
+ "metrics": {
+  "queue_rows": 513,
+  "scope_interim": {
+   "out_of_scope": 329,
+   "resident_refugee_status": 133,
+   "unclear": 17,
+   "crossborder_people_services": 34
+  },
+  "in_scope": 167,
+  "in_scope_resident": 133,
+  "in_scope_crossborder": 34,
+  "in_scope_from_round2": 49,
+  "in_scope_unique_texts": 165,
+  "by_source": {
+   "afnc": 128,
+   "cofact": 22,
+   "afp": 7,
+   "thaipbs": 10
+  },
+  "by_group_marker": {
+   "generic_or_other": 56,
+   "myanmar": 26,
+   "cambodia": 58,
+   "china": 8,
+   "israel_jewish": 19
+  },
+  "by_verdict": {
+   "false": 112,
+   "misleading": 54,
+   "altered_media": 1
+  },
+  "claim_text_basis_llm": 25,
+  "late_2025_2026": 126,
+  "late_by_group": {
+   "generic_or_other": 30,
+   "myanmar": 15,
+   "china": 6,
+   "cambodia": 56,
+   "israel_jewish": 19
+  },
+  "subtopics": 9,
+  "subtopic_noise_records": 29,
+  "human_coded_rows": 0,
+  "decisions": {
+   "foreign_residents_any_origin": "in scope",
+   "tourists_short_term_visitors": "out of scope",
+   "decided_by": "owner",
+   "date": "2026-10-04"
+  },
+  "status": "assistant-screened; replaced after human coding"
+ }
+}
