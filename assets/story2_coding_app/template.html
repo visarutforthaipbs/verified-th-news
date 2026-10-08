@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ลงรหัสเรื่อง 2</title>
+<style>
+  /* Three hue families only: blue = in scope / primary action, amber = unsure / needs attention, grey = everything else. */
+  :root{
+    --bg:#f6f5f2; --card:#ffffff; --ink:#1c1c1a; --muted:#6b6a66; --line:#dedcd6;
+    --blue:#1f5fbf; --blue-soft:#e6eefb; --amber:#b86a00; --amber-soft:#fdf1dc; --grey:#8a8983; --grey-soft:#ecebe7;
+    --radius:10px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,"Sukhumvit Set","Thonburi","Noto Sans Thai","Leelawadee UI",Tahoma,sans-serif;font-size:16px;line-height:1.6}
+  button,select,textarea,input{font:inherit;color:inherit}
+  [hidden]{display:none!important}
+  header{position:sticky;top:0;z-index:5;background:var(--card);border-bottom:1px solid var(--line);padding:10px 20px;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+  header h1{font-size:16px;margin:0;font-weight:600;white-space:nowrap}
+  .bar{flex:1;min-width:160px;height:8px;background:var(--grey-soft);border-radius:4px;overflow:hidden}
+  .bar i{display:block;height:100%;background:var(--blue);width:0;transition:width .25s}
+  .count{font-variant-numeric:tabular-nums;color:var(--muted);font-size:14px;white-space:nowrap}
+  .ghost{background:none;border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer}
+  .ghost:hover{border-color:var(--grey)}
+  main{max-width:860px;margin:0 auto;padding:20px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px;margin-bottom:16px}
+  .meta{color:var(--muted);font-size:14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .tag{background:var(--grey-soft);border-radius:999px;padding:1px 10px;font-size:13px}
+  .tag.cal{background:var(--amber-soft);color:var(--amber)}
+  .claim{font-size:22px;line-height:1.55;margin:12px 0 6px;font-weight:500}
+  .title{color:var(--muted);font-size:14px}
+  .title b{font-weight:600;color:var(--ink)}
+  a{color:var(--blue)}
+  h2{font-size:15px;margin:0 0 10px;font-weight:600}
+  h2 span{color:var(--muted);font-weight:400}
+  .opts{display:grid;gap:8px}
+  .opts.two{grid-template-columns:repeat(2,1fr)}
+  @media (max-width:640px){.opts.two{grid-template-columns:1fr}.claim{font-size:19px}}
+  .opt{display:block;text-align:left;background:var(--card);border:1.5px solid var(--line);border-radius:var(--radius);padding:10px 14px;cursor:pointer;width:100%}
+  .opt small{display:block;color:var(--muted);font-size:13px;line-height:1.45}
+  .opt kbd{float:right;font:12px ui-monospace,monospace;color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:0 5px}
+  .opt:hover{border-color:var(--grey)}
+  .opt.on{border-color:var(--blue);background:var(--blue-soft)}
+  .opt.out.on{border-color:var(--grey);background:var(--grey-soft)}
+  .opt.unsure.on{border-color:var(--amber);background:var(--amber-soft)}
+  .chip{display:inline-block;border:1.5px solid var(--line);border-radius:999px;padding:5px 14px;margin:0 6px 8px 0;cursor:pointer;background:var(--card)}
+  .chip.on{border-color:var(--blue);background:var(--blue-soft)}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media (max-width:640px){.row{grid-template-columns:1fr}}
+  label.f{display:block;font-size:14px;color:var(--muted);margin-bottom:4px}
+  select,textarea,input[type=text]{width:100%;border:1.5px solid var(--line);border-radius:8px;padding:8px 10px;background:var(--card)}
+  textarea{min-height:64px;resize:vertical}
+  .check{display:flex;gap:8px;align-items:flex-start;margin:8px 0;cursor:pointer}
+  .check input{margin-top:6px;width:16px;height:16px}
+  .nav{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+  .primary{background:var(--blue);color:#fff;border:0;border-radius:var(--radius);padding:11px 22px;font-weight:600;cursor:pointer}
+  .primary:disabled{background:var(--grey-soft);color:var(--grey);cursor:not-allowed}
+  .need{color:var(--amber);font-size:14px}
+  .map{display:flex;flex-wrap:wrap;gap:3px;margin-top:8px}
+  .map b{width:12px;height:12px;border-radius:3px;border:1px solid var(--line);background:var(--card);cursor:pointer;display:block}
+  .map b.in{background:var(--blue);border-color:var(--blue)}
+  .map b.out{background:var(--grey);border-color:var(--grey)}
+  .map b.unsure{background:var(--amber);border-color:var(--amber)}
+  .map b.cur{outline:2px solid var(--ink);outline-offset:1px}
+  .legend{font-size:13px;color:var(--muted);display:flex;gap:14px;flex-wrap:wrap;margin-top:8px}
+  .legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:middle}
+  .sop ol{padding-left:22px;margin:8px 0}
+  .sop li{margin-bottom:8px}
+  .sop h3{font-size:15px;margin:18px 0 4px}
+  .note{background:var(--amber-soft);border-radius:var(--radius);padding:12px 16px;color:#5c3a00;font-size:15px}
+  .big{font-size:20px;font-weight:600;margin:0 0 6px}
+  table.def{border-collapse:collapse;width:100%;font-size:14px;margin-top:6px}
+  table.def td{border-top:1px solid var(--line);padding:6px 8px;vertical-align:top}
+  table.def td:first-child{white-space:nowrap;font-weight:600}
+</style>
+</head>
+<body>
+<header>
+  <h1>เรื่อง 2 · ลงรหัส</h1>
+  <div class="bar"><i id="bar"></i></div>
+  <div class="count" id="count"></div>
+  <button class="ghost" id="btnGuide">วิธีทำ</button>
+  <button class="ghost" id="btnExport">ส่งออกไฟล์</button>
+</header>
+
+<main>
+  <!-- GUIDE / SOP -->
+  <section id="guide" class="card sop" hidden>
+    <p class="big">งานนี้คืออะไร</p>
+    <p>คุณจะอ่านข้ออ้างที่สำนักตรวจข่าวเคยตรวจไว้ <b id="gTotal"></b> ข้อ ทีละข้อ แล้วตอบว่าข้ออ้างนั้นพูดถึง “คนข้ามชาติในไทย” หรือไม่ ถ้าใช่ ข้ออ้างวางคนกลุ่มนั้นไว้ในบทบาทใด คำตอบของคุณจะใช้แทนการคัดของ AI ในบทความ</p>
+    <div class="note">ระหว่างลงรหัส อย่าเปิดร่างบทความหรือโฟลเดอร์ <code>runs/</code> และอย่าถาม AI ว่าข้อไหนใช่หรือไม่ใช่ ตัดสินจากข้อความที่เห็นตรงหน้าเท่านั้น</div>
+
+    <h3>เพราะทำคนเดียว จึงมีรอบตรวจซ้ำ</h3>
+    <p>งานแบบนี้ปกติให้สองคนลงรหัสแยกกันแล้ววัดว่าตรงกันแค่ไหน ในที่นี้มีคุณคนเดียว จึงวัดความนิ่งของการตัดสินของคุณเองแทน: ทำครบ <b id="gTotal2"></b> ข้อ <b>รอ 2 วัน</b> แล้วลงรหัสซ้ำประมาณ 105 ข้อที่สุ่มไว้ โดยไม่เห็นคำตอบเดิม ถ้าสองรอบตรงกัน ตัวเลขของคุณเชื่อถือได้ ถ้าไม่ตรง เรารู้ว่าเกณฑ์ข้อไหนยังไม่ชัด</p>
+
+    <h3>ขั้นตอน</h3>
+    <ol>
+      <li><b>ทำให้ครบทุกข้อ</b> ครั้งละไม่เกิน 90 นาที พักเมื่อเริ่มตอบเร็วขึ้นโดยไม่ได้อ่าน กด “ส่งออกไฟล์” ทุกครั้งที่เลิก</li>
+      <li>30 ข้อแรกเป็น<b>ชุดอุ่นเครื่อง</b> พอครบจะมีหน้าให้ทบทวนว่าเกณฑ์ข้อไหนไม่ชัด จดไว้ แล้วทำต่อได้เลย</li>
+      <li>เมื่อครบทุกข้อ ให้<b>รออย่างน้อย 48 ชั่วโมง</b> หน้านี้จะบอกเวลาที่เหลือ</li>
+      <li>กด “เริ่มรอบตรวจซ้ำ” ทำประมาณ 105 ข้อ แบบฟอร์มจะว่างเปล่า อย่าเปิดไฟล์เดิมดูคำตอบเก่า</li>
+      <li>กด “ส่งออกไฟล์” ได้ไฟล์สองไฟล์ ส่งทั้งสองไฟล์ให้ผู้ช่วย (AI) ซึ่งจะทำรายการข้อที่คุณตอบต่างจากตัวเอง และข้อที่ต่างจากที่ AI เคยคัดไว้ ให้คุณดูอีกรอบ</li>
+    </ol>
+
+    <h3>หลักตัดสิน 4 ข้อ</h3>
+    <ol>
+      <li><b>ตัดสินจาก “ข้ออ้างเท็จ” ไม่ใช่คำแก้ข่าว</b> ชื่อข่าวมักมีคำว่า “ข่าวปลอม อย่าแชร์!” ให้มองข้าม แล้วถามว่าโพสต์ที่ถูกตรวจเล่าเรื่องคนกลุ่มนี้อย่างไร</li>
+      <li><b>ตัดสินจากสิ่งที่ข้อความเขียน ไม่เดา</b> ถ้าต้องเปิดบทตรวจเต็มจึงจะรู้ ให้ติ๊ก “ต้องเปิดต้นทาง” แล้วตอบเท่าที่ตอบได้</li>
+      <li><b>ข้ออ้างจริงหรือเท็จไม่เกี่ยว</b> คุณกำลังบันทึกว่าข้ออ้างวางคนไว้อย่างไร ไม่ใช่ตรวจข่าวซ้ำ</li>
+      <li><b>ไม่แน่ใจ ให้เขียนหมายเหตุสั้น ๆ</b> เหตุผลของคุณมีค่าตอนทบทวน</li>
+    </ol>
+
+    <h3>ใครคือ “คนข้ามชาติ” ในงานนี้</h3>
+    <table class="def">
+      <tr><td>นับ</td><td>แรงงานข้ามชาติ ผู้ลี้ภัย คนไร้สัญชาติ และชาวต่างชาติทุกสัญชาติที่มา <b>อยู่ ทำงาน ตั้งถิ่นฐาน หรือทำธุรกิจ</b> ในไทย รวมถึงคนที่ข้ามแดนมาใช้บริการในไทย</td></tr>
+      <tr><td>ไม่นับ</td><td><b>นักท่องเที่ยว</b>และผู้มาเยือนระยะสั้น (เขียน visitor ในหมายเหตุ) · ข่าวทหาร การสู้รบ การค้า การเมืองระหว่างประเทศ · เหตุการณ์ในต่างประเทศ · เพจรับทำใบขับขี่ทั่วไปที่ไม่ได้พูดถึงชาวต่างชาติ</td></tr>
+    </table>
+
+    <h3>การบันทึก</h3>
+    <p>คำตอบบันทึกอัตโนมัติในเบราว์เซอร์นี้บนเครื่องนี้ ปิดแล้วเปิดใหม่จะทำต่อได้ ห้ามล้างข้อมูลเบราว์เซอร์ ไม่ใช้หน้าต่างไม่ระบุตัวตน และอย่าย้ายไปทำเครื่องอื่นโดยไม่ส่งออกไฟล์ก่อน ถ้าจะทำต่อบนเครื่องอื่น ให้เปิดหน้านี้ที่เครื่องใหม่แล้วกด “นำเข้าไฟล์ที่ส่งออกไว้”</p>
+    <p id="lsWarn" class="note" hidden>เบราว์เซอร์นี้ไม่ยอมให้บันทึกอัตโนมัติ ให้กด “ส่งออกไฟล์” บ่อย ๆ และนำเข้าไฟล์เมื่อกลับมาทำต่อ</p>
+
+    <div class="nav" style="margin-top:18px">
+      <label class="ghost" style="cursor:pointer">นำเข้าไฟล์ที่ส่งออกไว้<input type="file" id="importFile" accept=".csv" hidden></label>
+      <button class="primary" id="btnStart">เริ่มทำ</button>
+    </div>
+  </section>
+
+  <!-- CHECKPOINT after the 30 warm-up rows (never blocks) -->
+  <section id="gate" class="card" hidden>
+    <p class="big">อุ่นเครื่องครบ 30 ข้อแล้ว</p>
+    <p>ก่อนทำต่อ ใช้เวลาหนึ่งนาที:</p>
+    <ol>
+      <li>มีข้อไหนที่ตอบแล้วรู้สึกว่าเกณฑ์ไม่ชัดไหม ดูที่ข้อที่คุณเขียนหมายเหตุหรือติ๊กต้องเปิดต้นทาง จดไว้ว่าคุณตีความอย่างไร แล้วใช้แบบเดียวกันตลอดจนจบ</li>
+      <li>กด “ส่งออกไฟล์” เก็บสำเนาไว้</li>
+    </ol>
+    <div class="note">คำตอบ 30 ข้อแรกนับรวมในผลจริง ไม่ต้องทำใหม่ และแก้ได้ตลอดจนกว่าจะเริ่มรอบตรวจซ้ำ</div>
+    <div class="nav" style="margin-top:14px">
+      <button class="ghost" id="btnExport2">ส่งออกไฟล์</button>
+      <button class="primary" id="btnGo">ทำต่อ</button>
+    </div>
+  </section>
+
+  <!-- PASS 1 COMPLETE -->
+  <section id="done" class="card" hidden>
+    <p class="big">ครบทุกข้อแล้ว</p>
+    <p>กด “ส่งออกไฟล์” เก็บไว้ก่อน ยังกลับไปแก้ข้อไหนก็ได้จากแผนที่ด้านล่าง จนกว่าจะเริ่มรอบตรวจซ้ำ</p>
+    <div class="card" style="background:var(--grey-soft);border:0;margin:14px 0">
+      <p style="margin:0 0 6px"><b>ขั้นต่อไป: รอบตรวจซ้ำ <span id="rtN"></span> ข้อ</b></p>
+      <p style="margin:0">วัดว่าคุณตอบเหมือนเดิมหรือไม่ เมื่อไม่เห็นคำตอบเก่า ควรรออย่างน้อย 48 ชั่วโมงให้ลืม <span id="elapsed"></span></p>
+    </div>
+    <div class="note">เมื่อเริ่มรอบตรวจซ้ำแล้ว คำตอบรอบแรกจะแก้ไม่ได้อีก เพื่อให้เทียบกันได้อย่างซื่อตรง</div>
+    <div class="nav" style="margin-top:14px">
+      <button class="ghost" id="btnExport3">ส่งออกไฟล์</button>
+      <button class="primary" id="btnRetest">เริ่มรอบตรวจซ้ำ</button>
+    </div>
+  </section>
+
+  <!-- RETEST COMPLETE -->
+  <section id="final" class="card" hidden>
+    <p class="big">ตรวจซ้ำครบแล้ว ขอบคุณ</p>
+    <ol>
+      <li>กด “ส่งออกไฟล์” จะได้ <b>สองไฟล์</b>: <code>coder_main_…csv</code> และ <code>coder_retest_…csv</code> (ถ้าเบราว์เซอร์ถามว่าอนุญาตให้ดาวน์โหลดหลายไฟล์ ให้กดอนุญาต)</li>
+      <li>ส่งทั้งสองไฟล์ให้ผู้ช่วย (AI)</li>
+      <li>ผู้ช่วยจะวัดความนิ่งของคุณ และทำรายการข้อที่ควรดูอีกรอบ ให้คุณตัดสินข้อที่ขัดกันเอง</li>
+    </ol>
+    <button class="primary" id="btnExport4">ส่งออกไฟล์ทั้งสอง</button>
+  </section>
+
+  <!-- WORK -->
+  <section id="work" hidden>
+    <div class="card">
+      <div class="meta"><span id="mPos"></span><span class="tag" id="mPhase"></span><span id="mSrc"></span><span id="mDate"></span><span id="mVerdict"></span></div>
+      <p class="claim" id="claim"></p>
+      <div class="title" id="titleLine"></div>
+      <div style="margin-top:6px"><a id="link" target="_blank" rel="noopener">เปิดบทตรวจต้นทาง ↗</a></div>
+    </div>
+
+    <div class="card">
+      <h2>① ข้ออ้างนี้พูดถึงคนข้ามชาติในไทยหรือไม่</h2>
+      <div class="opts two" id="scopeOpts"></div>
+    </div>
+
+    <div id="inScope" hidden>
+      <div class="card">
+        <h2>② พูดถึงคนกลุ่มใด <span>เลือก 1 ตามที่ข้อความระบุ</span></h2>
+        <div id="groupOpts"></div>
+      </div>
+      <div class="card">
+        <h2>③ ข้ออ้างวางคนกลุ่มนี้ไว้อย่างไร <span>เลือกได้หลายข้อ เฉพาะที่ถ้อยคำบอกชัด</span></h2>
+        <div class="opts two" id="frameOpts"></div>
+        <div id="otherWrap" hidden style="margin-top:10px"><label class="f">กรอบอื่นคืออะไร (สั้น ๆ)</label><input type="text" id="otherText"></div>
+        <div class="row" style="margin-top:16px">
+          <div><label class="f">ใครถูกวางเป็นผู้ทำให้เกิดปัญหา</label><select id="blamed"></select></div>
+          <div><label class="f">ใครถูกวางเป็นผู้เสียหาย</label><select id="victim"></select></div>
+        </div>
+        <label class="check"><input type="checkbox" id="dehum"><span>ใช้ถ้อยคำลดทอนความเป็นคน เช่น เปรียบเป็นสัตว์ สิ่งของ โรค หรือ “ระบาด/ทะลัก/ฝูง” <small style="color:var(--muted)">(คำว่า “ต่างด้าว” เฉย ๆ ไม่นับ)</small></span></label>
+      </div>
+    </div>
+
+    <div class="card">
+      <label class="check"><input type="checkbox" id="needSrc"><span>ต้องเปิดบทตรวจต้นทางจึงจะตัดสินได้แน่</span></label>
+      <label class="f" style="margin-top:8px">หมายเหตุ (ถ้ามี)</label>
+      <textarea id="note" placeholder="เหตุผลสั้น ๆ เมื่อไม่แน่ใจ · เขียน visitor ถ้าเป็นนักท่องเที่ยว"></textarea>
+    </div>
+
+    <div class="nav">
+      <button class="ghost" id="btnPrev">← ข้อก่อนหน้า</button>
+      <span class="need" id="need"></span>
+      <button class="primary" id="btnNext">บันทึกและไปข้อถัดไป <kbd style="font:12px ui-monospace,monospace;opacity:.8">Enter</kbd></button>
+    </div>
+  </section>
+
+  <section class="card" id="mapCard" hidden>
+    <h2>แผนที่งาน <span>คลิกเพื่อไปที่ข้อนั้น</span></h2>
+    <div class="map" id="map"></div>
+    <div class="legend"><span><i style="background:var(--blue)"></i>ในขอบเขต</span><span><i style="background:var(--grey)"></i>นอกขอบเขต</span><span><i style="background:var(--amber)"></i>ไม่แน่ใจ</span><span><i style="border:1px solid var(--line)"></i>ยังไม่ทำ</span></div>
+  </section>
+</main>
+
+<script>
+const ROWS = /*__DATA__*/[];
+const RETEST_BASE = /*__RETEST__*/[];
+const KEY = "th-verify-story2-solo-v1";
+const SHOW = ["id","source","date","verdict","title","claim_text","url"];
+const FRAMES = [
+  ["frame_disease_vector","พาหะหรือแหล่งโรค","วางเป็นผู้นำเชื้อหรือแหล่งระบาด"],
+  ["frame_job_competition","แย่งงาน รายได้ อาชีพ","หรือทำให้ค่าแรงเปลี่ยน"],
+  ["frame_undeserved_benefits","ได้สิทธิที่ไม่ควรได้","สัญชาติ เอกสาร สวัสดิการ หรือรัฐเอื้อเป็นพิเศษ"],
+  ["frame_security_threat","ภัยความมั่นคง","แทรกซึม ยึดพื้นที่ ภัยต่อชายแดนหรือดินแดน"],
+  ["frame_criminality","ผู้ก่ออาชญากรรม","ค้ามนุษย์ ลักลอบ ขอทาน ในฐานะกลุ่ม"],
+  ["frame_victim_exploitation","ผู้ถูกกระทำ","ถูกเอาเปรียบ ถูกหลอก ถูกละเมิดสิทธิ"],
+  ["frame_other","กรอบอื่นที่ชัด","ระบุสั้น ๆ ในช่องด้านล่าง"],
+  ["frame_none","ไม่มีกรอบข้างต้น","เช่น ประกาศระเบียบเฉย ๆ ไม่มีน้ำเสียงต่อคนกลุ่มนี้"]
+];
+const CODE = ["phase","scope","target_group"].concat(FRAMES.slice(0,7).map(f=>f[0]),["frame_other_text","frame_none","blamed_actor","victim_actor","dehumanizing_language","needs_source_check","note","coded_at"]);
+const SCOPES = [
+  ["resident_refugee_status","in","ใช่ — อยู่ ทำงาน หรือมีสถานะในไทย","แรงงาน ผู้ลี้ภัย คนไร้สัญชาติ ชาวต่างชาติที่ตั้งถิ่นฐานหรือทำธุรกิจ"],
+  ["crossborder_people_services","in","ใช่ — คนข้ามแดนหรือบริการข้ามแดน","ข้ามมารักษา เรียน ลักลอบเข้า แต่ไม่ชัดว่าอยู่ในไทย"],
+  ["out_of_scope","out","ไม่ใช่","นักท่องเที่ยว ข่าวทหาร การค้า การเมือง เหตุในต่างประเทศ"],
+  ["unclear","unsure","ตัดสินไม่ได้","ต้องเปิดบทตรวจต้นทางก่อน"]
+];
+const IN = ["resident_refugee_status","crossborder_people_services"];
+const GROUPS = [["myanmar","เมียนมา พม่า โรฮิงญา"],["cambodia","กัมพูชา เขมร"],["laos_vietnam","ลาว เวียดนาม"],["china","จีน"],["israel","อิสราเอล ยิว"],["other_foreign","สัญชาติอื่นที่ระบุชื่อ"],["generic","“ต่างด้าว/ต่างชาติ” ไม่ระบุสัญชาติ"],["stateless_ethnic","ไร้สัญชาติ ชาติพันธุ์ในไทย"],["mixed","มากกว่าหนึ่งกลุ่ม"]];
+const ACTORS = [["","— เลือก —"],["migrants","คนข้ามชาติ"],["thai_state","รัฐไทย หน่วยงาน เจ้าหน้าที่"],["employers_brokers","นายจ้าง นายหน้า"],["foreign_state","รัฐต่างประเทศ"],["thai_public","คนไทยทั่วไป"],["other","อื่น ๆ"],["none","ไม่มี"]];
+const SRC = {afnc:"ศูนย์ต่อต้านข่าวปลอม",afp:"AFP",cofact:"Cofact",thaipbs:"Thai PBS Verify",sure_share:"ชัวร์ก่อนแชร์"};
+const VERDICT = {false:"สำนักให้ผล: เท็จ",misleading:"สำนักให้ผล: บิดเบือน",altered_media:"สำนักให้ผล: สื่อดัดแปลง"};
+const MONTH = ["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."];
+const WAIT_H = 48, MIN_H = 24;
+const $ = id => document.getElementById(id);
+const BYID = Object.fromEntries(ROWS.map(r => [r.id, r]));
+const nCal = ROWS.filter(r => r.phase === "calibration").length;
+
+// state.mode: "main" = first pass, "retest" = blind second pass over a sample
+let state = {answers:{}, started:false, cur:0, cpSeen:false, firstDoneAt:null, mode:"main", retest:null};
+let canStore = true;
+try { const s = localStorage.getItem(KEY); if (s) state = Object.assign(state, JSON.parse(s)); } catch(e) { canStore = false; }
+function persist(){ if (!canStore) return; try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e) { canStore = false; $("lsWarn").hidden = false; } }
+
+const isRetest = () => state.mode === "retest";
+const hash = s => { let x = 2166136261; for (const ch of s) { x ^= ch.charCodeAt(0); x = Math.imul(x, 16777619); } return x >>> 0; };
+const LIST = () => isRetest() ? state.retest.ids.map(id => BYID[id]) : ROWS;
+const STORE = () => isRetest() ? state.retest.answers : state.answers;
+const CUR = () => isRetest() ? state.retest.cur : state.cur;
+const setCur = v => { if (isRetest()) state.retest.cur = v; else state.cur = v; };
+const now = () => new Date().toISOString();
+
+function blank(){ const a = {scope:"",target_group:"",frame_other_text:"",blamed_actor:"",victim_actor:"",dehumanizing_language:"",needs_source_check:"",note:"",coded_at:""}; FRAMES.forEach(f => a[f[0]] = ""); return a; }
+function ans(id){ const S = STORE(); return S[id] || (S[id] = blank()); }
+function missing(a){
+  if (!a.scope) return "เลือกคำตอบข้อ ①";
+  if (IN.includes(a.scope)){
+    if (!a.target_group) return "เลือกกลุ่มคนในข้อ ②";
+    if (!FRAMES.some(f => a[f[0]] === "1")) return "เลือกอย่างน้อยหนึ่งช่องในข้อ ③";
+    if (a.frame_other === "1" && !a.frame_other_text.trim()) return "ระบุกรอบอื่น";
+    if (!a.blamed_actor || !a.victim_actor) return "เลือกผู้ทำให้เกิดปัญหาและผู้เสียหาย";
+  }
+  return "";
+}
+const isDone = (id, S) => { const a = (S || STORE())[id]; return !!a && !missing(a); };
+const calDone = () => ROWS.filter(r => r.phase === "calibration").every(r => isDone(r.id, state.answers));
+const mainDone = () => ROWS.every(r => isDone(r.id, state.answers));
+const retestDone = () => !!state.retest && state.retest.ids.every(id => isDone(id, state.retest.answers));
+let view = "";   // "done" is shown once pass 1 is complete until a row is opened from the map
+
+function show(which){ ["guide","gate","done","final","work"].forEach(s => $(s).hidden = s !== which); $("mapCard").hidden = which === "guide"; window.scrollTo(0,0); }
+function route(){
+  if (!state.started) return show("guide");
+  if (isRetest()) { if (retestDone() && view !== "work") { header(); drawMap(); return show("final"); } render(); return show("work"); }
+  if (!state.cpSeen && calDone() && !mainDone() && state.cur >= nCal) { header(); drawMap(); return show("gate"); }
+  if (mainDone() && view !== "work") { fillDone(); header(); drawMap(); return show("done"); }
+  render(); show("work");
+}
+function header(){
+  const L = LIST(), done = L.filter(r => isDone(r.id)).length;
+  $("bar").style.width = (done / L.length * 100) + "%";
+  $("count").textContent = isRetest() ? `ตรวจซ้ำ ${done} / ${L.length}` : `${done} / ${L.length}`;
+}
+function drawMap(){
+  const m = $("map"); m.innerHTML = ""; const L = LIST(), S = STORE();
+  L.forEach((r,i) => {
+    const b = document.createElement("b"), a = S[r.id];
+    if (isDone(r.id)) b.className = IN.includes(a.scope) ? "in" : a.scope === "unclear" ? "unsure" : "out";
+    if (i === CUR()) b.classList.add("cur");
+    b.title = `ข้อ ${i+1}`;
+    b.onclick = () => { setCur(i); view = "work"; persist(); route(); };
+    m.appendChild(b);
+    if (!isRetest() && i === nCal - 1) { const gap = document.createElement("span"); gap.style.cssText = "flex-basis:100%;height:6px"; m.appendChild(gap); }
+  });
+}
+function thaiDate(d){ const p = (d||"").split("-"); return p.length === 3 ? `${+p[2]} ${MONTH[+p[1]-1]} ${+p[0]+543}` : d; }
+
+function render(){
+  const L = LIST(), i = CUR(), r = L[i], a = ans(r.id);
+  $("mPos").textContent = `ข้อ ${i+1} จาก ${L.length}`;
+  const ph = isRetest() ? "ตรวจซ้ำ" : r.phase === "calibration" ? "อุ่นเครื่อง" : "ชุดหลัก";
+  $("mPhase").textContent = ph; $("mPhase").className = "tag" + (ph !== "ชุดหลัก" ? " cal" : "");
+  $("mSrc").textContent = SRC[r.source] || r.source; $("mDate").textContent = thaiDate(r.date); $("mVerdict").textContent = VERDICT[r.verdict] || "";
+  $("claim").textContent = r.claim_text || r.title;
+  $("titleLine").innerHTML = ""; if (r.title && r.title !== r.claim_text) { const b = document.createElement("b"); b.textContent = "ชื่อข่าวของสำนัก: "; $("titleLine").append(b, r.title); }
+  $("link").href = r.url; $("link").hidden = !r.url;
+
+  const so = $("scopeOpts"); so.innerHTML = "";
+  SCOPES.forEach((s,k) => { const b = document.createElement("button"); b.className = `opt ${s[1]}` + (a.scope === s[0] ? " on" : "");
+    b.innerHTML = `<kbd>${k+1}</kbd>${s[2]}<small>${s[3]}</small>`; b.onclick = () => setScope(s[0]); so.appendChild(b); });
+  const inS = IN.includes(a.scope); $("inScope").hidden = !inS;
+  if (inS){
+    const go = $("groupOpts"); go.innerHTML = "";
+    GROUPS.forEach(g => { const c = document.createElement("button"); c.className = "chip" + (a.target_group === g[0] ? " on" : ""); c.textContent = g[1];
+      c.onclick = () => { a.target_group = g[0]; changed(); }; go.appendChild(c); });
+    const fo = $("frameOpts"); fo.innerHTML = "";
+    FRAMES.forEach(f => { const b = document.createElement("button"); b.className = "opt" + (a[f[0]] === "1" ? " on" : "");
+      b.innerHTML = `${f[1]}<small>${f[2]}</small>`; b.onclick = () => toggleFrame(f[0]); fo.appendChild(b); });
+    $("otherWrap").hidden = a.frame_other !== "1"; $("otherText").value = a.frame_other_text;
+    [["blamed","blamed_actor"],["victim","victim_actor"]].forEach(([el,key]) => { const s = $(el); s.innerHTML = "";
+      ACTORS.forEach(o => { const op = document.createElement("option"); op.value = o[0]; op.textContent = o[1]; s.appendChild(op); }); s.value = a[key]; });
+    $("dehum").checked = a.dehumanizing_language === "1";
+  }
+  $("needSrc").checked = a.needs_source_check === "1";
+  $("note").value = a.note;
+  $("btnPrev").disabled = i === 0;
+  const m = missing(a); $("need").textContent = m; $("btnNext").disabled = !!m;
+  header(); drawMap();
+}
+function touch(a){ a.coded_at = now(); }
+function changed(){ touch(ans(LIST()[CUR()].id)); persist(); render(); }
+function setScope(v){
+  const a = ans(LIST()[CUR()].id); a.scope = v;
+  if (!IN.includes(v)) { a.target_group = ""; FRAMES.forEach(f => a[f[0]] = ""); a.frame_other_text = ""; a.blamed_actor = ""; a.victim_actor = ""; a.dehumanizing_language = ""; }
+  if (v === "unclear") a.needs_source_check = "1";
+  changed();
+}
+function toggleFrame(k){
+  const a = ans(LIST()[CUR()].id); a[k] = a[k] === "1" ? "" : "1";
+  if (k === "frame_none" && a[k] === "1") { FRAMES.forEach(f => { if (f[0] !== "frame_none") a[f[0]] = ""; }); a.frame_other_text = ""; }
+  if (k !== "frame_none" && a[k] === "1") a.frame_none = "";
+  if (a.frame_other !== "1") a.frame_other_text = "";
+  changed();
+}
+function next(){
+  const L = LIST(), i = CUR();
+  if (missing(ans(L[i].id))) return;
+  persist();
+  if (isRetest()) {
+    if (retestDone()) { state.retest.doneAt = state.retest.doneAt || now(); view = ""; persist(); return route(); }
+  } else {
+    if (mainDone()) { state.firstDoneAt = state.firstDoneAt || now(); view = ""; persist(); return route(); }
+    if (!state.cpSeen && calDone()) { let j0 = L.findIndex((r,k) => k > i && !isDone(r.id)); if (j0 < 0) j0 = L.findIndex(r => !isDone(r.id)); state.cur = j0 < 0 ? i : j0; persist(); return route(); }
+  }
+  let j = L.findIndex((r,k) => k > i && !isDone(r.id));
+  if (j < 0) j = L.findIndex(r => !isDone(r.id));
+  if (j < 0) j = Math.min(i + 1, L.length - 1);
+  setCur(j); view = "work"; persist(); route();
+}
+
+// ---- retest
+function retestIds(){
+  const set = new Set(RETEST_BASE);
+  ROWS.forEach(r => { const a = state.answers[r.id]; if (a && a.scope === "unclear") set.add(r.id); });   // every row you called unclear is re-coded
+  return [...set].filter(id => BYID[id]).sort((a,b) => hash(a + "retest") - hash(b + "retest"));
+}
+function hoursSince(iso){ return iso ? (Date.now() - new Date(iso).getTime()) / 36e5 : 0; }
+function fillDone(){
+  $("rtN").textContent = retestIds().length;
+  const h = hoursSince(state.firstDoneAt);
+  $("elapsed").textContent = h >= WAIT_H ? "ครบเวลารอแล้ว" : `ผ่านมา ${Math.floor(h)} ชั่วโมง แนะนำรออีกอย่างน้อย ${Math.ceil(WAIT_H - h)} ชั่วโมง`;
+}
+function startRetest(){
+  if (hoursSince(state.firstDoneAt) < MIN_H && !confirm(`ผ่านมาไม่ถึง ${MIN_H} ชั่วโมงหลังทำรอบแรกเสร็จ คุณอาจจำคำตอบเดิมได้ ผลวัดความนิ่งจะดูดีเกินจริง ยืนยันว่าจะเริ่มเลยหรือไม่`)) return;
+  state.retest = {ids: retestIds(), answers:{}, cur:0, startedAt: now(), doneAt: null};
+  state.mode = "retest"; view = "work"; persist(); route();
+}
+
+// ---- CSV out / in (same columns as the original sheet + coded_at, so the scorers read it unchanged)
+const esc = v => { v = v == null ? "" : String(v); return /[",\n\r]/.test(v) ? '"' + v.replace(/"/g,'""') + '"' : v; };
+function toCSV(list, store, phaseOf){
+  const lines = [SHOW.concat(CODE).join(",")];
+  list.forEach(r => { const a = store[r.id] || blank();
+    lines.push(SHOW.map(k => esc(r[k])).concat(CODE.map(k => esc(k === "phase" ? phaseOf(r) : a[k]))).join(",")); });
+  return "﻿" + lines.join("\r\n") + "\r\n";
+}
+const mainCSV = () => toCSV(ROWS, state.answers, r => r.phase);
+const retestCSV = () => toCSV(state.retest ? state.retest.ids.map(id => BYID[id]) : [], state.retest ? state.retest.answers : {}, () => "retest");
+function stamp(){ const d = new Date(); return d.getFullYear() + String(d.getMonth()+1).padStart(2,"0") + String(d.getDate()).padStart(2,"0") + "-" + String(d.getHours()).padStart(2,"0") + String(d.getMinutes()).padStart(2,"0"); }
+function save(name, text){ const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([text], {type:"text/csv;charset=utf-8"})); a.download = name; document.body.appendChild(a); a.click(); a.remove(); }
+function exportAll(){
+  save(`coder_main_${ROWS.filter(r => isDone(r.id, state.answers)).length}of${ROWS.length}_${stamp()}.csv`, mainCSV());
+  if (state.retest) setTimeout(() => save(`coder_retest_${state.retest.ids.filter(id => isDone(id, state.retest.answers)).length}of${state.retest.ids.length}_${stamp()}.csv`, retestCSV()), 500);
+}
+function parseCSV(t){
+  const rows = []; let row = [], cell = "", q = false; t = t.replace(/^﻿/, "");
+  for (let i = 0; i < t.length; i++){ const c = t[i];
+    if (q) { if (c === '"') { if (t[i+1] === '"') { cell += '"'; i++; } else q = false; } else cell += c; }
+    else if (c === '"') q = true; else if (c === ",") { row.push(cell); cell = ""; }
+    else if (c === "\n") { row.push(cell); rows.push(row); row = []; cell = ""; } else if (c !== "\r") cell += c; }
+  if (cell !== "" || row.length) { row.push(cell); rows.push(row); }
+  return rows;
+}
+function importCSV(text){
+  const rows = parseCSV(text), head = rows[0] || [], ix = Object.fromEntries(head.map((h,i) => [h,i]));
+  if (!("id" in ix) || !("scope" in ix)) return alert("ไฟล์นี้ไม่ใช่ไฟล์ที่ส่งออกจากหน้านี้");
+  const body = rows.slice(1).filter(r => r.length > 1 && BYID[r[ix.id]]);
+  const isRt = body.some(r => r[ix.phase] === "retest"); const store = {}; let n = 0;
+  body.forEach(r => { const a = blank(); Object.keys(a).forEach(k => { if (k in ix) a[k] = r[ix[k]] || ""; }); if (a.scope) { store[r[ix.id]] = a; n++; } });
+  if (isRt) {
+    const ids = body.map(r => r[ix.id]); const first = ids.findIndex(id => !isDone(id, store));
+    state.retest = {ids, answers: store, cur: first < 0 ? 0 : first, startedAt: now(), doneAt: null}; state.mode = "retest";
+  } else {
+    state.answers = store; state.mode = "main"; state.retest = null;
+    state.cpSeen = ROWS.some(r => r.phase === "main" && isDone(r.id, store));
+    const j = ROWS.findIndex(r => !isDone(r.id, store)); state.cur = j < 0 ? 0 : j;
+    if (mainDone()) state.firstDoneAt = Object.values(store).map(a => a.coded_at).filter(Boolean).sort().pop() || now();
+  }
+  state.started = true; view = ""; persist(); alert(`นำเข้าคำตอบ ${n} ข้อ`); route();
+}
+
+// ---- wiring
+$("gTotal").textContent = ROWS.length; $("gTotal2").textContent = ROWS.length;
+$("btnGuide").onclick = () => { if ($("guide").hidden) { $("btnStart").textContent = state.started ? "กลับไปทำต่อ" : "เริ่มทำ"; show("guide"); } else if (state.started) route(); };
+$("btnStart").onclick = () => { state.started = true; persist(); route(); };
+["btnExport","btnExport2","btnExport3","btnExport4"].forEach(b => $(b).onclick = exportAll);
+$("btnGo").onclick = () => { state.cpSeen = true; view = "work"; persist(); route(); };
+$("btnRetest").onclick = startRetest;
+$("btnPrev").onclick = () => { if (CUR() > 0) { setCur(CUR() - 1); persist(); render(); window.scrollTo(0,0); } };
+$("btnNext").onclick = next;
+$("otherText").oninput = e => { const a = ans(LIST()[CUR()].id); a.frame_other_text = e.target.value; touch(a); persist(); const m = missing(a); $("need").textContent = m; $("btnNext").disabled = !!m; };
+$("blamed").onchange = e => { ans(LIST()[CUR()].id).blamed_actor = e.target.value; changed(); };
+$("victim").onchange = e => { ans(LIST()[CUR()].id).victim_actor = e.target.value; changed(); };
+$("dehum").onchange = e => { const a = ans(LIST()[CUR()].id); a.dehumanizing_language = e.target.checked ? "1" : ""; touch(a); persist(); };
+$("needSrc").onchange = e => { const a = ans(LIST()[CUR()].id); a.needs_source_check = e.target.checked ? "1" : ""; touch(a); persist(); };
+$("note").oninput = e => { const a = ans(LIST()[CUR()].id); a.note = e.target.value; touch(a); persist(); };
+$("importFile").onchange = e => { const f = e.target.files[0]; if (!f) return; const rd = new FileReader(); rd.onload = () => importCSV(rd.result); rd.readAsText(f, "utf-8"); e.target.value = ""; };
+document.addEventListener("keydown", e => {
+  if ($("work").hidden || /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
+  if (["1","2","3","4"].includes(e.key)) setScope(SCOPES[+e.key-1][0]);
+  else if (e.key === "Enter") { e.preventDefault(); next(); }
+});
+window.__app = {mainCSV, retestCSV, state: () => state, ROWS, retestIds, startRetest};   // used only to check the export
+header(); route();
+</script>
+</body>
+</html>

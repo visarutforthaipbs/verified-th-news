@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>แผนที่กลุ่มข่าวลวง 14,429 บันทึก</title>
+<style>
+:root{--page:#f9f9f7;--surface:#fcfcfb;--ink:#0b0b0b;--ink2:#52514e;--muted:#6f6d67;--grid:#e1e0d9;--ring:rgba(11,11,11,.12);--wash:#efeee9;--s1:#2a78d6;--s2:#eb6834;--s3:#1baf7a;--dot:#9a988f;--noise:#cfcdc4;--accent:#2a78d6}
+@media (prefers-color-scheme:dark){:root:where(:not([data-theme="light"])){--page:#0d0d0d;--surface:#1a1a19;--ink:#fff;--ink2:#c3c2b7;--muted:#a09e96;--grid:#2c2c2a;--ring:rgba(255,255,255,.14);--wash:#232321;--s1:#3987e5;--s2:#d95926;--s3:#199e70;--dot:#74726b;--noise:#3a3a37;--accent:#6da7ec}}
+:root[data-theme="dark"]{--page:#0d0d0d;--surface:#1a1a19;--ink:#fff;--ink2:#c3c2b7;--muted:#a09e96;--grid:#2c2c2a;--ring:rgba(255,255,255,.14);--wash:#232321;--s1:#3987e5;--s2:#d95926;--s3:#199e70;--dot:#74726b;--noise:#3a3a37;--accent:#6da7ec}
+*{box-sizing:border-box}
+body{margin:0;background:var(--page);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI","Thonburi","Sarabun","Noto Sans Thai",sans-serif}
+.wrap{max-width:1280px;margin:0 auto;padding:14px}
+h1{font-size:19px;margin:0 0 2px;font-weight:650}.sub{margin:0 0 10px;color:var(--ink2);font-size:13.5px}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:12px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+.stage{position:relative;background:var(--surface);border:1px solid var(--ring);border-radius:12px;overflow:hidden;height:min(74vh,720px);min-height:380px}
+canvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab}canvas.drag{cursor:grabbing}
+.zoom{position:absolute;right:10px;top:10px;display:flex;flex-direction:column;gap:6px}
+.zoom button{width:34px;height:34px;font:inherit;font-size:18px;line-height:1;background:var(--surface);color:var(--ink2);border:1px solid var(--ring);border-radius:8px;cursor:pointer}
+.zoom button:hover{background:var(--wash)}
+.axis{position:absolute;left:10px;bottom:8px;font-size:11.5px;color:var(--muted);background:color-mix(in srgb,var(--surface) 80%,transparent);padding:2px 6px;border-radius:6px}
+.panel>*{flex-shrink:0}.panel{background:var(--surface);border:1px solid var(--ring);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px;max-height:min(74vh,720px);overflow:auto}
+.seg{display:flex;border:1px solid var(--ring);border-radius:10px;overflow:hidden}
+.seg button{flex:1;font:inherit;font-size:13px;background:transparent;color:var(--ink2);border:0;padding:6px 4px;cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--accent);color:#fff}
+input[type=search]{width:100%;font:inherit;font-size:14px;color:var(--ink);background:var(--surface);border:1px solid var(--ring);border-radius:8px;padding:6px 10px}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12.5px;color:var(--ink2);align-items:center}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:0}
+.ramp{display:inline-block;height:10px;width:120px;border-radius:5px;vertical-align:-1px}
+.card{background:var(--wash);border-radius:10px;padding:10px;font-size:13.5px}
+.card h2{font-size:14.5px;margin:0 0 4px;font-weight:650}.card .k{color:var(--ink2);font-size:12.5px;word-break:break-word}
+.bars{display:flex;align-items:flex-end;gap:3px;height:44px;margin:8px 0 2px}.bars b{flex:1;background:var(--accent);border-radius:2px 2px 0 0;min-height:1px}
+.bl{display:flex;gap:3px;font-size:10px;color:var(--muted)}.bl span{flex:1;text-align:center}
+.tbl{width:100%;border-collapse:collapse;font-size:12.5px}.tbl th,.tbl td{padding:4px 6px;border-bottom:1px solid var(--grid);text-align:left;vertical-align:top}
+.tbl th{position:sticky;top:0;background:var(--surface);color:var(--ink2)}.tbl td.r,.tbl th.r{text-align:right;white-space:nowrap}
+.tbl tr.row{cursor:pointer}.tbl tr.row:hover{background:var(--wash)}.tbl tr.sel{background:var(--wash);outline:2px solid var(--accent);outline-offset:-2px}
+.tbl .nm{color:var(--ink)}.tbl .kw{color:var(--muted);font-size:11.5px}
+#tip{position:fixed;z-index:6;pointer-events:none;max-width:360px;background:var(--surface);color:var(--ink);border:1px solid var(--ring);border-radius:8px;padding:8px 10px;font-size:13px;box-shadow:0 4px 18px rgba(0,0,0,.2);opacity:0}
+#tip .t{font-weight:650;margin-bottom:3px;word-break:break-word}#tip .m{color:var(--ink2);font-size:12px}
+.pin a{color:var(--accent)}
+.note{margin:10px 0 0;color:var(--muted);font-size:12.5px;line-height:1.55}
+.pill{font-size:12px;color:var(--ink2)}
+button.t2{font:inherit;font-size:12.5px;color:var(--ink2);background:transparent;border:1px solid var(--ring);border-radius:8px;padding:3px 9px;cursor:pointer}button.t2:hover{background:var(--wash)}
+button:focus-visible,input:focus-visible,a:focus-visible,tr:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.hidden{display:none!important}
+.expsub,.mlegend{display:none}
+.exportmap .panel,.exportmap .note,.exportmap .sub,.exportmap .zoom{display:none}
+.exportmap .wrap{padding:16px;max-width:1100px}.exportmap .layout{grid-template-columns:1fr}.exportmap .stage{height:680px}
+.exportmap .expsub{display:block;margin:0 0 10px;color:var(--ink2);font-size:13.5px}
+.exportmap .mlegend{display:flex;position:absolute;left:12px;top:10px;gap:4px 16px;flex-wrap:wrap;font-size:13px;color:var(--ink2);background:color-mix(in srgb,var(--surface) 85%,transparent);padding:4px 8px;border-radius:8px}
+.mlegend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px}
+.exportmap .src{position:absolute;right:12px;bottom:8px;font-size:11.5px;color:var(--muted)}
+.src{display:none}.exportmap .src{display:block}
+</style></head><body><div class="wrap">
+<h1>แผนที่กลุ่มข่าวลวง: 14,429 บทตรวจ ใน 64 กลุ่มที่โมเดลหาเจอ</h1>
+<p class="sub">ทุกจุด = ข้อความข้ออ้างที่ไม่ซ้ำกัน 1 ข้อความ (13,377 ข้อความ) · จุดที่อยู่ใกล้กัน = ความหมายใกล้กัน · ลากเพื่อเลื่อน ล้อเมาส์เพื่อซูม ชี้ที่จุดเพื่ออ่านข้อความ</p>
+<p class="expsub">แต่ละจุด = ข้อความข้ออ้างที่ไม่ซ้ำกัน 1 ข้อความ · สี = สำนักที่ตรวจข้อความนั้นมากที่สุด · จุดที่อยู่ใกล้กัน = ความหมายใกล้กัน · ป้ายชื่อคือชื่อร่างของผู้เขียนสำหรับ 8 กลุ่มที่ใช้ในเรื่อง กลุ่มอื่นไม่ติดป้าย</p>
+<div class="layout">
+ <div class="stage" id="stage">
+  <div class="mlegend" id="mlegend"></div><div class="src">ที่มา: ผลจัดกลุ่ม BERTopic บนบทตรวจ 14,429 รายการ (สแนปช็อต 2 ก.ย. 2569) · ตำแหน่ง UMAP 2 มิติ แกนไม่มีหน่วย</div><canvas id="cv" aria-label="แผนที่จุดของข้อความข้ออ้าง จัดตามความหมาย" role="img"></canvas>
+  <div class="zoom"><button id="zi" aria-label="ซูมเข้า">+</button><button id="zo" aria-label="ซูมออก">−</button><button id="zr" aria-label="กลับมุมมองทั้งหมด" title="กลับมุมมองทั้งหมด">⌂</button></div>
+  <div class="axis">แกนไม่มีหน่วย · ระยะระหว่างเกาะที่อยู่ไกลกันไม่ใช่ตัวเลข</div></div>
+ <div class="panel">
+  <div class="seg" role="group" aria-label="โหมดสี"><button id="mSrc" aria-pressed="true">แยกตามสำนัก</button><button id="mYear" aria-pressed="false">แยกตามปี</button><button id="mNone" aria-pressed="false">เทาทั้งหมด</button></div>
+  <input type="search" id="q" placeholder="ค้นข้อความ เช่น ใบขับขี่, กัมพูชา, วัคซีน" aria-label="ค้นข้อความ">
+  <div class="pill" id="qn"></div>
+  <div class="legend" id="legend"></div>
+  <div class="card hidden" id="detail"></div>
+  <div class="card pin hidden" id="pinned"></div>
+  <div><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><b style="font-size:13.5px">กลุ่มทั้งหมด (กดเพื่อเน้นและซูม)</b><button class="t2" id="clr">ล้างการเลือก</button></div>
+   <table class="tbl" id="tbl"><thead><tr><th>กลุ่ม</th><th class="r">บทตรวจ</th></tr></thead><tbody></tbody></table></div>
+ </div>
+</div>
+<p class="note">ตำแหน่งบนแผนที่คำนวณแยกเพื่อแสดงผลเท่านั้น (UMAP 2 มิติ) ส่วนการจัดกลุ่มทำในอีกมิติหนึ่ง จึงมีบางกลุ่มที่เห็นจุดกระจาย หรือสองกลุ่มที่ดูติดกัน · ชื่อกลุ่มเป็น <b>คำสำคัญจากเครื่อง</b> เฉพาะ 8 กลุ่มที่ใช้ในเรื่องมีชื่อร่างของผู้เขียน และผลอ่านตัวอย่างโดยบรรณาธิการกับ AI (ตรง/ไม่ตรง) · “ไม่เข้ากลุ่ม” (-1) คือ 16.1% ของบันทึกที่โมเดลจัดเข้ากลุ่มใดไม่ได้ · จำนวนกลุ่มขึ้นกับการตั้งค่า (เกณฑ์ขนาดกลุ่มขั้นต่ำ 15 / 50 / 80 ได้ 161 / 43 / 33 กลุ่ม) 64 ไม่ได้แปลว่าข่าวลวงไทยมี 64 ประเภท · โหมดสีแยกตามสำนักรวม AFP, Cofact และ Thai PBS Verify เป็นสีเดียว และใช้สำนักที่ตรวจข้อความนั้นมากที่สุด · โหมดปีใช้ปีที่พบข้อความครั้งแรก<br>ที่มา: runs/20260908_bertopic_v001 (assignments.csv, topics.csv) · ตำแหน่งจาก runs/20261004_viz_v001/umap2d.npy · สแนปช็อตข้อมูล 2 ก.ย. 2569</p>
+</div><div id="tip" role="status"></div>
+<script>
+const D=__DATA__, P=D.pts, T=D.topics;
+const $=id=>document.getElementById(id), fmt=n=>n.toLocaleString("en-US");
+try{const q=new URLSearchParams(location.search).get("theme");if(q==="light"||q==="dark")document.documentElement.dataset.theme=q}catch(e){}
+const EXPORT_MAP=(()=>{try{const sp=new URLSearchParams(location.search);if(sp.get("export")==="map"){document.documentElement.classList.add("exportmap");return true}}catch(e){}return false})();
+const X=0,Y=1,TOP=2,SRC=3,YR=4,NREC=5,TXT=6,ID=7,URL_=8,YLAST=10,MIX=11;
+const SRCNAME=Object.fromEntries(D.src.map(s=>[D.src.indexOf(s),s.label])), SRCKEY=D.src.map(s=>s.key);
+const tById=Object.fromEntries(T.map(t=>[t.id,t]));
+const nameOf=t=>t.draft||("กลุ่ม "+t.id+" · "+t.kw.split("|").slice(0,3).map(s=>s.trim()).join(" · "));
+let mode="src",sel=null,pinned=-1,query="",hover=-1,view={s:1,tx:0,ty:0};
+// bounds
+let minX=1e9,maxX=-1e9,minY=1e9,maxY=-1e9;P.forEach(p=>{minX=Math.min(minX,p[X]);maxX=Math.max(maxX,p[X]);minY=Math.min(minY,p[Y]);maxY=Math.max(maxY,p[Y])});
+const cv=$("cv"),ctx=cv.getContext("2d");let W=0,H=0,DPR=1,base={s:1,ox:0,oy:0};
+function fit(){const r=$("stage").getBoundingClientRect();DPR=Math.min(2,window.devicePixelRatio||1);W=r.width;H=r.height;cv.width=W*DPR;cv.height=H*DPR;
+ const pad=28,sx=(W-2*pad)/(maxX-minX),sy=(H-2*pad)/(maxY-minY);base.s=Math.min(sx,sy);base.ox=(W-(maxX-minX)*base.s)/2-minX*base.s;base.oy=(H-(maxY-minY)*base.s)/2-minY*base.s}
+const sx=x=>(x*base.s+base.ox)*view.s+view.tx, sy=y=>(y*base.s+base.oy)*view.s+view.ty;
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const RAMP=["#86b6ef","#6da7ec","#5598e7","#3987e5","#2a78d6","#256abf","#1c5cab","#184f95","#104281"];
+const dark=()=>{const t=document.documentElement.dataset.theme;return t?t==="dark":matchMedia("(prefers-color-scheme:dark)").matches};
+const yearColor=y=>{let i=Math.round((y-2015)/11*8);i=Math.max(0,Math.min(8,i));if(dark())i=8-i;return RAMP[i]};
+// grid index for hover (data coords)
+const G=48,gx=(maxX-minX)/G+1e-9,gy=(maxY-minY)/G+1e-9,grid=new Map();
+P.forEach((p,i)=>{const k=Math.floor((p[X]-minX)/gx)+","+Math.floor((p[Y]-minY)/gy);(grid.get(k)||grid.set(k,[]).get(k)).push(i)});
+// medians for labels
+const med={};{const by={};P.forEach(p=>{(by[p[TOP]]||(by[p[TOP]]=[])).push(p)});for(const t in by){const xs=by[t].map(p=>p[X]).sort((a,b)=>a-b),ys=by[t].map(p=>p[Y]).sort((a,b)=>a-b);med[t]=[xs[xs.length>>1],ys[ys.length>>1],xs[Math.floor(xs.length*.05)],xs[Math.floor(xs.length*.95)],ys[Math.floor(ys.length*.05)],ys[Math.floor(ys.length*.95)]]}}
+function matches(i){return !query||P[i][TXT].toLowerCase().includes(query)}
+function dim(i){return (sel!==null&&P[i][TOP]!==sel)||!matches(i)}
+function color(i){const p=P[i];if(sel!==null&&mode==="none"&&p[TOP]===sel)return css("--accent");if(p[TOP]===-1)return css("--noise");
+ if(mode==="src")return p[SRC]===0?css("--s1"):p[SRC]===1?css("--s2"):css("--s3");if(mode==="year")return yearColor(p[YR]);return css("--dot")}
+function draw(){ctx.setTransform(DPR,0,0,DPR,0,0);ctx.clearRect(0,0,W,H);
+ const r=Math.max(1.5,Math.min(4.5,1.5+(view.s-1)*0.35)),buckets=new Map(),dimmed=[];
+ for(let i=0;i<P.length;i++){const x=sx(P[i][X]),y=sy(P[i][Y]);if(x<-6||y<-6||x>W+6||y>H+6)continue;
+  if(dim(i)){dimmed.push(x,y);continue}const c=color(i);let b=buckets.get(c);if(!b)buckets.set(c,b=[]);b.push(x,y)}
+ ctx.globalAlpha=sel!==null||query?0.16:1;ctx.fillStyle=css("--dot");
+ // dimmed points drawn first, in muted gray
+ ctx.beginPath();for(let k=0;k<dimmed.length;k+=2){ctx.moveTo(dimmed[k]+r,dimmed[k+1]);ctx.arc(dimmed[k],dimmed[k+1],r,0,6.283)}ctx.fill();
+ ctx.globalAlpha=0.9;for(const [c,a] of buckets){ctx.fillStyle=c;ctx.beginPath();for(let k=0;k<a.length;k+=2){ctx.moveTo(a[k]+r,a[k+1]);ctx.arc(a[k],a[k+1],r,0,6.283)}ctx.fill()}
+ ctx.globalAlpha=1;labels();
+ if(hover>=0){const p=P[hover];ctx.beginPath();ctx.arc(sx(p[X]),sy(p[Y]),r+3,0,6.283);ctx.strokeStyle=css("--ink");ctx.lineWidth=2;ctx.stroke()}
+ if(pinned>=0){const p=P[pinned];ctx.beginPath();ctx.arc(sx(p[X]),sy(p[Y]),r+5,0,6.283);ctx.strokeStyle=css("--accent");ctx.lineWidth=2.5;ctx.stroke()}}
+function labels(){const placed=[],surf=css("--surface"),ink=css("--ink");ctx.font=(EXPORT_MAP?"700 15px":"600 12.5px")+" system-ui,'Thonburi','Sarabun',sans-serif";ctx.textBaseline="middle";ctx.lineJoin="round";
+ const cand=EXPORT_MAP?T.filter(t=>t.draft).sort((a,b)=>b.records-a.records):T.filter(t=>t.id!==-1&&(t.records>=170||t.id===sel||(t.draft&&view.s>1.6)||view.s>3.2)).sort((a,b)=>(b.id===sel)-(a.id===sel)||b.records-a.records);
+ for(const t of cand){const m=med[t.id];if(!m)continue;const x=sx(m[0]),yy=sy(m[1]);if(x<0||yy<0||x>W||yy>H)continue;
+  const txt=t.draft?t.draft:("กลุ่ม "+t.id+" · "+t.kw.split("|").slice(0,2).map(s=>s.trim()).join(" · "));const w=ctx.measureText(txt).width+8,h=EXPORT_MAP?22:18;
+  const offs=EXPORT_MAP?[0,-26,26,-52,52,-78,78]:[0];let done=false;
+  for(const o of offs){const y=yy+o,box=[x-w/2,y-h/2,x+w/2,y+h/2];
+   if(!EXPORT_MAP&&t.id!==sel&&placed.some(b=>!(box[2]<b[0]||box[0]>b[2]||box[3]<b[1]||box[1]>b[3])))break;
+   if(EXPORT_MAP&&(placed.some(b=>!(box[2]<b[0]||box[0]>b[2]||box[3]<b[1]||box[1]>b[3]))||box[0]<2||box[2]>W-2))continue;
+   placed.push(box);ctx.strokeStyle=surf;ctx.lineWidth=5;ctx.strokeText(txt,x-w/2+4,y);ctx.fillStyle=ink;ctx.fillText(txt,x-w/2+4,y);
+   if(EXPORT_MAP&&o!==0){ctx.beginPath();ctx.moveTo(x,yy);ctx.lineTo(x,y+(o>0?-h/2:h/2));ctx.strokeStyle=ink;ctx.lineWidth=1;ctx.stroke()}
+   done=true;break}}}
+// hover
+function nearest(mx,my){const dx=(mx-view.tx)/view.s-base.ox,dy=(my-view.ty)/view.s-base.oy,x=dx/base.s,y=dy/base.s,rad=11/(base.s*view.s);let best=-1,bd=rad*rad;
+ const gi=Math.floor((x-minX)/gx),gj=Math.floor((y-minY)/gy),span=Math.ceil(rad/Math.min(gx,gy));
+ for(let a=gi-span;a<=gi+span;a++)for(let b=gj-span;b<=gj+span;b++){const l=grid.get(a+","+b);if(!l)continue;for(const i of l){if(dim(i)&&(sel!==null||query))continue;const ddx=P[i][X]-x,ddy=P[i][Y]-y,d=ddx*ddx+ddy*ddy;if(d<bd){bd=d;best=i}}}return best}
+const tip=$("tip");
+function showTip(i,ev){const p=P[i],t=tById[p[TOP]];tip.replaceChildren();const a=document.createElement("div");a.className="t";a.textContent=p[TXT];
+ const b=document.createElement("div");b.className="m";b.textContent=(p[TOP]===-1?"ไม่เข้ากลุ่ม":nameOf(t));
+ const c=document.createElement("div");c.className="m";const srcs=p[MIX].split("|").map(s=>{const[k,n]=s.split(":");return (D.src.find(x=>x.key===k)||{label:k}).label+" "+n}).join(" · ");
+ c.textContent=`พบ ${p[NREC]} บทตรวจ · ปี ${p[YR]+543}${p[YLAST]!==p[YR]?"–"+(p[YLAST]+543):""} · ${srcs}`;tip.append(a,b,c);
+ tip.style.opacity=1;let x=ev.clientX+14,y=ev.clientY+14;const r=tip.getBoundingClientRect();if(x+r.width>innerWidth-8)x=ev.clientX-r.width-14;if(y+r.height>innerHeight-8)y=ev.clientY-r.height-14;tip.style.left=x+"px";tip.style.top=y+"px"}
+let drag=null,moved=false;
+cv.addEventListener("pointerdown",e=>{drag={x:e.clientX,y:e.clientY,tx:view.tx,ty:view.ty};moved=false;try{cv.setPointerCapture(e.pointerId)}catch(_){}cv.classList.add("drag")});
+cv.addEventListener("pointercancel",()=>{drag=null;cv.classList.remove("drag")});
+cv.addEventListener("pointermove",e=>{if(drag){const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(Math.abs(dx)+Math.abs(dy)>3)moved=true;view.tx=drag.tx+dx;view.ty=drag.ty+dy;tip.style.opacity=0;draw();return}
+ const r=cv.getBoundingClientRect(),i=nearest(e.clientX-r.left,e.clientY-r.top);if(i!==hover){hover=i;draw()}if(i>=0)showTip(i,e);else tip.style.opacity=0});
+cv.addEventListener("pointerup",e=>{cv.classList.remove("drag");if(drag&&!moved){const r=cv.getBoundingClientRect(),i=nearest(e.clientX-r.left,e.clientY-r.top);pinned=i;pin();draw()}drag=null});
+cv.addEventListener("pointerleave",()=>{hover=-1;tip.style.opacity=0;draw()});
+function zoomAt(f,cx,cy){const ns=Math.max(1,Math.min(60,view.s*f));f=ns/view.s;view.tx=cx-(cx-view.tx)*f;view.ty=cy-(cy-view.ty)*f;view.s=ns;if(ns===1){view.tx=0;view.ty=0}draw()}
+cv.addEventListener("wheel",e=>{e.preventDefault();const r=cv.getBoundingClientRect();zoomAt(e.deltaY<0?1.25:0.8,e.clientX-r.left,e.clientY-r.top)},{passive:false});
+cv.addEventListener("dblclick",e=>{const r=cv.getBoundingClientRect();zoomAt(2,e.clientX-r.left,e.clientY-r.top)});
+$("zi").onclick=()=>zoomAt(1.5,W/2,H/2);$("zo").onclick=()=>zoomAt(1/1.5,W/2,H/2);$("zr").onclick=()=>{view={s:1,tx:0,ty:0};draw()};
+function focusTopic(id){const m=med[id];if(!m)return;const bx=sx(m[2]),ex=sx(m[3]),by=sy(m[5]),ey=sy(m[4]);const w=Math.max(20,Math.abs(ex-bx)),h=Math.max(20,Math.abs(ey-by));
+ const f=Math.min(8,Math.max(1,0.62*Math.min(W/w,H/h)));const cx=sx(m[0]),cy=sy(m[0+1]);const ns=Math.min(60,view.s*f);const ff=ns/view.s;
+ view.tx=W/2-(cx-view.tx)*ff;view.ty=H/2-(cy-view.ty)*ff;view.s=ns}
+// panel
+function pin(){const el=$("pinned");if(pinned<0){el.classList.add("hidden");return}const p=P[pinned];el.classList.remove("hidden");el.replaceChildren();
+ const h=document.createElement("h2");h.textContent="จุดที่เลือก";const t=document.createElement("div");t.textContent=p[TXT];const m=document.createElement("div");m.className="k";m.textContent=`ID ${p[ID]} · ${p[TOP]===-1?"ไม่เข้ากลุ่ม":nameOf(tById[p[TOP]])}`;el.append(h,t,m);
+ if(/^https?:\/\//.test(p[URL_])){const a=document.createElement("a");a.href=p[URL_];a.target="_blank";a.rel="noopener noreferrer";a.textContent="เปิดต้นทาง ↗";const d=document.createElement("div");d.append(a);el.append(d)}}
+function detail(){const el=$("detail");if(sel===null){el.classList.add("hidden");return}const t=tById[sel];el.classList.remove("hidden");el.replaceChildren();
+ const h=document.createElement("h2");h.textContent=sel===-1?"ไม่เข้ากลุ่ม (-1)":nameOf(t);const k=document.createElement("div");k.className="k";k.textContent="คำสำคัญจากเครื่อง: "+t.kw.split("|").map(s=>s.trim()).join(" · ");
+ const n=document.createElement("div");n.textContent=`${fmt(t.records)} บทตรวจ (${t.share.toFixed(1)}% ของคลัง) · ${fmt(t.unique)} ข้อความที่ไม่ซ้ำ`;
+ const tot=Object.values(t.src).reduce((a,b)=>a+b,0),s=document.createElement("div");s.className="k";s.textContent="สำนัก: "+Object.entries(t.src).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`${(D.src.find(x=>x.key===k)||{label:k}).label} ${Math.round(100*v/tot)}%`).join(" · ");
+ el.append(h,k,n,s);
+ if(t.purity){const p=t.purity,d=p.yes+p.no,q=document.createElement("div");q.className="k";q.textContent=`อ่านตัวอย่าง (บรรณาธิการอ่านก่อน AI อ่านซ้ำ): ตรงชื่อกลุ่ม ${p.yes} จาก ${d} ที่ตัดสินได้${p.unsure?` (ไม่แน่ใจ ${p.unsure})`:""}`;el.append(q)}
+ const ys=Object.entries(t.years),mx=Math.max(1,...ys.map(([,v])=>v)),bars=document.createElement("div");bars.className="bars";bars.setAttribute("role","img");bars.setAttribute("aria-label","จำนวนบทตรวจรายปีของกลุ่มนี้");
+ ys.forEach(([y,v])=>{const b=document.createElement("b");b.style.height=Math.max(1,44*v/mx)+"px";b.title=`ปี ${+y+543}: ${v}`;bars.append(b)});
+ const bl=document.createElement("div");bl.className="bl";ys.forEach(([y])=>{const s=document.createElement("span");s.textContent=String(+y+543).slice(2);bl.append(s)});
+ const cap=document.createElement("div");cap.className="k";cap.textContent="บทตรวจรายปี (พ.ศ. 25xx; 2558 และ 2569 ไม่เต็มปี)";el.append(bars,bl,cap)}
+function mlegend(){const l=$("mlegend");l.replaceChildren();[["--s1","ชัวร์ก่อนแชร์"],["--s2","AFNC"],["--s3","AFP · Cofact · Thai PBS Verify"],["--noise","ไม่เข้ากลุ่ม"]].forEach(([c,tx])=>{const s=document.createElement("span"),i=document.createElement("i");i.style.background=`var(${c})`;s.append(i,document.createTextNode(tx));l.append(s)})}
+function legend(){mlegend();const l=$("legend");l.replaceChildren();
+ if(mode==="src"){[["--s1","ชัวร์ก่อนแชร์"],["--s2","AFNC"],["--s3","AFP · Cofact · Thai PBS Verify"],["--noise","ไม่เข้ากลุ่ม"]].forEach(([c,t])=>{const s=document.createElement("span"),i=document.createElement("i");i.style.background=`var(${c})`;s.append(i,document.createTextNode(t));l.append(s)})}
+ else if(mode==="year"){const a=document.createElement("span");a.textContent="ปีแรกที่พบ ";const r=document.createElement("span");r.className="ramp";const cs=dark()?[...RAMP].reverse():RAMP;r.style.background=`linear-gradient(90deg,${cs.join(",")})`;const b=document.createElement("span");b.textContent=" 2558 → 2569";l.append(a,r,b)}
+ else{const s=document.createElement("span");s.textContent=sel===null?"เทาทั้งหมด เลือกกลุ่มจากรายการเพื่อเน้นสีฟ้า":"สีฟ้า = กลุ่มที่เลือก";l.append(s)}}
+function table(){const tb=document.querySelector("#tbl tbody");tb.replaceChildren();
+ T.forEach(t=>{const tr=document.createElement("tr");tr.className="row"+(sel===t.id?" sel":"");tr.tabIndex=0;
+  const a=document.createElement("td"),nm=document.createElement("div");nm.className="nm";nm.textContent=t.id===-1?"ไม่เข้ากลุ่ม (-1)":(t.draft?`${t.id} · ${t.draft}`:`กลุ่ม ${t.id}`);const kw=document.createElement("div");kw.className="kw";kw.textContent=t.kw.split("|").slice(0,5).map(s=>s.trim()).join(" · ");a.append(nm,kw);
+  const b=document.createElement("td");b.className="r";b.textContent=fmt(t.records);tr.append(a,b);
+  const go=()=>{sel=sel===t.id?null:t.id;if(sel!==null)focusTopic(sel);else{view={s:1,tx:0,ty:0}}refresh()};tr.onclick=go;tr.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();go()}};tb.append(tr)})}
+function refresh(){legend();detail();table();document.querySelectorAll(".seg button").forEach(b=>b.setAttribute("aria-pressed",(b.id==="mSrc"&&mode==="src")||(b.id==="mYear"&&mode==="year")||(b.id==="mNone"&&mode==="none")));draw()}
+$("mSrc").onclick=()=>{mode="src";refresh()};$("mYear").onclick=()=>{mode="year";refresh()};$("mNone").onclick=()=>{mode="none";refresh()};
+$("clr").onclick=()=>{sel=null;query="";$("q").value="";$("qn").textContent="";pinned=-1;pin();view={s:1,tx:0,ty:0};refresh()};
+$("q").addEventListener("input",e=>{query=e.target.value.trim().toLowerCase();const n=query?P.reduce((a,_,i)=>a+(matches(i)&&(sel===null||P[i][TOP]===sel)?1:0),0):0;$("qn").textContent=query?`พบ ${fmt(n)} ข้อความที่มีคำนี้`:"";draw()});
+addEventListener("resize",()=>{fit();draw()});matchMedia("(prefers-color-scheme:dark)").addEventListener("change",()=>{legend();draw()});
+fit();refresh();
+</script></body></html>
